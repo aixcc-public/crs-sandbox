@@ -1,0 +1,59 @@
+######################################################################################################
+# DO NOT MODIFY THIS FILE ANYWHERE OTHER THAN WITHIN THE CUSTOMIZE BLOCKS
+#
+#
+# New services are acceptable
+# Any service which needs KVM or Docker MUST run privleged and pass the appropriate volume (see below)
+# /dev/kvm for QEMU or /var/run/docker.sock for Docker
+#
+# Profiles
+# We use the profiles "development" and "competition"
+# All containers added by competitors must include the appropriate profiles
+# At competition time only the `--profile competition` will be used
+# This will cause the LiteLLM proxy to disappear. 
+# Competitors should be using the LITELLM_URL environment variable
+# for accessing LiteLLM, so we can swap the URL at competition time.
+#
+######################################################################################################
+
+include:
+  - sandbox/docker-compose.yaml
+
+#############
+### CUSTOMIZE
+#############
+
+### Additional services are welcomed, just make sure to use the supplied variables and profile names
+services:
+
+  crs:
+    profiles:
+      - development
+      - competition
+    build: 
+      context: . # Note that this uses the base folder for context, you may not need this for your CRS
+      dockerfile: crs/src/Dockerfile
+    privileged: true
+    volumes:
+      - /dev/kvm:/dev/kvm
+      - /var/run/docker.sock:/var/run/docker.sock
+      - type: volume
+        source: cp-root
+        target: /cp-root
+        # This is the core CP mount point where repos are attached as subdirectories. 
+        # A CRS must automatically copy subdirectories here to some location for building and should not modify this read_only setting.
+        read_only: true  # DO NOT MODIFY FROM READ-ONLY
+    environment:
+      # TODO: These all need to be injected from the CI/CD workflow itself and come from the Github secrets/environments
+      - LITELLM_URL="http://litellm"
+      - IAPI_URL="http://iapi"
+      - LITELLM_KEY="sk-1234" # Leave this default value during development
+    depends_on:
+      litellm:
+        condition: service_healthy
+      iapi:
+        condition: service_started
+
+#############
+### CUSTOMIZE
+#############

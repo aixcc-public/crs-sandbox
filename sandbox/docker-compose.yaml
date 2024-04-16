@@ -1,0 +1,62 @@
+######################################
+# COMPETITORS: DO NOT MODIFY THIS FILE
+######################################
+version: '3.9'
+
+services:
+  iapi:
+    profiles:
+      - development
+      - competition
+    image: nginx:mainline-alpine3.18
+    # Note: the NGINX container is a placeholder.
+    # This will be replaced with the iAPI container which will be
+    # released in a future iteration of the CRS Sandbox
+    # image: ghcr.io/aixcc-sc/crs-sandbox/iapi:main-v0.0.1
+    restart: always
+    ports:
+      - "8080:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -O /dev/null http://localhost || exit 1"]
+      timeout: 10s
+    volumes:
+      - type: volume
+        source: cp-root
+        target: /cp-root
+        read_only: false
+    environment: 
+      - ASC_API_URL="https://api.aixcc.internal"
+  db:
+    profiles:
+      - development
+    image: postgres:16.2-alpine3.19
+    restart: always
+    shm_size: 128mb
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=aixcc
+      - POSTGRES_USER=aixcc 
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=litellm
+  litellm:
+    profiles:
+      - development
+    image: ghcr.io/berriai/litellm-database:main-v1.30.7
+    restart: always
+    volumes:
+      - ./litellm/local_litellm_config.yaml:/app/config.yaml
+    command: [ "--config", "/app/config.yaml", "--port", "80", "--num_workers", "8" ]
+    ports:
+      - "8081:80"
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql://aixcc:aixcc@db
+    healthcheck:
+      test: ["CMD-SHELL", "python3", "--version"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 1s
+volumes:
+  cp-root:

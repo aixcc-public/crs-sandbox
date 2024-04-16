@@ -1,0 +1,5 @@
+## Localized environment variables
+**/.env
+
+## Generated Kubernetes Resources
+.k8s
