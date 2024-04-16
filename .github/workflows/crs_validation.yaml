@@ -1,0 +1,10 @@
+################# DO NOT CHANGE ########################
+# This file should not be modified.
+# Modifying this file could result in disqualification. 
+########################################################
+
+# This file contains the CRS validation logic which will perform the following:
+# 1. Linter for the infrastructure code.
+# 2. Validator for the infrastructure code and any tests.
+
+################# DO NOT CHANGE ########################
