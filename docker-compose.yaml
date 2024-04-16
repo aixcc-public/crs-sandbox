@@ -38,8 +38,8 @@ services:
       - /dev/kvm:/dev/kvm
       - /var/run/docker.sock:/var/run/docker.sock
       - type: volume
-        source: cp-root
-        target: /cp-root
+        source: cp_root
+        target: /cp_root
         # This is the core CP mount point where repos are attached as subdirectories. 
         # A CRS must automatically copy subdirectories here to some location for building and should not modify this read_only setting.
         read_only: true  # DO NOT MODIFY FROM READ-ONLY
@@ -53,6 +53,8 @@ services:
         condition: service_healthy
       iapi:
         condition: service_started
+volumes:
+  cp_root:
 
 #############
 ### CUSTOMIZE
