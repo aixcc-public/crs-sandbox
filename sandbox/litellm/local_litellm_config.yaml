@@ -1,0 +1,19 @@
+model_list:
+  - model_name: gpt-3.5
+    litellm_params:
+      model: openai/gpt-3.5-turbo
+      api_base: http://litellm/
+      api_version: "2023-05-15"
+      api_key: os.environ/OPENAI_API_KEY # The `os.environ/` prefix tells litellm to read this from the env. See https://docs.litellm.ai/docs/simple_proxy#load-api-keys-from-vault
+litellm_settings:
+  drop_params: True
+  max_budget: 100 
+  budget_duration: 30d
+general_settings: 
+  master_key: sk-1234 # Leave this default value. 
+
+environment_variables:
+  # settings for using redis caching
+  # REDIS_HOST: redis-16337.c322.us-east-1-2.ec2.cloud.redislabs.com
+  # REDIS_PORT: "16337"
+  # REDIS_PASSWORD: 
