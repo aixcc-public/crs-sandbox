@@ -1,9 +1,9 @@
 GIT_HOST = git@github.com
-EXEMPLAR_REPOS = aixcc-sc/challenge-001-linux-cp.git aixcc-sc/challenge-002-jenkins-cp.git 
+EXEMPLAR_REPOS = aixcc-sc/challenge-002-jenkins-cp.git
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 DOCKER_COMPOSE_FILE = docker-compose.yaml
 
-.PHONY: help build up start down destroy stop restart logs logs-crs logs-litellm logs-iapi ps crs-shell litellm-shell cps/clone cps/manual cps/clone
+.PHONY: help build up start down destroy stop restart logs logs-crs logs-litellm logs-iapi ps crs-shell litellm-shell cps/clean cps
 
 help: ## Display available targets and their help strings
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(THIS_FILE) | sort
@@ -51,7 +51,7 @@ crs-shell: ## Access the crs shell
 litellm-shell: ## Access the litellm shell
 	@docker-compose -f $(DOCKER_COMPOSE_FILE) --profile development exec litellm /bin/bash
 
-cps/manual: ## Clean up the cloned CP repos
+cps: ## Clean up the cloned CP repos
 	@for repo in $(EXEMPLAR_REPOS); do \
 		cd cp_root; \
 		git clone $(GIT_HOST):$$repo; \

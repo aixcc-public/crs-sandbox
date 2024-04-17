@@ -8,11 +8,7 @@ services:
     profiles:
       - development
       - competition
-    image: nginx:mainline-alpine3.18
-    # Note: the NGINX container is a placeholder.
-    # This will be replaced with the iAPI container which will be
-    # released in a future iteration of the CRS Sandbox
-    # image: ghcr.io/aixcc-sc/crs-sandbox/iapi:main-v0.0.1
+    image: ghcr.io/aixcc-sc/iapi:v1.0.0
     restart: always
     ports:
       - "8080:80"
@@ -21,8 +17,8 @@ services:
       timeout: 10s
     volumes:
       - type: volume
-        source: cp-root
-        target: /cp-root
+        source: cp_root
+        target: /cp_root
         read_only: false
     environment: 
       - ASC_API_URL="https://api.aixcc.internal"
@@ -59,4 +55,4 @@ services:
       retries: 10
       start_period: 1s
 volumes:
-  cp-root:
+  cp_root:
