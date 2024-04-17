@@ -38,7 +38,7 @@ services:
   litellm:
     profiles:
       - development
-    image: ghcr.io/berriai/litellm-database:main-v1.30.7
+    image: ghcr.io/berriai/litellm-database:main-v1.35.10
     restart: always
     volumes:
       - ./litellm/local_litellm_config.yaml:/app/config.yaml
@@ -48,6 +48,10 @@ services:
     env_file: .env
     environment:
       - DATABASE_URL=postgresql://aixcc:aixcc@db
+      - GEMINI_API_KEY=checkinpassbolt
+      - ANTHROPIC_API_KEY=checkinpassbolt
+      - OPENAI_API_KEY=checkinpassbolt
+      - AZURE_API_KEY=checkinpassbolt
     healthcheck:
       test: ["CMD-SHELL", "python3", "--version"]
       interval: 5s
