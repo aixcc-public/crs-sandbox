@@ -18,8 +18,29 @@ This is so the AIxCC infrastructure team can override the per-competitor secrets
 Please see the competition rules and technical release as the cut off dates for changes will be descibed there. 
 
 # Local Development
-`make up` - brings up the development CRS Sandbox
+
+## Github Personal Access Token (PAT)
+In order to work with the CRS Sandbox you must setup your Github personal access token or PAT following these steps. 
+1. Configure a personal access token (PAT) with `read:packages` permission by following this [guide](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic)
+2. Authorize the generated PAT for the `aixcc-sc` organization by this [guide](https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on)
+3. Run `echo "example-token-1234" | docker login ghcr.io -u USERNAME --password-stdin` replacing example-token-1234 with your generated PAT
+4. Confirm that you see `> Login Succeeded` in your output from step #3. 
+
+## Github SSH Key
+1. Generate an SSH key by following this [guide](https://docs.github.com/en/enterprise-cloud@latest/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
+2. Upload the generated SSH key to your AIxCC Github account by following this [guide](https://docs.github.com/en/enterprise-cloud@latest/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)
+3. Follow this [guide](https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-an-ssh-key-for-use-with-saml-single-sign-on) to authorize the SSH key for the `aixcc-sc` organization
+
+## Using Make
+A Makefile has been provided with a number of a commands to make it easy to clone the exemplar repos, stand up the environment, and a variety of other actions. 
+
+`make cps` - clones the exemplar challenges into `./cp_root` folder
+`make up` - brings up the development CRS Sandbox, you can visit http://127.0.0.1:8080/docs to see the iAPI OpenAPI spec.
+
+The CRS Sandbox currently uses Grafana/K6 as a placeholder for the CRS solution itself and is used to validate that the sandbox can reach the proper HTTP endpoints within the iAPI and LiteLLM containers.
+
 `make down` - tears down the development CRS Sandbox
+
 See [Makefile](./Makefile) for more commands
 
 ## Kubernetes
