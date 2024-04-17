@@ -1,10 +1,33 @@
 model_list:
+# OpenAI
+  - model_name: gpt-3.5
+    litellm_params:
+      model: openai/gpt-3.5-turbo
+      api_key: "os.environ/OPENAI_API_KEY"
+  - model_name: gpt-4
+    litellm_params:
+      model: openai/gpt-4
+      api_key: "os.environ/OPENAI_API_KEY"
+# Microsoft/Azure 
   - model_name: gpt-3.5
     litellm_params:
       model: openai/gpt-3.5-turbo
       api_base: http://litellm/
       api_version: "2023-05-15"
-      api_key: os.environ/OPENAI_API_KEY # The `os.environ/` prefix tells litellm to read this from the env. See https://docs.litellm.ai/docs/simple_proxy#load-api-keys-from-vault
+      api_key: "os.environ/AZURE_API_KEY"
+# Anthropic/Claude
+  - model_name: claude-3
+    litellm_params:
+      model: claude-3-opus-20240229
+      api_key: "os.environ/ANTHROPIC_API_KEY"
+# Google/Vertex AI
+  - model_name: gpt-3.5
+    litellm_params:
+      model: vertex_ai/gemini
+      api_base: http://litellm/
+      api_version: "2023-05-15"
+      api_key: "os.environ/GEMINI_API_KEY"
+
 litellm_settings:
   drop_params: True
   max_budget: 100 
