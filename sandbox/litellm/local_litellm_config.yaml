@@ -8,6 +8,28 @@ model_list:
     litellm_params:
       model: openai/gpt-4
       api_key: "os.environ/OPENAI_API_KEY"
+  - model_name: gpt-4-turbo
+    litellm_params:
+      model: openai/gpt-4-turbo
+      api_key: "os.environ/OPENAI_API_KEY"
+# Anthropic/Claude
+  - model_name: claude-3-opus
+    litellm_params:
+      model: claude-3-opus-20240229
+      api_key: "os.environ/ANTHROPIC_API_KEY"
+  - model_name: claude-3-sonnet
+    litellm_params:
+      model: claude-3-sonnet-20240229
+      api_key: "os.environ/ANTHROPIC_API_KEY"
+# Google/Vertex AI
+  - model_name: gemini-pro
+    litellm_params:
+      model: gemini-pro
+      vertex_project: "Generative Language Client"
+      vertex_location: "us-central1"
+      api_key: "os.environ/GEMINI_API_KEY"
+        
+# still working through this
 # Microsoft/Azure 
   - model_name: gpt-3.5
     litellm_params:
@@ -15,18 +37,6 @@ model_list:
       api_base: http://litellm/
       api_version: "2023-05-15"
       api_key: "os.environ/AZURE_API_KEY"
-# Anthropic/Claude
-  - model_name: claude-3
-    litellm_params:
-      model: claude-3-opus-20240229
-      api_key: "os.environ/ANTHROPIC_API_KEY"
-# Google/Vertex AI
-  - model_name: gpt-3.5
-    litellm_params:
-      model: vertex_ai/gemini
-      api_base: http://litellm/
-      api_version: "2023-05-15"
-      api_key: "os.environ/GEMINI_API_KEY"
 
 litellm_settings:
   drop_params: True
