@@ -3,3 +3,6 @@
 
 ## Generated Kubernetes Resources
 .k8s
+
+## Cloned exemplar repositories
+cp_root/*
