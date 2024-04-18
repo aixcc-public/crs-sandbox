@@ -21,7 +21,7 @@ services:
         target: /cp_root
         read_only: false
     environment: 
-      - ASC_API_URL="https://api.aixcc.internal"
+      - AIXCC_API_HOSTNAME="https://api.aixcc.internal"
   db:
     profiles:
       - development
