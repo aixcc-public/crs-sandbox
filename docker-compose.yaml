@@ -11,7 +11,7 @@
 # All containers added by competitors must include the appropriate profiles
 # At competition time only the `--profile competition` will be used
 # This will cause the LiteLLM proxy to disappear. 
-# Competitors should be using the LITELLM_URL environment variable
+# Competitors should be using the AIXCC_LITELLM_HOSTNAME environment variable
 # for accessing LiteLLM, so we can swap the URL at competition time.
 #
 ######################################################################################################
@@ -45,7 +45,7 @@ services:
         read_only: true  # DO NOT MODIFY FROM READ-ONLY
     environment:
       # TODO: These all need to be injected from the CI/CD workflow itself and come from the Github secrets/environments
-      - LITELLM_URL="http://litellm"
+      - AIXCC_LITELLM_HOSTNAME="http://litellm"
       - IAPI_URL="http://iapi"
       - LITELLM_KEY="sk-1234" # Leave this default value during development
     depends_on:
