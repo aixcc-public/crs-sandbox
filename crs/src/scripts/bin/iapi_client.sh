@@ -2,8 +2,7 @@
 
 set -eo pipefail
 
-# get scripts directory and file  name containing the script
-#SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+# get script's file name for usage print statements
 SCRIPT_FILE="$(basename "${BASH_SOURCE[0]}")"
 
 # set target hostname based on expect iAPI environment variable
