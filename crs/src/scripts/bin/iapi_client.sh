@@ -12,6 +12,13 @@ API_HOSTNAME=${AIXCC_API_HOSTNAME:-"localhost:8080"}
 : "${API_SUBMISSION_VDS_PATH:="submission/vds"}"
 : "${API_SUBMISSION_GP_PATH:="submission/gp"}"
 
+# default curl command arguments
+: "${CURL_EXTRA_ARGS:="--silent --show-error"}"
+
+#################################
+## Utility functions
+#################################
+
 # print warning
 warn() {
     echo "$*" >&2
@@ -76,13 +83,12 @@ print_get_usage() {
 ## Subcommand functions
 #################################
 
-# default curl command invocation
-CURL_CMD="curl --silent --show-error"
-
 # call curl with the passed options and arguments
 curl_generic_with_args() {
     # call curl with arguments (script exits/returns here)
-    ${CURL_CMD} \
+    # shellcheck disable=SC2086
+    curl \
+        ${CURL_EXTRA_ARGS} \
         --header "Content-Type: application/json" \
         --header "accept: application/json" \
         "$@"
