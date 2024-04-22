@@ -42,6 +42,7 @@ services:
     restart: always
     volumes:
       - ./litellm/local_litellm_config.yaml:/app/config.yaml
+      - ./litellm/vertex_key.json:/vertex_key.json
     command: [ "--config", "/app/config.yaml", "--port", "80", "--num_workers", "8" ]
     ports:
       - "8081:80"
