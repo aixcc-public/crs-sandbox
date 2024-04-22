@@ -48,10 +48,6 @@ services:
     env_file: .env
     environment:
       - DATABASE_URL=postgresql://aixcc:aixcc@db
-      - GEMINI_API_KEY=checkinpassbolt
-      - ANTHROPIC_API_KEY=checkinpassbolt
-      - OPENAI_API_KEY=checkinpassbolt
-      - AZURE_API_KEY=checkinpassbolt
     healthcheck:
       test: ["CMD-SHELL", "python3", "--version"]
       interval: 5s
