@@ -1,7 +1,6 @@
 ######################################
 # COMPETITORS: DO NOT MODIFY THIS FILE
 ######################################
-version: '3.9'
 
 services:
   iapi:
@@ -20,7 +19,7 @@ services:
         source: cp_root
         target: /cp_root
         read_only: false
-    environment: 
+    environment:
       - AIXCC_API_HOSTNAME="https://api.aixcc.internal"
   db:
     profiles:
@@ -32,7 +31,7 @@ services:
       - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=aixcc
-      - POSTGRES_USER=aixcc 
+      - POSTGRES_USER=aixcc
       - POSTGRES_PORT=5432
       - POSTGRES_DATABASE=litellm
   litellm:
