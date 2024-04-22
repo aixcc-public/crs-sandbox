@@ -10,14 +10,14 @@
 # We use the profiles "development" and "competition"
 # All containers added by competitors must include the appropriate profiles
 # At competition time only the `--profile competition` will be used
-# This will cause the LiteLLM proxy to disappear. 
+# This will cause the LiteLLM proxy to disappear.
 # Competitors should be using the AIXCC_LITELLM_HOSTNAME environment variable
 # for accessing LiteLLM, so we can swap the URL at competition time.
 #
 ######################################################################################################
 
 include:
-  - sandbox/docker-compose.yaml
+  - sandbox/compose.yaml
 
 #############
 ### CUSTOMIZE
@@ -30,7 +30,7 @@ services:
     profiles:
       - development
       - competition
-    build: 
+    build:
       context: . # Note that this uses the base folder for context, you may not need this for your CRS
       dockerfile: crs/src/Dockerfile
     privileged: true
@@ -40,7 +40,7 @@ services:
       - type: volume
         source: cp_root
         target: /cp_root
-        # This is the core CP mount point where repos are attached as subdirectories. 
+        # This is the core CP mount point where repos are attached as subdirectories.
         # A CRS must automatically copy subdirectories here to some location for building and should not modify this read_only setting.
         read_only: true  # DO NOT MODIFY FROM READ-ONLY
     environment:
