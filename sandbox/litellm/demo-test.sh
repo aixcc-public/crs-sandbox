@@ -2,7 +2,7 @@
 # Script to demonstrate basic LLM forwarding for the models we currently have API keys and configs for.
 #
 
-MODELS=("gpt-3.5" "gpt-4" "gpt-4-turbo" "claude-3-opus" "claude-3-sonnet" "gemini-pro")
+MODELS=("gpt-3.5" "gpt-4" "gpt-4-turbo" "claude-3-opus" "claude-3-sonnet" "gemini-pro" "gemini-1.5-pro")
 
 for model in ${MODELS[@]}; do
   echo "Out for $model:"
