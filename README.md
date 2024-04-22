@@ -13,6 +13,12 @@ Each competitors CRS will come pre-packaged with a list of Github secrets and en
 
 This is so the AIxCC infrastructure team can override the per-competitor secrets and variables at competition time, yet competitors can use these secrets for connecting to their cloud vendor and/or LLM APIs as needed.
 
+There are currently 4 LLM Provider environment variables declared but not populated in example.env, which will be populated at competition time:
+- OPENAI\_API\_KEY
+- AZUREML\_API\_KEY
+- GEMINI\_API\_KEY
+- ANTHROPIC\_API\_KEY
+
 *TBD* - These variables and the LiteLLM configuration file are not yet complete. This will be released in a CRS sandbox update. We will continue iterating on the CRS sandbox as we grow closer to the competition in order to support newer versions of components in order to stay compatible with the latest LLM models and tech as this changes almost daily. 
 
 Please see the competition rules and technical release as the cut off dates for changes will be descibed there. 
