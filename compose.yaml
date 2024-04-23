@@ -45,8 +45,8 @@ services:
         read_only: true  # DO NOT MODIFY FROM READ-ONLY
     environment:
       # TODO: These all need to be injected from the CI/CD workflow itself and come from the Github secrets/environments
-      - AIXCC_LITELLM_HOSTNAME="http://litellm"
-      - AIXCC_API_HOSTNAME="http://iapi"
+      - AIXCC_LITELLM_HOSTNAME=http://litellm
+      - AIXCC_API_HOSTNAME=http://iapi
       - LITELLM_KEY="sk-1234" # Leave this default value during development
     depends_on:
       litellm:
