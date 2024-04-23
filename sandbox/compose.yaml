@@ -39,9 +39,11 @@ services:
       - development
     image: ghcr.io/berriai/litellm-database:main-v1.35.10
     restart: always
-    volumes:
-      - ./litellm/local_litellm_config.yaml:/app/config.yaml
-      - ./litellm/vertex_key.json:/vertex_key.json
+    configs:
+      - source: litellm_config
+        target: /app/config.yaml
+      - source: litellm_vertex_config
+        target: /vertex_key.json
     command: [ "--config", "/app/config.yaml", "--port", "80", "--num_workers", "8" ]
     ports:
       - "8081:80"
@@ -54,5 +56,11 @@ services:
       timeout: 5s
       retries: 10
       start_period: 1s
+
+configs:
+  litellm_config:
+    file: ./litellm/local_litellm_config.yaml
+  litellm_vertex_config:
+    file: ./litellm/vertex_key.json
 volumes:
   cp_root:
