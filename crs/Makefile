@@ -1,9 +1,5 @@
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
-REQ_EXE = shellcheck git
-__UNUSED_VAR := $(foreach exe,$(REQ_EXE),\
-        $(if $(shell command -v $(exe)),,$(error "Executable $(exe) not in PATH")))
-
 SHELLCHECK_SCRIPTS:= \
 	$(shell find $(ROOT_DIR) -type f -name "*.sh" -not -path "./.git*")
 
