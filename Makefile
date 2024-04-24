@@ -8,7 +8,7 @@ HOST_CP_ROOT_DIR = $(ROOT_DIR)/cp_root
 .PHONY: help build up start down destroy stop restart logs logs-crs logs-litellm logs-iapi ps crs-shell litellm-shell cps/clean cps
 
 help: ## Display available targets and their help strings
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(THIS_FILE) | sort
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_/-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(THIS_FILE) | sort
 
 build: ## Build the project
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development build $(c)
