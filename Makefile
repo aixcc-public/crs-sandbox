@@ -1,9 +1,11 @@
-GIT_HOST = git@github.com
-EXEMPLAR_REPOS = aixcc-sc/challenge-002-jenkins-cp.git
 ROOT_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 DOCKER_COMPOSE_FILE = $(ROOT_DIR)/compose.yaml
+
+# variables that control the CP repos
 HOST_CP_ROOT_DIR = $(ROOT_DIR)/cp_root
+EXEMPLAR_REPOS = git@github.com:aixcc-sc/challenge-002-jenkins-cp.git
+EXEMPLAR_REPOS_TARGETS = $(addprefix $(HOST_CP_ROOT_DIR)/.pulled_, $(subst :,_colon_, $(subst /,_slash_, $(EXEMPLAR_REPOS))))
 
 .PHONY: help build up start down destroy stop restart logs logs-crs logs-litellm logs-iapi ps crs-shell litellm-shell cps/clean cps
 
@@ -53,12 +55,16 @@ crs-shell: ## Access the crs shell
 litellm-shell: ## Access the litellm shell
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development exec litellm /bin/bash
 
-cps: ## Clone CP repos
-	@mkdir -p $(HOST_CP_ROOT_DIR)
-	@for repo in $(EXEMPLAR_REPOS); do \
-		cd $(HOST_CP_ROOT_DIR); \
-		git clone $(GIT_HOST):$$repo; \
-	done
+## Internal target to clone and pull the CP source for each CP repo
+$(HOST_CP_ROOT_DIR)/.pulled_%.git:
+	$(eval REVERT_REPO_ESCAPE_STR=$(subst _colon_,:,$(subst _slash_,/,$*)))
+	$(eval CP_ROOT_REPO_SUBDIR=$(@D)/$(basename $(notdir $(REVERT_REPO_ESCAPE_STR))))
+	@mkdir -p $(@D)
+	git clone $(REVERT_REPO_ESCAPE_STR).git $(CP_ROOT_REPO_SUBDIR)
+	$(CP_ROOT_REPO_SUBDIR)/run.sh pull_source
+	@touch $@
+
+cps: $(EXEMPLAR_REPOS_TARGETS) ## Clone CP repos
 
 cps/clean: ## Clean up the cloned CP repos
 	@rm -rf $(HOST_CP_ROOT_DIR)
