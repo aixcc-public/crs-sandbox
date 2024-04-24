@@ -15,7 +15,7 @@ help: ## Display available targets and their help strings
 build: ## Build the project
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development build $(c)
 
-up: ## Start containers
+up: cps ## Start containers
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development up -d $(c)
 
 start: ## Start containers

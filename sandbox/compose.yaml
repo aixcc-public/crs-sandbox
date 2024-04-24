@@ -14,11 +14,6 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "wget -O /dev/null http://localhost || exit 1"]
       timeout: 10s
-    volumes:
-      - type: volume
-        source: cp_root
-        target: /cp_root
-        read_only: false
     environment:
       - AIXCC_API_HOSTNAME=https://api.aixcc.internal
   db:
@@ -62,5 +57,3 @@ configs:
     file: ./litellm/local_litellm_config.yaml
   litellm_vertex_config:
     file: ./litellm/vertex_key.json
-volumes:
-  cp_root:
