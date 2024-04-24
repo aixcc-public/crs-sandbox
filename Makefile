@@ -1,7 +1,8 @@
 GIT_HOST = git@github.com
 EXEMPLAR_REPOS = aixcc-sc/challenge-002-jenkins-cp.git
+ROOT_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
-DOCKER_COMPOSE_FILE = compose.yaml
+DOCKER_COMPOSE_FILE = $(ROOT_DIR)/compose.yaml
 
 .PHONY: help build up start down destroy stop restart logs logs-crs logs-litellm logs-iapi ps crs-shell litellm-shell cps/clean cps
 
@@ -52,22 +53,22 @@ litellm-shell: ## Access the litellm shell
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development exec litellm /bin/bash
 
 cps: ## Clone CP repos
-	@mkdir -p ./cp_root
+	@mkdir -p $(ROOT_DIR)/cp_root
 	@for repo in $(EXEMPLAR_REPOS); do \
-		cd ./cp_root; \
+		cd $(ROOT_DIR)/cp_root; \
 		git clone $(GIT_HOST):$$repo; \
 	done
 
 cps/clean: ## Clean up the cloned CP repos
-	@rm -rf ./cp_root/*
+	@rm -rf $(ROOT_DIR)/cp_root/*
 
 k8s: k8s/clean
-	@kompose convert --profile development --out ./.k8s/
+	@kompose convert --profile development --out $(ROOT_DIR)/.k8s/
 
 k8s/helm: k8s/clean
-	@kompose convert --profile development --chart --out ./.k8s/
+	@kompose convert --profile development --chart --out $(ROOT_DIR)/.k8s/
 
 k8s/clean:
-	@rm -rf ./.k8s
+	@rm -rf $(ROOT_DIR)/.k8s
 
 clean: cps/clean k8s/clean down
