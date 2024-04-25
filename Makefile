@@ -70,10 +70,10 @@ cps/clean: ## Clean up the cloned CP repos
 	@rm -rf $(HOST_CP_ROOT_DIR)
 
 k8s: k8s/clean
-	@kompose convert --profile development --out $(ROOT_DIR)/.k8s/
+	@COMPOSE_FILE="compose.yaml kompose_conversion_overrides.yaml" kompose convert --profile development --out $(ROOT_DIR)/.k8s/
 
 k8s/helm: k8s/clean
-	@kompose convert --profile development --chart --out $(ROOT_DIR)/.k8s/
+	@COMPOSE_FILE="compose.yaml kompose_conversion_overrides.yaml" kompose convert --profile development --chart --out $(ROOT_DIR)/.k8s/
 
 k8s/clean:
 	@rm -rf $(ROOT_DIR)/.k8s
