@@ -15,7 +15,7 @@ help: ## Display available targets and their help strings
 build: ## Build the project
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development build $(c)
 
-up: ## Start containers
+up: cps ## Start containers
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development up -d $(c)
 
 start: ## Start containers
@@ -70,10 +70,10 @@ cps/clean: ## Clean up the cloned CP repos
 	@rm -rf $(HOST_CP_ROOT_DIR)
 
 k8s: k8s/clean
-	@kompose convert --profile development --out $(ROOT_DIR)/.k8s/
+	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_conversion_overrides.yaml" kompose convert --profile development --out $(ROOT_DIR)/.k8s/
 
 k8s/helm: k8s/clean
-	@kompose convert --profile development --chart --out $(ROOT_DIR)/.k8s/
+	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_conversion_overrides.yaml" kompose convert --profile development --chart --out $(ROOT_DIR)/.k8s/
 
 k8s/clean:
 	@rm -rf $(ROOT_DIR)/.k8s

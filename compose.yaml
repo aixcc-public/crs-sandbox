@@ -37,8 +37,8 @@ services:
     volumes:
       - /dev/kvm:/dev/kvm
       - /var/run/docker.sock:/var/run/docker.sock
-      - type: volume
-        source: cp_root
+      - type: bind
+        source: ./cp_root
         target: /cp_root
         # This is the core CP mount point where repos are attached as subdirectories.
         # A CRS must automatically copy subdirectories here to some location for building and should not modify this read_only setting.
@@ -47,14 +47,13 @@ services:
       # TODO: These all need to be injected from the CI/CD workflow itself and come from the Github secrets/environments
       - AIXCC_LITELLM_HOSTNAME=http://litellm
       - AIXCC_API_HOSTNAME=http://iapi
+      - AIXCC_CP_ROOT=/cp_root
       - LITELLM_KEY="sk-1234" # Leave this default value during development
     depends_on:
       litellm:
         condition: service_healthy
       iapi:
         condition: service_started
-volumes:
-  cp_root:
 
 #############
 ### CUSTOMIZE
