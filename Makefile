@@ -4,8 +4,9 @@ DOCKER_COMPOSE_FILE = $(ROOT_DIR)/compose.yaml
 
 # variables that control the CP repos
 HOST_CP_ROOT_DIR = $(ROOT_DIR)/cp_root
-EXEMPLAR_REPOS = git@github.com:aixcc-sc/challenge-002-jenkins-cp.git
-EXEMPLAR_REPOS_TARGETS = $(addprefix $(HOST_CP_ROOT_DIR)/.pulled_, $(subst :,_colon_, $(subst /,_slash_, $(EXEMPLAR_REPOS))))
+CP_CONFIG_FILE ?= $(ROOT_DIR)/cp_config.yaml
+CP_TARGETS_DIRS = $(shell yq  -r '.cp_targets | keys[]' $(CP_CONFIG_FILE))
+CP_MAKE_TARGETS = $(addprefix $(HOST_CP_ROOT_DIR)/.pulled_, $(subst :,_colon_, $(subst /,_slash_, $(CP_TARGETS_DIRS))))
 
 .PHONY: help build up start down destroy stop restart logs logs-crs logs-litellm logs-iapi ps crs-shell litellm-shell cps/clean cps
 
@@ -56,15 +57,21 @@ litellm-shell: ## Access the litellm shell
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development exec litellm /bin/bash
 
 ## Internal target to clone and pull the CP source for each CP repo
-$(HOST_CP_ROOT_DIR)/.pulled_%.git:
-	$(eval REVERT_REPO_ESCAPE_STR=$(subst _colon_,:,$(subst _slash_,/,$*)))
-	$(eval CP_ROOT_REPO_SUBDIR=$(@D)/$(basename $(notdir $(REVERT_REPO_ESCAPE_STR))))
-	@mkdir -p $(@D)
-	git clone $(REVERT_REPO_ESCAPE_STR).git $(CP_ROOT_REPO_SUBDIR)
+$(HOST_CP_ROOT_DIR)/.pulled_%:
+	$(eval REVERT_CP_TARGETS_DIRS_ESCAPE_STR=$(subst _colon_,:,$(subst _slash_,/,$*)))
+	$(eval CP_ROOT_REPO_SUBDIR=$(@D)/$(REVERT_CP_TARGETS_DIRS_ESCAPE_STR))
+	@$(RM) -r $(CP_ROOT_REPO_SUBDIR)
+	@mkdir -p $(CP_ROOT_REPO_SUBDIR)
+	@yq -r '.cp_targets["$(REVERT_CP_TARGETS_DIRS_ESCAPE_STR)"].url' $(CP_CONFIG_FILE) | \
+		xargs -I {} git clone --depth 1 {} $(CP_ROOT_REPO_SUBDIR)
+	@yq -r '.cp_targets["$(REVERT_CP_TARGETS_DIRS_ESCAPE_STR)"] | .ref // "main"' $(CP_CONFIG_FILE) | \
+		xargs -I {} sh -c \
+			"git -C $(CP_ROOT_REPO_SUBDIR) fetch --depth 1 origin {}; \
+			git -C $(CP_ROOT_REPO_SUBDIR) checkout --quiet {};"
 	$(CP_ROOT_REPO_SUBDIR)/run.sh pull_source
 	@touch $@
 
-cps: $(EXEMPLAR_REPOS_TARGETS) ## Clone CP repos
+cps: $(CP_MAKE_TARGETS) ## Clone CP repos
 
 cps/clean: ## Clean up the cloned CP repos
 	@rm -rf $(HOST_CP_ROOT_DIR)
