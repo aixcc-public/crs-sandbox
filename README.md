@@ -35,6 +35,7 @@ Please see the competition rules and technical release as the cut off dates for 
 | Google    | gemini-1.5-pro  | 2024-04-09     |
 
 These are utilized by hitting the LiteLLM /chat/completions endpoint, specifying model and message using the OpenAI JSON request format.
+Note that further models will be supported in subsequent iterations.
 
 # Local Development
 
