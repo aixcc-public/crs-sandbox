@@ -5,6 +5,13 @@ DOCKER_COMPOSE_FILE = $(ROOT_DIR)/compose.yaml
 # variables that control the CP repos
 HOST_CP_ROOT_DIR = $(ROOT_DIR)/cp_root
 CP_CONFIG_FILE ?= $(ROOT_DIR)/cp_config.yaml
+
+# Check for required file that will error out elsewhere if not present
+ifeq (,$(wildcard $(CP_CONFIG_FILE)))
+$(error Required file not found: $(CP_CONFIG_FILE))
+endif
+
+# Determine CP repo targets
 CP_TARGETS_DIRS = $(shell yq -r '.cp_targets | keys | .[]' $(CP_CONFIG_FILE))
 CP_MAKE_TARGETS = $(addprefix $(HOST_CP_ROOT_DIR)/.pulled_, $(subst :,_colon_, $(subst /,_slash_, $(CP_TARGETS_DIRS))))
 
