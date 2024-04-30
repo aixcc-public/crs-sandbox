@@ -11,6 +11,18 @@ ifeq (,$(wildcard $(CP_CONFIG_FILE)))
 $(error Required file not found: $(CP_CONFIG_FILE))
 endif
 
+# Check for required executables (dependencies)
+__UNUSED_REQUIRED_EXE = yq docker kompose
+__UNUSED_EVAL_EXES := $(foreach exe,$(__UNUSED_REQUIRED_EXE), \
+	$(if $(shell command -v $(exe)),,$(warning Required executable not in PATH: $(exe))))
+
+# Check yq version
+__UNUSED_YQ_REQUIRED_MAJOR_VERSION ?= 4
+__UNUSED_YQ_ACTUAL_MAJOR_VERSION = $(shell yq --version | grep -o "version v.*" | grep -Eo '[0-9]+(\.[0-9]+)+' | cut -f1 -d'.')
+ifneq ($(__UNUSED_YQ_REQUIRED_MAJOR_VERSION),$(__UNUSED_YQ_ACTUAL_MAJOR_VERSION))
+$(error Unexpected major version of 'yq'. Expected: $(__UNUSED_YQ_REQUIRED_MAJOR_VERSION), Actual: $(__UNUSED_YQ_ACTUAL_MAJOR_VERSION)))
+endif
+
 # Determine CP repo targets
 CP_TARGETS_DIRS = $(shell yq -r '.cp_targets | keys | .[]' $(CP_CONFIG_FILE))
 CP_MAKE_TARGETS = $(addprefix $(HOST_CP_ROOT_DIR)/.pulled_, $(subst :,_colon_, $(subst /,_slash_, $(CP_TARGETS_DIRS))))
