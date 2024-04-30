@@ -7,7 +7,7 @@ services:
     profiles:
       - development
       - competition
-    image: ghcr.io/aixcc-sc/iapi:v1.0.0
+    image: ghcr.io/aixcc-sc/iapi:v2.0.0
     restart: always
     ports:
       - "8080:80"
