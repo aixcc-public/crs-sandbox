@@ -5,7 +5,26 @@ DOCKER_COMPOSE_FILE = $(ROOT_DIR)/compose.yaml
 # variables that control the CP repos
 HOST_CP_ROOT_DIR = $(ROOT_DIR)/cp_root
 CP_CONFIG_FILE ?= $(ROOT_DIR)/cp_config.yaml
-CP_TARGETS_DIRS = $(shell yq  -r '.cp_targets | keys[]' $(CP_CONFIG_FILE))
+
+# Check for required file that will error out elsewhere if not present
+ifeq (,$(wildcard $(CP_CONFIG_FILE)))
+$(error Required file not found: $(CP_CONFIG_FILE))
+endif
+
+# Check for required executables (dependencies)
+__UNUSED_REQUIRED_EXE = yq docker kompose
+__UNUSED_EVAL_EXES := $(foreach exe,$(__UNUSED_REQUIRED_EXE), \
+	$(if $(shell command -v $(exe)),,$(warning Required executable not in PATH: $(exe))))
+
+# Check yq version
+__UNUSED_YQ_REQUIRED_MAJOR_VERSION ?= 4
+__UNUSED_YQ_ACTUAL_MAJOR_VERSION = $(shell yq --version | grep -o "version v.*" | grep -Eo '[0-9]+(\.[0-9]+)+' | cut -f1 -d'.')
+ifneq ($(__UNUSED_YQ_REQUIRED_MAJOR_VERSION),$(__UNUSED_YQ_ACTUAL_MAJOR_VERSION))
+$(error Unexpected major version of 'yq'. Expected: $(__UNUSED_YQ_REQUIRED_MAJOR_VERSION), Actual: $(__UNUSED_YQ_ACTUAL_MAJOR_VERSION)))
+endif
+
+# Determine CP repo targets
+CP_TARGETS_DIRS = $(shell yq -r '.cp_targets | keys | .[]' $(CP_CONFIG_FILE))
 CP_MAKE_TARGETS = $(addprefix $(HOST_CP_ROOT_DIR)/.pulled_, $(subst :,_colon_, $(subst /,_slash_, $(CP_TARGETS_DIRS))))
 
 .PHONY: help build up start down destroy stop restart logs logs-crs logs-litellm logs-iapi ps crs-shell litellm-shell cps/clean cps
