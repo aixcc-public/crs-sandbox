@@ -16,8 +16,9 @@ This is so the AIxCC infrastructure team can override the per-competitor secrets
 There are currently 4 LLM Provider environment variables declared but not populated in example.env, which will be populated at competition time:
 - OPENAI\_API\_KEY
 - AZUREML\_API\_KEY
-- GEMINI\_API\_KEY
+- GOOGLE_APPLICATION_CREDENTIAL
 - ANTHROPIC\_API\_KEY
+Note: For local development the example.env file should be renamed to env.
 
 *TBD* - These variables and the LiteLLM configuration file are not yet complete. This will be released in a CRS sandbox update. We will continue iterating on the CRS sandbox as we grow closer to the competition in order to support newer versions of components in order to stay compatible with the latest LLM models and tech as this changes almost daily.
 
