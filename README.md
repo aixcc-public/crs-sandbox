@@ -25,14 +25,17 @@ Please see the competition rules and technical release as the cut off dates for 
 
 # LiteLLM Models Supported
 
-| Provider  | Model           | Pinned Version |
-| --------- | --------------- | -------------- |
-| OpenAI    | gpt-4           | TBD            |
-| OpenAI    | gpt-4-turbo     | TBD            |
-| Anthropic | claude-3-sonnet | 2024-02-29     |
-| Anthropic | claude-3-opus   | 2024-02-29     |
-| Google    | gemini-pro      | TBD            |
-| Google    | gemini-1.5-pro  | 2024-04-09     |
+| Provider  | Model                  | Pinned Version         |
+| --------- | ---------------------- | ---------------------- |
+| OpenAI    | gpt-4                  | TBD                    |
+| OpenAI    | gpt-4-turbo            | TBD                    |
+| OpenAI    | text-embedding-3-large | text-embedding-3-large |
+| OpenAI    | text-embedding-3-small | text-embedding-3-small |
+| Anthropic | claude-3-sonnet        | 2024-02-29             |
+| Anthropic | claude-3-opus          | 2024-02-29             |
+| Google    | gemini-pro             | TBD                    |
+| Google    | gemini-1.5-pro         | 2024-04-09             |
+Note: Embedding models have not currently been released in more than a single version.
 
 These are utilized by hitting the LiteLLM /chat/completions endpoint, specifying model and message using the OpenAI JSON request format.
 Note that further models will be supported in subsequent iterations.

@@ -12,6 +12,20 @@ model_list:
     litellm_params:
       model: openai/gpt-4-turbo
       api_key: "os.environ/OPENAI_API_KEY"
+  - model_name: text-embedding-3-large
+    litellm_params:
+      model: openai/text-embedding-3-large
+      api_key: os.environ/OPENAI_API_KEY
+    model_info:
+      mode: embedding
+      base_model: text-embedding-3-large
+  - model_name: text-embedding-3-small
+    litellm_params:
+      model: openai/text-embedding-3-small
+      api_key: os.environ/OPENAI_API_KEY
+    model_info:
+      mode: embedding
+      base_model: text-embedding-3-small
 # Anthropic/Claude
   - model_name: claude-3-opus
     litellm_params:
