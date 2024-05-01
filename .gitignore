@@ -1,8 +1,12 @@
 ## Localized environment variables
 **/.env
+**/env
 
 ## Generated Kubernetes Resources
 .k8s
 
 ## Cloned exemplar repositories
 cp_root/*
+
+## LLM creds
+**/vertex_key.json
