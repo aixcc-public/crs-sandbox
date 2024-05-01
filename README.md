@@ -16,8 +16,9 @@ This is so the AIxCC infrastructure team can override the per-competitor secrets
 There are currently 4 LLM Provider environment variables declared but not populated in example.env, which will be populated at competition time:
 - OPENAI\_API\_KEY
 - AZUREML\_API\_KEY
-- GEMINI\_API\_KEY
+- GOOGLE_APPLICATION_CREDENTIAL
 - ANTHROPIC\_API\_KEY
+Note: For local development the example.env file should be renamed to env.
 
 *TBD* - These variables and the LiteLLM configuration file are not yet complete. This will be released in a CRS sandbox update. We will continue iterating on the CRS sandbox as we grow closer to the competition in order to support newer versions of components in order to stay compatible with the latest LLM models and tech as this changes almost daily.
 
@@ -25,14 +26,17 @@ Please see the competition rules and technical release as the cut off dates for 
 
 # LiteLLM Models Supported
 
-| Provider  | Model           | Pinned Version |
-| --------- | --------------- | -------------- |
-| OpenAI    | gpt-4           | TBD            |
-| OpenAI    | gpt-4-turbo     | TBD            |
-| Anthropic | claude-3-sonnet | 2024-02-29     |
-| Anthropic | claude-3-opus   | 2024-02-29     |
-| Google    | gemini-pro      | TBD            |
-| Google    | gemini-1.5-pro  | 2024-04-09     |
+| Provider  | Model                  | Pinned Version         |
+| --------- | ---------------------- | ---------------------- |
+| OpenAI    | gpt-4                  | TBD                    |
+| OpenAI    | gpt-4-turbo            | TBD                    |
+| OpenAI    | text-embedding-3-large | text-embedding-3-large |
+| OpenAI    | text-embedding-3-small | text-embedding-3-small |
+| Anthropic | claude-3-sonnet        | 2024-02-29             |
+| Anthropic | claude-3-opus          | 2024-02-29             |
+| Google    | gemini-pro             | TBD                    |
+| Google    | gemini-1.5-pro         | 2024-04-09             |
+Note: Embedding models have not currently been released in more than a single version.
 
 These are utilized by hitting the LiteLLM /chat/completions endpoint, specifying model and message using the OpenAI JSON request format.
 Note that further models will be supported in subsequent iterations.

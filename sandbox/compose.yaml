@@ -42,7 +42,7 @@ services:
     command: [ "--config", "/app/config.yaml", "--port", "80", "--num_workers", "8" ]
     ports:
       - "8081:80"
-    env_file: .env
+    env_file: env
     environment:
       - DATABASE_URL=postgresql://aixcc:aixcc@db
     healthcheck:
