@@ -13,8 +13,8 @@ set -e
 : "${iAPI_POST_VDS_CMD:="post vds"}"
 : "${iAPI_GET_VDS_CMD:="get vds"}"
 : "${iAPI_VDS_STATUS_FIELD:="status"}"
-: "${iAPI_VDS_VD_UUID_FIELD:="VD_UUID"}"
-: "${iAPI_VDS_CPV_UUID_FIELD:="CPV_UUID"}"
+: "${iAPI_VDS_VD_UUID_FIELD:="vd_uuid"}"
+: "${iAPI_VDS_CPV_UUID_FIELD:="cpv_uuid"}"
 : "${iAPI_VDS_STATUS_PASSED:="accepted"}"
 : "${iAPI_VDS_STATUS_TESTING:="pending"}"
 : "${iAPI_VDS_STATUS_INVALID:="rejected"}"
@@ -22,7 +22,7 @@ set -e
 : "${iAPI_POST_GP_CMD:="post gp"}"
 : "${iAPI_GET_GP_CMD:="get gp"}"
 : "${iAPI_GP_STATUS_FIELD:="status"}"
-: "${iAPI_GP_GP_UUID_FIELD:="GP_UUID"}"
+: "${iAPI_GP_GP_UUID_FIELD:="gp_uuid"}"
 : "${iAPI_GP_STATUS_PASSED:="accepted"}"
 : "${iAPI_GP_STATUS_BUILT:="accepted"}"
 : "${iAPI_GP_STATUS_BUILDING:="pending"}"
@@ -60,7 +60,7 @@ export -f iapi_status_good
 ## VDS submission iAPI functions
 #################################
 
-# do VDS submission and return VD_UUID for a valid/accepted submission
+# do VDS submission and return vd_uuid for a valid/accepted submission
 iapi_post_vds_vd_uuid() {
     # shellcheck disable=SC2086
     "${iAPI_CLI_COMMAND}" ${iAPI_POST_VDS_CMD} "$@" 2>/dev/null | jq -r "select(.${iAPI_VDS_STATUS_FIELD}==\"${iAPI_VDS_STATUS_PASSED}\") | .${iAPI_VDS_VD_UUID_FIELD}" 2>/dev/null || true
@@ -74,7 +74,7 @@ iapi_get_vds_status_value() {
 }
 export -f iapi_get_vds_status_value
 
-# do VDS submission GET and return CPV_UUID for a valid/accepted submission
+# do VDS submission GET and return cpv_uuid for a valid/accepted submission
 iapi_get_vds_cpv_uuid() {
     # shellcheck disable=SC2086
     "${iAPI_CLI_COMMAND}" ${iAPI_GET_VDS_CMD} "$@" 2>/dev/null | jq -r "select(.${iAPI_VDS_STATUS_FIELD}==\"${iAPI_VDS_STATUS_PASSED}\") | .${iAPI_VDS_CPV_UUID_FIELD}" 2>/dev/null || true
@@ -153,7 +153,7 @@ export -f iapi_vds_submission_passed
 ## GP submission iAPI functions
 #################################
 
-# do GP submission and return GP_UUID for a valid/accepted submission
+# do GP submission and return gp_uuid for a valid/accepted submission
 iapi_post_gp_gp_uuid() {
     # shellcheck disable=SC2086
     "${iAPI_CLI_COMMAND}" ${iAPI_POST_GP_CMD} "$@" 2>/dev/null | jq -r "select(.${iAPI_GP_STATUS_FIELD}==\"${iAPI_GP_STATUS_PASSED}\") | .${iAPI_GP_GP_UUID_FIELD}" 2>/dev/null || true
