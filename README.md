@@ -26,16 +26,18 @@ Please see the competition rules and technical release as the cut off dates for 
 
 # LiteLLM Models Supported
 
-| Provider  | Model                  | Pinned Version         |
-| --------- | ---------------------- | ---------------------- |
-| OpenAI    | gpt-4                  | TBD                    |
-| OpenAI    | gpt-4-turbo            | TBD                    |
-| OpenAI    | text-embedding-3-large | text-embedding-3-large |
-| OpenAI    | text-embedding-3-small | text-embedding-3-small |
-| Anthropic | claude-3-sonnet        | 2024-02-29             |
-| Anthropic | claude-3-opus          | 2024-02-29             |
-| Google    | gemini-pro             | TBD                    |
-| Google    | gemini-1.5-pro         | 2024-04-09             |
+| Provider  | Model                  | Pinned Version              |
+| --------- | ---------------------- | --------------------------- |
+| OpenAI    | gpt-3.5-turbo          | gpt-3.5-turbo-0125          |
+| OpenAI    | gpt-4                  | gpt-4-0613                  |
+| OpenAI    | gpt-4-turbo            | gpt-4-turbo-2024-04-09      |
+| OpenAI    | text-embedding-3-large | text-embedding-3-large      |
+| OpenAI    | text-embedding-3-small | text-embedding-3-small      |
+| Anthropic | claude-3-sonnet        | claude-3-sonnet-20240229    |
+| Anthropic | claude-3-opus          | claude-3-opus-20240229      |
+| Anthropic | claude-3-haiku         | claude-3-haiku-20240307     |
+| Google    | gemini-pro             | gemini-1.0-pro-001          |
+| Google    | gemini-1.5-pro         | gemini-1.5-pro-preview-0409 |
 Note: Embedding models have not currently been released in more than a single version.
 
 These are utilized by hitting the LiteLLM /chat/completions endpoint, specifying model and message using the OpenAI JSON request format.
