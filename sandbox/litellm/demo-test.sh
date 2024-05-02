@@ -2,7 +2,7 @@
 # Script to demonstrate basic LLM forwarding for the models we currently have API keys and configs for.
 # Internal testing only
 
-MODELS=("gpt-4" "gpt-4-turbo" "claude-3-opus" "claude-3-sonnet" "gemini-pro" "gemini-1.5-pro")
+MODELS=("gpt-3.5-turbo" "gpt-4" "gpt-4-turbo" "claude-3-opus" "claude-3-sonnet" "claude-3-haiku" "gemini-pro" "gemini-1.5-pro")
 EMB_MODELS=("text-embedding-3-large" "text-embedding-3-small")
 
 for model in ${MODELS[@]}; do
