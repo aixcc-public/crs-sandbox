@@ -36,7 +36,7 @@ test_vds_data_invalid_harness='{"cp_name":"linux kernel","pou":{"commit_sha1":"2
 test_vds_data_invalid_data='{"cp_name":"linux kernel","pou":{"commit_sha1":"2923ffa6e0572ee6572245f980acfcfb872fcf74","sanitizer":"ASAN: slab-out-of-bounds"},"pov":{"harness":"mux_test_harness","data":"LS0tIGhlbGxvLmMJMjAxNC0xMC0wNyAxODoxNzo0OS4wMDAwMDAwMDAgKzA1MzANCisrKyBoZWxsb19uZXcuYwkyMDE0LTEwLTA3IDE4OjE3!!@#!@#KQEAgLTEsNSArMSw2IEBADQogI2luY2x1ZGUgPHN0ZGlvLmg+DQogDQotaW50IG1haW4oKSB7DQoraW50IG1haW4oaW50IGFyZ2MsIGNoYXIgKmFyZ3ZbXSkgew0KIAlwcmludGYoIkhlbGxvIFdvcmxkXG"}}'
 test_vds_data_missing_cp='{"pou":{"commit_sha1":"2923ffa6e0572ee6572245f980acfcfb872fcf74","sanitizer":"ASAN: slab-out-of-bounds"},"pov":{"harness":"mux_test_harness","data":"LS0tIGhlbGxvLmMJMjAxNC0xMC0wNyAxODoxNzo0OS4wMDAwMDAwMDAgKzA1MzANCisrKyBoZWxsb19uZXcuYwkyMDE0LTEwLTA3IDE4OjE3!!@#!@#KQEAgLTEsNSArMSw2IEBADQogI2luY2x1ZGUgPHN0ZGlvLmg+DQogDQotaW50IG1haW4oKSB7DQoraW50IG1haW4oaW50IGFyZ2MsIGNoYXIgKmFyZ3ZbXSkgew0KIAlwcmludGYoIkhlbGxvIFdvcmxkXG"}}'
 
-if [[ $(iapi_post_vds_vd_uuid "-d ${test_vds_data_valid}" | wc -c) -eq 37 ]]; then echo "Passed VDS VD_UUID check"; else die "Failed VDS VD_UUID check"; fi
+if [[ $(iapi_post_vds_vd_uuid "-d ${test_vds_data_valid}" | wc -c) -eq 37 ]]; then echo "Passed VDS vd_uuid check"; else die "Failed VDS vd_uuid check"; fi
 if [[ $(iapi_post_vds_vd_uuid "-d ${test_vds_data_invalid_sha}" | wc -c) -eq 37 ]]; then die "Failed VDS submission with invalid hash check"; else echo "Passed VDS submission with invalid hash check"; fi
 if [[ $(iapi_post_vds_vd_uuid "-d ${test_vds_data_invalid_sanitizer}" | wc -c) -eq 37 ]]; then die "Failed VDS submission with invalid sanitizer check"; else echo "Passed VDS submission with invalid sanitizer check"; fi
 if [[ $(iapi_post_vds_vd_uuid "-d ${test_vds_data_invalid_harness}" | wc -c) -eq 37 ]]; then die "Failed VDS submission with invalid harness check"; else echo "Passed VDS submission with invalid harness check"; fi
@@ -55,13 +55,13 @@ if iapi_vds_submission_api_accepted "${test_vd_uuid_invalid2}"; then die "Failed
 if iapi_vds_submission_api_accepted ""; then die "Failed invalid VDS UUID #3 check"; else echo "Passed invalid VDS UUID #3 check"; fi
 if iAPI_GET_VDS_CMD="get invalid" iapi_vds_submission_api_accepted "${test_vd_uuid_valid}"; then die "Failed invalid get VDS command check"; else echo "Passed invalid get VDS command check"; fi
 if iAPI_VDS_STATUS_FIELD="invalid" iapi_vds_submission_api_accepted "${test_vd_uuid_valid}"; then die "Failed invalid VDS status field check"; else echo "Passed invalid VDS status field check"; fi
-if [[ $(iapi_get_vds_cpv_uuid "${test_vd_uuid_valid}" | wc -c) -eq 37 ]]; then echo "Passed VDS CPV_UUID check"; else die "Failed VDS CPV_UUID check"; fi
+if [[ $(iapi_get_vds_cpv_uuid "${test_vd_uuid_valid}" | wc -c) -eq 37 ]]; then echo "Passed VDS cpv_uuid check"; else die "Failed VDS cpv_uuid check"; fi
 
 # # test GP functions
 test_gp_data_valid='{"cpv_uuid":"17820e40-2a2b-4de1-931f-72cefb6d490d","data":"LS0tIGhlbGxvLmMJMjAxNC0xMC0wNyAxODoxNzo0OS4wMDAwMDAwMDAgKzA1MzANCisrKyBoZWxsb19uZXcuYwkyMDE0LTEwLTA3IDE4OjE3OjU0LjAwMDAwMDAwMCArMDUzMA0KQEAgLTEsNSArMSw2IEBADQogI2luY2x1ZGUgPHN0ZGlvLmg+DQogDQotaW50IG1haW4oKSB7DQoraW50IG1haW4oaW50IGFyZ2MsIGNoYXIgKmFyZ3ZbXSkgew0KIAlwcmludGYoIkhlbGxvIFdvcmxkXG4iKTsNCisJcmV0dXJuIDA7DQogfQ=="}'
 test_gp_data_invalid_cpv_uuid='{"cpv_uuid":"17820e40-2a2b-2de1-931f-72cefb6d490d","data":"LS0tIGhlbGxvLmMJMjAxNC0xMC0wNyAxODoxNzo0OS4wMDAwMDAwMDAgKzA1MzANCisrKyBoZWxsb19uZXcuYwkyMDE0LTEwLTA3IDE4OjE3OjU0LjAwMDAwMDAwMCArMDUzMA0KQEAgLTEsNSArMSw2IEBADQogI2luY2x1ZGUgPHN0ZGlvLmg+DQogDQotaW50IG1haW4oKSB7DQoraW50IG1haW4oaW50IGFyZ2MsIGNoYXIgKmFyZ3ZbXSkgew0KIAlwcmludGYoIkhlbGxvIFdvcmxkXG4iKTsNCisJcmV0dXJuIDA7DQogfQ=="}'
 test_gp_data_invalid_data='{"cpv_uuid":"17820e40-2a2b-2de1-931f-72cefb6d490d","data":"LS0tIGhlbGxvLmMJMjAxNC0xMC0wNyAxODoxNzo0OS4wMDAwMDAwMDAgKzA1MzANCisrKyBoZWxsb19uZXcuYwkyMDE0LTEwLTA3IDE4OjE3OjU0LjAwMDAwMDAwMCArMDUzMA0KQEAgLTEsNSArMSw2IEBADQogI2luY2x1ZGUgPHN0ZGlvLmg+DQogDQotaW50IG1haW4oKSB7DQoraW50IG1haW4oaW50IGFyZ2MsIGNoYXIgKmFyZ3ZbXSkgew0KIAlwcmludGY!@#$!#sdaf"}'
-if [[ $(iapi_post_gp_gp_uuid "-d ${test_gp_data_valid}" | wc -c) -eq 37 ]]; then echo "Passed GP GP_UUID check"; else die "Failed GP GP_UUID check"; fi
+if [[ $(iapi_post_gp_gp_uuid "-d ${test_gp_data_valid}" | wc -c) -eq 37 ]]; then echo "Passed GP gp_uuid check"; else die "Failed GP gp_uuid check"; fi
 if [[ $(iapi_post_gp_gp_uuid "-d ${test_gp_data_invalid_cpv_uuid}" | wc -c) -eq 37 ]]; then die "Failed GP submission with invalid GP UUID check"; else echo "Passed GP submission with invalid GP UUID check"; fi
 if [[ $(iapi_post_gp_gp_uuid "-d ${test_gp_data_invalid_data}" | wc -c) -eq 37 ]]; then die "Failed GP submission with invalid patch check"; else echo "Passed GP submission with invalid patch check"; fi
 
