@@ -42,10 +42,10 @@ start: ## Start containers
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development start $(c)
 
 down: ## Stop and remove containers
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development down $(c)
+	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development down --remove-orphans $(c)
 
 destroy: ## Stop and remove containers with volumes
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development down -v $(c)
+	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development down --volumes --remove-orphans $(c)
 
 stop: ## Stop containers
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development stop $(c)
@@ -94,6 +94,13 @@ cps: $(CP_MAKE_TARGETS) ## Clone CP repos
 
 cps/clean: ## Clean up the cloned CP repos
 	@rm -rf $(HOST_CP_ROOT_DIR)
+
+test: ## Run tests
+	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile test up -d $(c)
+	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile test logs test --follow $(c)
+
+test/destroy: ## Stop and remove containers with volumes
+	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile test down --volumes --remove-orphans $(c)
 
 k8s: k8s/clean
 	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_conversion_overrides.yaml" kompose convert --profile development --out $(ROOT_DIR)/.k8s/
