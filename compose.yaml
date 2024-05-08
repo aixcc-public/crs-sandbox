@@ -23,32 +23,39 @@ include:
 ### CUSTOMIZE
 #############
 
+
 ### Additional services are welcomed, just make sure to use the supplied variables and profile names
 services:
-
   crs:
     profiles:
       - development
       - competition
+      - test
     build:
       context: . # Note that this uses the base folder for context, you may not need this for your CRS
       dockerfile: crs/src/Dockerfile
-    privileged: true
     volumes:
-      - /dev/kvm:/dev/kvm
-      - /var/run/docker.sock:/var/run/docker.sock
+      #################################################################################
+      ### THESE VOLUMES MUST BE INCLUDED WITHOUT MODIFICATION TO ALL CRS CONTAINERS ### 
+      # `/cp_root` is the core CP mount point where repos are attached as subdirectories.
+      # A CRS must automatically copy subdirectories from `/cp_root` to some location within `/crs_scratch` for building and should not modify settings within this section.
       - type: bind
         source: ./cp_root
         target: /cp_root
-        # This is the core CP mount point where repos are attached as subdirectories.
-        # A CRS must automatically copy subdirectories here to some location for building and should not modify this read_only setting.
-        read_only: true  # DO NOT MODIFY FROM READ-ONLY
+        read_only: true
+      - type: volume
+        source: crs_scratch 
+        target: /crs_scratch
+        read_only: false 
+      #################################################################################
+      
     environment:
-      # TODO: These all need to be injected from the CI/CD workflow itself and come from the Github secrets/environments
-      - AIXCC_LITELLM_HOSTNAME=http://litellm
-      - AIXCC_API_HOSTNAME=http://iapi
-      - AIXCC_CP_ROOT=/cp_root
-      - LITELLM_KEY="sk-1234" # Leave this default value during development
+      # These values will be modified automatically at competition time
+      - DOCKER_HOST="tcp://dind:2376" 
+      - AIXCC_LITELLM_HOSTNAME="http://litellm"
+      - AIXCC_API_HOSTNAME="http://iapi"
+      - AIXCC_CP_ROOT="/cp_root"
+      - LITELLM_KEY="sk-1234"
     depends_on:
       litellm:
         condition: service_healthy
