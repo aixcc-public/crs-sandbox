@@ -107,18 +107,18 @@ volumes:
   crs_scratch:
     name: crs_scratch
     labels:
-      kompose.volume.type: emptyDir
+      kompose.volume.type: persistentVolumeClaim
       kompose.volume.storage-class-name: managed-csi-premium
       kompose.volume.size: 1Ti
   docker_cache:
     name: docker_cache
     labels:
-      kompose.volume.type: emptyDir
+      kompose.volume.type: persistentVolumeClaim
       kompose.volume.storage-class-name: managed-csi-premium
       kompose.volume.size: 1Ti
   cp_root:
     name: cp_root
     labels:
-      kompose.volume.type: emptyDir
+      kompose.volume.type: persistentVolumeClaim
       kompose.volume.storage-class-name: managed-csi-premium
       kompose.volume.size: 100Gi
