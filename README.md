@@ -6,9 +6,23 @@ Environment variables and secrets will be injected into the `compose.yaml` from 
 
 Competitor SSO accounts to Github will be limited to a basic set of actions for making modifications and merging PRs within the Github repo.
 
+# CRS Constraints on Docker and Virtualization
 At competition time a specific subset of secrets and environment variables will be wiped from all of the private repos and competitors will no longer have access to change these at competition time. This is so the AIxCC infrastructure team can replace the LiteLLM instance and credentials used to access the LiteLLM API in order to track individual competitor LLM usage at competition time.
 
+In the competition environment, a CRS is expected to use Docker (via `run.sh`)
+to exercise the CPs that are packaged and configured to be built, tested, and
+patched using the provided Docker container.
+
+One CP (the public Linux kernel CP) includes `virtme-ng` in its CP-specific
+Docker container for the purposes of testing the built kernel. 
+
+This is the only form of nested virtualization or nested containerization that
+will be supported by the competition environment. A CRS **MUST NOT** assume that 
+nested containers or another virtualiztaion/hypervisor technology will be
+compatible with the competition environment.
+
 # Environment Variables & Github Secrets
+
 Each competitors CRS will come pre-packaged with a list of Github secrets and environment variables. Teams may change the values of these secrets, however they must not change the name of the pre-existing secrets or variables and must ensure their application code uses the core variables related to the iAPI and LiteLLM connections.
 
 This is so the AIxCC infrastructure team can override the per-competitor secrets and variables at competition time, yet competitors can use these secrets for connecting to their cloud vendor and/or LLM APIs as needed.
