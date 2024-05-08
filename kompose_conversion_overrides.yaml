@@ -2,7 +2,7 @@
 services:
   crs:
     volumes:
-      - cp_root:/cp_root
-
-volumes:
-  cp_root:
+      - type: volume
+        source: cp_root
+        target: /cp_root
+        read_only: true
