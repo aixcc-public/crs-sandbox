@@ -147,21 +147,7 @@ export default function() {
         }
     });
 
-    group("/config/update", () => {
-
-        // Request No. 1: update_config_config_update_post
-        {
-            let url = BASE_URL + `/config/update`;
-            // TODO: edit the parameters of the request body.
-            let body = {"environmentVariables": {}, "modelList": {}, "litellmSettings": {}, "generalSettings": {"completionModel": "completion_model", "keyManagementSystem": "configgeneralsettings_key_management_system", "useGoogleKms": "use_google_kms", "useAzureKeyVault": "use_azure_key_vault", "masterKey": "master_key", "databaseUrl": "database_url", "databaseConnectionPoolLimit": "database_connection_pool_limit", "databaseConnectionTimeout": "database_connection_timeout", "databaseType": "database_type", "databaseArgs": "configgeneralsettings_database_args", "otel": "otel", "customAuth": "custom_auth", "maxParallelRequests": "max_parallel_requests", "inferModelFromKeys": "infer_model_from_keys", "backgroundHealthChecks": "background_health_checks", "healthCheckInterval": "oas_any_type_not_mapped", "alerting": "alerting", "alertingThreshold": "alerting_threshold"}};
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.post(url, JSON.stringify(body), params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+//REMOVED: /config/update
 
     group("/team/info", () => {
         let teamId = '1'; // specify value as there is no example value for this parameter in OpenAPI spec
@@ -232,20 +218,6 @@ export default function() {
     });
 
 
-    group("/v1/chat/completions", () => {
-        let model = 'gpt-4'; // specify value as there is no example value for this parameter in OpenAPI spec
-
-        // Request No. 1: chat_completion_v1_chat_completions_post
-        {
-            let url = BASE_URL + `/v1/chat/completions?model=${model}`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.post(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
 
     group("/model/info", () => {
 
@@ -276,20 +248,6 @@ export default function() {
         }
     });
 
-    group("/completions", () => {
-        let model = 'gpt-4'; // specify value as there is no example value for this parameter in OpenAPI spec
-
-        // Request No. 1: completion_completions_post
-        {
-            let url = BASE_URL + `/completions?model=${model}`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.post(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
 
     group("/user/new", () => {
 
@@ -339,20 +297,6 @@ export default function() {
     });
 
 
-    group("/queue/chat/completions", () => {
-        let model = 'gpt-4'; // specify value as there is no example value for this parameter in OpenAPI spec
-
-        // Request No. 1: async_queue_request_queue_chat_completions_post
-        {
-            let url = BASE_URL + `/queue/chat/completions?model=${model}`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.post(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
 
     group("/v1/models", () => {
 
@@ -399,20 +343,6 @@ export default function() {
         }
     });
 
-    group("/engines/{model}/completions", () => {
-        let model = 'gpt-4'; // specify value as there is no example value for this parameter in OpenAPI spec
-
-        // Request No. 1: completion_engines__model__completions_post
-        {
-            let url = BASE_URL + `/engines/${model}/completions`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.post(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
 
     group("/user/info", () => {
         let userId = '1'; // specify value as there is no example value for this parameter in OpenAPI spec
@@ -514,20 +444,6 @@ export default function() {
         }
     });
 
-    group("/v1/completions", () => {
-        let model = 'gpt-4'; // specify value as there is no example value for this parameter in OpenAPI spec
-
-        // Request No. 1: completion_v1_completions_post
-        {
-            let url = BASE_URL + `/v1/completions?model=${model}`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.post(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
 
     group("/config/yaml", () => {
 
@@ -603,20 +519,6 @@ export default function() {
         }
     });
 
-    group("/chat/completions", () => {
-        let model = 'gpt-4'; // specify value as there is no example value for this parameter in OpenAPI spec
-
-        // Request No. 1: chat_completion_chat_completions_post
-        {
-            let url = BASE_URL + `/chat/completions?model=${model}`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.post(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
 
     group("/team/member_add", () => {
 
@@ -634,19 +536,7 @@ export default function() {
         }
     });
 
-    group("/v1/images/generations", () => {
-
-        // Request No. 1: image_generation_v1_images_generations_post
-        {
-            let url = BASE_URL + `/v1/images/generations`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.post(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+//REMOVED: /v1/images/generation
 
     group("/user/update", () => {
 
@@ -679,19 +569,7 @@ export default function() {
         }
     });
 
-    group("/user/request_model", () => {
-
-        // Request No. 1: user_request_model_user_request_model_post
-        {
-            let url = BASE_URL + `/user/request_model`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.post(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+//REMOVED: /user/request_model
 
     group("/key/generate", () => {
 
@@ -723,19 +601,7 @@ export default function() {
         }
     });
 
-    group("/images/generations", () => {
-
-        // Request No. 1: image_generation_images_generations_post
-        {
-            let url = BASE_URL + `/images/generations`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.post(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+//REMOVED: /images/generations
 
     group("/team/update", () => {
 
@@ -767,21 +633,6 @@ export default function() {
         }
     });
 
-    group("/openai/deployments/{model}/chat/completions", () => {
-        let model = 'gpt-4'; // specify value as there is no example value for this parameter in OpenAPI spec
-
-        // Request No. 1: chat_completion_openai_deployments__model__chat_completions_post
-        {
-            let url = BASE_URL + `/openai/deployments/${model}/chat/completions`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.post(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
-
     group("/v1/model/info", () => {
 
         // Request No. 1: model_info_v1_v1_model_info_get
@@ -789,34 +640,6 @@ export default function() {
             let url = BASE_URL + `/v1/model/info`;
             let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
             let request = http.get(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
-
-    group("/moderations", () => {
-
-        // Request No. 1: moderations_moderations_post
-        {
-            let url = BASE_URL + `/moderations`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.post(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
-
-    group("/v1/moderations", () => {
-
-        // Request No. 1: moderations_v1_moderations_post
-        {
-            let url = BASE_URL + `/v1/moderations`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.post(url, params);
 
             check(request, {
                 "Successful Response": (r) => r.status === 200
@@ -838,6 +661,119 @@ export default function() {
         }
     });
 
+//all chat completions go here for easy viewing/testing 
+    group("/v1/chat/completions", () => {
+        let model = 'gpt-4'; // specify value as there is no example value for this parameter in OpenAPI spec
 
+        // Request No. 1: chat_completion_v1_chat_completions_post
+        {
+            let url = BASE_URL + `/v1/chat/completions?model=${model}`;
+            let body = {"model": model, "messages": [{"role": "user", "content": "What is 2 + 2?"}]};
+            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
+            let request = http.post(url, JSON.stringify(body), params);
 
+            check(request, {
+                "Successful Response": (r) => r.status === 200
+            });
+        }
+    });
+    
+    group("/openai/deployments/{model}/chat/completions", () => {
+        let model = 'gpt-4'; // specify value as there is no example value for this parameter in OpenAPI spec
+
+        // Request No. 1: chat_completion_openai_deployments__model__chat_completions_post
+        {
+            let url = BASE_URL + `/openai/deployments/${model}/chat/completions`;
+            let body = {"model": model, "messages": [{"role": "user", "content": "What is 2 + 2?"}]};
+            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
+            let request = http.post(url, JSON.stringify(body), params);
+
+            check(request, {
+                "Successful Response": (r) => r.status === 200
+            });
+        }
+    });
+
+    group("/chat/completions", () => {
+        let model = 'gpt-4'; // specify value as there is no example value for this parameter in OpenAPI spec
+
+        // Request No. 1: chat_completion_chat_completions_post
+        {
+            let url = BASE_URL + `/chat/completions?model=${model}`;
+            let body = {"messages": [{"role": "user", "content": "What is 2 + 2?"}]};
+            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
+            let request = http.post(url, JSON.stringify(body), params);
+
+            check(request, {
+                "Successful Response": (r) => r.status === 200
+            });
+        }
+    });
+
+    group("/v1/completions", () => {
+        let model = 'gpt-4'; // specify value as there is no example value for this parameter in OpenAPI spec
+
+        // Request No. 1: completion_v1_completions_post
+        {
+            let url = BASE_URL + `/v1/completions?model=${model}`;
+            let body = {"messages": [{"role": "user", "content": "What is 2 + 2?"}]};
+            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
+            let request = http.post(url, JSON.stringify(body), params);
+
+            check(request, {
+                "Successful Response": (r) => r.status === 200
+            });
+        }
+    });
+
+    group("/engines/{model}/completions", () => {
+        let model = 'gpt-4'; // specify value as there is no example value for this parameter in OpenAPI spec
+
+        // Request No. 1: completion_engines__model__completions_post
+        {
+            let url = BASE_URL + `/engines/${model}/completions`;
+            let body = {"messages": [{"role": "user", "content": "What is 2 + 2?"}]};
+            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
+            let request = http.post(url, JSON.stringify(body), params);
+
+            check(request, {
+                "Successful Response": (r) => r.status === 200
+            });
+        }
+    });
+
+    group("/queue/chat/completions", () => {
+        let model = 'gpt-4'; // specify value as there is no example value for this parameter in OpenAPI spec
+
+        // Request No. 1: async_queue_request_queue_chat_completions_post
+        {
+            let url = BASE_URL + `/queue/chat/completions?model=${model}`;
+            let body = {"messages": [{"role": "user", "content": "What is 2 + 2?"}]};
+            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
+            let request = http.post(url, JSON.stringify(body), params);
+
+            check(request, {
+                "Successful Response": (r) => r.status === 200
+            });
+        }
+    });
+
+    group("/completions", () => {
+        let model = 'gpt-4'; // specify value as there is no example value for this parameter in OpenAPI spec
+
+        // Request No. 1: completion_completions_post
+        {
+            let url = BASE_URL + `/completions?model=${model}`;
+            let body = {"messages": [{"role": "user", "content": "What is 2 + 2?"}]};
+            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
+            let request = http.post(url, JSON.stringify(body), params);
+
+            check(request, {
+                "Successful Response": (r) => r.status === 200
+            });
+        }
+    });
+
+//REMOVED: /moderations
+//REMOVED: /v1/moderations
 }
