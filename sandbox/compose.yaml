@@ -21,7 +21,7 @@ services:
       litellm:
         condition: service_healthy
       iapi:
-        condition: service_started
+        condition: service_healthy
   dind: 
     profiles:
       - development

@@ -101,6 +101,8 @@ The CRS Sandbox currently uses Grafana/K6 as a placeholder for the CRS solution 
 
 See [Makefile](./Makefile) for more commands
 
+`make force-reset` - performs a full Docker system prune of all local docker containers, images, networks, and volumes. This can be useful if you accidentally orphaned some docker process or other resources. 
+
 ## Kubernetes
 The Makefile includes endpoints for `make k8s` and `make k8s/helm` which will generate resources in a `./.k8s/` folder which can be applied to your own Kubernetes clusters for testing. This uses a component called [Kompose](https://kompose.io/conversion/) for translating the Docker Compose file into resources.
 

@@ -96,7 +96,7 @@ cps/clean: ## Clean up the cloned CP repos
 	@rm -rf $(HOST_CP_ROOT_DIR)
 
 test: ## Run tests
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile test up -d $(c)
+	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile test up --build -d $(c)
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile test logs test --follow $(c)
 
 test/destroy: ## Stop and remove containers with volumes
@@ -112,3 +112,6 @@ k8s/clean:
 	@rm -rf $(ROOT_DIR)/.k8s
 
 clean: cps/clean k8s/clean down
+
+force-reset: ## Remove all local docker containers, networks, volumes, and images
+	@docker system prune --all
