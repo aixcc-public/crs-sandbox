@@ -18,7 +18,7 @@ Docker container for the purposes of testing the built kernel.
 
 This is the only form of nested virtualization or nested containerization that
 will be supported by the competition environment. A CRS **MUST NOT** assume that 
-nested containers or another virtualiztaion/hypervisor technology will be
+nested containers or another virtualization/hypervisor technology will be
 compatible with the competition environment.
 
 # Environment Variables & Github Secrets
