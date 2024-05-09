@@ -11,11 +11,12 @@ services:
       dockerfile: Dockerfile
     environment:
       # These values will be modified automatically at competition time
-      - DOCKER_HOST="tcp://dind:2376" 
-      - AIXCC_LITELLM_HOSTNAME="http://litellm"
-      - AIXCC_API_HOSTNAME="http://iapi"
-      - AIXCC_CP_ROOT="/cp_root"
-      - LITELLM_KEY="sk-1234"
+      - DOCKER_HOST=tcp://dind:2375 
+      - AIXCC_LITELLM_HOSTNAME=http://litellm
+      - AIXCC_API_HOSTNAME=http://iapi"
+      - AIXCC_CP_ROOT=/cp_root
+      - AIXCC_CRS_SCRATCH_SPACE=/crs_scratch
+      - LITELLM_KEY=sk-1234
     depends_on:
       litellm:
         condition: service_healthy
@@ -57,7 +58,7 @@ services:
     volumes:
       - type: volume
         source: crs_scratch 
-        target: /crs-scratch
+        target: /crs_scratch
         read_only: false
   db:
     profiles:
