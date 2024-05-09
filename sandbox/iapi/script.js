@@ -15,7 +15,7 @@
 import http from "k6/http";
 import { group, check, sleep } from "k6";
 
-const BASE_URL = "/";
+const BASE_URL = "http://iapi/";
 const SLEEP_DURATION = 0.1;
 
 export default function() {
