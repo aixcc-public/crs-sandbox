@@ -29,7 +29,7 @@ function makeTestId(length) {
 }
 
 
-const BASE_URL = "http://localhost:8081";
+const BASE_URL = "http://litellm";
 // Sleep duration between successive requests.
 // You might want to edit the value of this variable or remove calls to the sleep function on the script.
 const SLEEP_DURATION = 0.1;

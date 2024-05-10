@@ -3,6 +3,8 @@ services:
   crs:
     volumes:
       - cp_root:/cp_root
+      - crs_scratch:/crs_scratch
 
 volumes:
   cp_root:
+  crs_scratch:
