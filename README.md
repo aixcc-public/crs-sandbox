@@ -78,6 +78,12 @@ Most dependencies in this repo can be automatically managed by `mise`, but you'l
 - docker-compose >= 2.24.7
 - GNU make >= 4.3
 
+## Local Kubernetes Testing Dependencies
+These are only needed if you wish to test the generated helm charts
+- kind >= 0.22.0
+- kubectl >= 1.29.2
+- helm >= 3.14.4
+
 ### Dependencies managed using mise
 This repo defines its dependencies in a [`.tool-versions`](./.tool-versions) file.  [`mise`](https://mise.jdx.dev/getting-started.html#quickstart) can read this file and automatically install the tools at the required versions.  Install `mise`, set it up in your shell, and then run `mise install`.  `mise` will then manage your `PATH` variable to make the tools available whenever you `cd` into this repo.
 
@@ -104,8 +110,7 @@ See [Makefile](./Makefile) for more commands
 `make force-reset` - performs a full Docker system prune of all local docker containers, images, networks, and volumes. This can be useful if you accidentally orphaned some docker process or other resources. 
 
 ## Kubernetes
-The Makefile includes endpoints for `make k8s` and `make k8s/helm` which will generate resources in a `./.k8s/` folder which can be applied to your own Kubernetes clusters for testing. This uses a component called [Kompose](https://kompose.io/conversion/) for translating the Docker Compose file into resources.
-
+The Makefile includes endpoints for `make k8s` and `make k8s/competition` which will generate a helm chart in a `./.k8s/` folder which can be applied to your own Kubernetes clusters for testing. This uses a component called [Kompose](https://kompose.io/conversion/) for translating the Docker Compose file into resources. The CRS Sandbox will include a CI/CD action which the private repos must also use which will generate and push the container images to the respective per-competitor private Github repos as well as the Helm chart as an OCI compliant chart. 
 
 ## Architecture Diagram
 
