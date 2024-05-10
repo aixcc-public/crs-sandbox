@@ -35,12 +35,6 @@ services:
       - "2375:2375"
     environment:
       - DOCKER_TLS_CERTDIR # intentionally blank to optimize runtime
-    volumes:
-      - /dev/kvm:/dev/kvm # In order to support virtme-ng for the public Linux CP
-      # This volume uses an optimized disk during competition to support faster build times
-      - type: volume
-        source: docker_cache
-        target: /var/lib/docker
   iapi:
     profiles:
       - development
@@ -55,11 +49,6 @@ services:
       timeout: 10s
     environment:
       - AIXCC_API_HOSTNAME=https://api.game-services.aixcc.tech
-    volumes:
-      - type: volume
-        source: crs_scratch 
-        target: /crs_scratch
-        read_only: false
   db:
     profiles:
       - development
@@ -104,22 +93,3 @@ configs:
   litellm_vertex_config:
     file: ./litellm/vertex_key.json
 
-volumes:
-  crs_scratch:
-    name: crs_scratch
-    labels:
-      kompose.volume.type: persistentVolumeClaim
-      kompose.volume.storage-class-name: managed-csi-premium
-      kompose.volume.size: 1Ti
-  docker_cache:
-    name: docker_cache
-    labels:
-      kompose.volume.type: persistentVolumeClaim
-      kompose.volume.storage-class-name: managed-csi-premium
-      kompose.volume.size: 1Ti
-  cp_root:
-    name: cp_root
-    labels:
-      kompose.volume.type: persistentVolumeClaim
-      kompose.volume.storage-class-name: managed-csi-premium
-      kompose.volume.size: 100Gi
