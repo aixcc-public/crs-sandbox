@@ -3,10 +3,43 @@
 ######################################
 
 services:
+  test: 
+    profiles: 
+      - test
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      # These values will be modified automatically at competition time
+      - DOCKER_HOST=tcp://dind:2375 
+      - AIXCC_LITELLM_HOSTNAME=http://litellm
+      - AIXCC_API_HOSTNAME=http://iapi"
+      - AIXCC_CP_ROOT=/cp_root
+      - AIXCC_CRS_SCRATCH_SPACE=/crs_scratch
+      - LITELLM_KEY=sk-1234
+    depends_on:
+      litellm:
+        condition: service_healthy
+      iapi:
+        condition: service_healthy
+  dind: 
+    profiles:
+      - development
+      - competition
+      - test
+    image: docker:24-dind
+    command: [ "dockerd", "-H", "tcp://0.0.0.0:2375", "--tls=false" ]
+    restart: always
+    privileged: true # This must run with privlege to support nested virtualization within the public Linux CP for `virtme-ng`
+    ports:
+      - "2375:2375"
+    environment:
+      - DOCKER_TLS_CERTDIR # intentionally blank to optimize runtime
   iapi:
     profiles:
       - development
       - competition
+      - test
     image: ghcr.io/aixcc-sc/iapi:v2.0.0
     restart: always
     ports:
@@ -15,10 +48,11 @@ services:
       test: ["CMD-SHELL", "wget -O /dev/null http://localhost || exit 1"]
       timeout: 10s
     environment:
-      - AIXCC_API_HOSTNAME=https://api.aixcc.internal
+      - AIXCC_API_HOSTNAME=https://api.game-services.aixcc.tech
   db:
     profiles:
       - development
+      - test
     image: postgres:16.2-alpine3.19
     restart: always
     shm_size: 128mb
@@ -32,6 +66,7 @@ services:
   litellm:
     profiles:
       - development
+      - test
     image: ghcr.io/berriai/litellm-database:main-v1.35.10
     restart: always
     configs:
@@ -57,3 +92,4 @@ configs:
     file: ./litellm/local_litellm_config.yaml
   litellm_vertex_config:
     file: ./litellm/vertex_key.json
+

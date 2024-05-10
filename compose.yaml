@@ -3,8 +3,6 @@
 #
 #
 # New services are acceptable
-# Any service which needs KVM or Docker MUST run privleged and pass the appropriate volume (see below)
-# /dev/kvm for QEMU or /var/run/docker.sock for Docker
 #
 # Profiles
 # We use the profiles "development" and "competition"
@@ -23,37 +21,38 @@ include:
 ### CUSTOMIZE
 #############
 
+
 ### Additional services are welcomed, just make sure to use the supplied variables and profile names
 services:
-
   crs:
     profiles:
       - development
       - competition
+      - test
+    image: crs-sandbox-crs
     build:
       context: . # Note that this uses the base folder for context, you may not need this for your CRS
       dockerfile: crs/src/Dockerfile
-    privileged: true
     volumes:
-      - /dev/kvm:/dev/kvm
-      - /var/run/docker.sock:/var/run/docker.sock
-      - type: bind
-        source: ./cp_root
-        target: /cp_root
-        # This is the core CP mount point where repos are attached as subdirectories.
-        # A CRS must automatically copy subdirectories here to some location for building and should not modify this read_only setting.
-        read_only: true  # DO NOT MODIFY FROM READ-ONLY
+      #################################################################################
+      ### THESE VOLUMES MUST BE INCLUDED WITHOUT MODIFICATION TO ALL CRS CONTAINERS ### 
+      # A CRS MUST copy CP repositories from `/cp_root` to a writable location such as `/crs_scratch` for building and testing CPs.
+      # A CRS MUST not modify settings within this section.
+      - ./cp_root:/cp_root
+      - ./crs_scratch:/crs_scratch
+      #################################################################################
+
     environment:
-      # TODO: These all need to be injected from the CI/CD workflow itself and come from the Github secrets/environments
+      # These values will be modified automatically at competition time
+      - DOCKER_HOST=tcp://dind:2375 
       - AIXCC_LITELLM_HOSTNAME=http://litellm
       - AIXCC_API_HOSTNAME=http://iapi
       - AIXCC_CP_ROOT=/cp_root
-      - LITELLM_KEY="sk-1234" # Leave this default value during development
+      - AIXCC_CRS_SCRATCH_SPACE=/crs_scratch
+      - LITELLM_KEY=sk-1234
     depends_on:
-      litellm:
-        condition: service_healthy
       iapi:
-        condition: service_started
+        condition: service_healthy
 
 #############
 ### CUSTOMIZE
