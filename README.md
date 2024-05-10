@@ -110,7 +110,7 @@ See [Makefile](./Makefile) for more commands
 `make force-reset` - performs a full Docker system prune of all local docker containers, images, networks, and volumes. This can be useful if you accidentally orphaned some docker process or other resources. 
 
 ## Kubernetes
-The Makefile includes endpoints for `make k8s` and `make k8s/competition` which will generate a helm chart in a `./.k8s/` folder which can be applied to your own Kubernetes clusters for testing. This uses a component called [Kompose](https://kompose.io/conversion/) for translating the Docker Compose file into resources. The CRS Sandbox will include a CI/CD action which the private repos must also use which will generate and push the container images to the respective per-competitor private Github repos as well as the Helm chart as an OCI compliant chart. 
+The Makefile includes endpoints for `make k8s` and `make k8s/competition` which will generate a helm chart in a `./.k8s/` folder. The `make k8s` command uses Kind to run Kubernetes locally and will also apply the generated Helm chart onto your cluster. This process uses a component called [Kompose](https://kompose.io/conversion/) for translating the Docker Compose file into resources. The CRS Sandbox will include a CI/CD action which the private repos must also use which will generate and push the container images to the respective per-competitor private Github repos as well as the Helm chart as an OCI compliant chart. 
 
 ## Architecture Diagram
 
