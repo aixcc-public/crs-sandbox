@@ -29,6 +29,7 @@ services:
       - development
       - competition
       - test
+    image: crs-sandbox-crs
     build:
       context: . # Note that this uses the base folder for context, you may not need this for your CRS
       dockerfile: crs/src/Dockerfile
@@ -37,14 +38,8 @@ services:
       ### THESE VOLUMES MUST BE INCLUDED WITHOUT MODIFICATION TO ALL CRS CONTAINERS ### 
       # A CRS MUST copy CP repositories from `/cp_root` to a writable location such as `/crs_scratch` for building and testing CPs.
       # A CRS MUST not modify settings within this section.
-      - type: bind
-        source: ./cp_root
-        target: /cp_root
-        read_only: true
-      - type: volume
-        source: crs_scratch 
-        target: /crs_scratch
-        read_only: false 
+      - ./cp_root:/cp_root
+      - ./crs_scratch:/crs_scratch
       #################################################################################
 
     environment:
@@ -56,10 +51,8 @@ services:
       - AIXCC_CRS_SCRATCH_SPACE=/crs_scratch
       - LITELLM_KEY=sk-1234
     depends_on:
-      litellm:
-        condition: service_healthy
       iapi:
-        condition: service_started
+        condition: service_healthy
 
 #############
 ### CUSTOMIZE
