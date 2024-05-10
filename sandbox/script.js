@@ -1,5 +1,7 @@
 import { default as litellm } from './litellm/script.js';
 import { default as iapi } from './iapi/script.js';
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.1.0/index.js';
+
 
 export const options = {
   thresholds: {

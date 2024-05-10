@@ -42,10 +42,10 @@ start: ## Start containers
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development start $(c)
 
 down: ## Stop and remove containers
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development down $(c)
+	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development down --remove-orphans $(c)
 
 destroy: ## Stop and remove containers with volumes
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development down -v $(c)
+	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development down --volumes --remove-orphans $(c)
 
 stop: ## Stop containers
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development stop $(c)
@@ -95,13 +95,31 @@ cps: $(CP_MAKE_TARGETS) ## Clone CP repos
 cps/clean: ## Clean up the cloned CP repos
 	@rm -rf $(HOST_CP_ROOT_DIR)
 
-k8s: k8s/clean
-	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_conversion_overrides.yaml" kompose convert --profile development --out $(ROOT_DIR)/.k8s/
+test: ## Run tests
+	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile test up --build -d $(c)
+	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile test logs test --follow $(c)
 
-k8s/helm: k8s/clean
-	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_conversion_overrides.yaml" kompose convert --profile development --chart --out $(ROOT_DIR)/.k8s/
+test/destroy: ## Stop and remove containers with volumes
+	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile test down --volumes --remove-orphans $(c)
+
+k8s: k8s/clean build ## Generates helm chart locally for the development profile for kind testing, etc. build is called for local image generation
+	@kind create cluster --wait 1m
+	@docker pull ghcr.io/aixcc-sc/iapi:v2.0.0 
+	@docker pull ghcr.io/berriai/litellm-database:main-v1.35.10
+	@docker pull docker:24-dind 
+	@docker pull postgres:16.2-alpine3.19
+	@kind load docker-image crs-sandbox-crs ghcr.io/aixcc-sc/iapi:v2.0.0 ghcr.io/berriai/litellm-database:main-v1.35.10 docker:24-dind postgres:16.2-alpine3.19
+	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_development_overrides.yaml" kompose convert --profile development --chart --out .k8s
+	@helm install crs ./.k8s
 
 k8s/clean:
 	@rm -rf $(ROOT_DIR)/.k8s
+	@kind delete cluster
+
+k8s/competition: k8s/clean ## Generates the competition helm chart for use during pregame and the competition
+	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_competition_overrides.yaml" kompose convert --profile competition --chart --out .k8s
 
 clean: cps/clean k8s/clean down
+
+force-reset: ## Remove all local docker containers, networks, volumes, and images
+	@docker system prune --all
