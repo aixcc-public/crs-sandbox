@@ -6,9 +6,23 @@ Environment variables and secrets will be injected into the `compose.yaml` from 
 
 Competitor SSO accounts to Github will be limited to a basic set of actions for making modifications and merging PRs within the Github repo.
 
+# CRS Constraints on Docker and Virtualization
 At competition time a specific subset of secrets and environment variables will be wiped from all of the private repos and competitors will no longer have access to change these at competition time. This is so the AIxCC infrastructure team can replace the LiteLLM instance and credentials used to access the LiteLLM API in order to track individual competitor LLM usage at competition time.
 
+In the competition environment, a CRS is expected to use Docker (via `run.sh`)
+to exercise the CPs that are packaged and configured to be built, tested, and
+patched using the provided Docker container.
+
+One CP (the public Linux kernel CP) includes `virtme-ng` in its CP-specific
+Docker container for the purposes of testing the built kernel. 
+
+This is the only form of nested virtualization or nested containerization that
+will be supported by the competition environment. A CRS **MUST NOT** assume that 
+nested containers or another virtualization/hypervisor technology will be
+compatible with the competition environment.
+
 # Environment Variables & Github Secrets
+
 Each competitors CRS will come pre-packaged with a list of Github secrets and environment variables. Teams may change the values of these secrets, however they must not change the name of the pre-existing secrets or variables and must ensure their application code uses the core variables related to the iAPI and LiteLLM connections.
 
 This is so the AIxCC infrastructure team can override the per-competitor secrets and variables at competition time, yet competitors can use these secrets for connecting to their cloud vendor and/or LLM APIs as needed.
@@ -64,6 +78,12 @@ Most dependencies in this repo can be automatically managed by `mise`, but you'l
 - docker-compose >= 2.24.7
 - GNU make >= 4.3
 
+## Local Kubernetes Testing Dependencies
+These are only needed if you wish to test the generated helm charts
+- kind >= 0.22.0
+- kubectl >= 1.29.2
+- helm >= 3.14.4
+
 ### Dependencies managed using mise
 This repo defines its dependencies in a [`.tool-versions`](./.tool-versions) file.  [`mise`](https://mise.jdx.dev/getting-started.html#quickstart) can read this file and automatically install the tools at the required versions.  Install `mise`, set it up in your shell, and then run `mise install`.  `mise` will then manage your `PATH` variable to make the tools available whenever you `cd` into this repo.
 
@@ -87,9 +107,10 @@ The CRS Sandbox currently uses Grafana/K6 as a placeholder for the CRS solution 
 
 See [Makefile](./Makefile) for more commands
 
-## Kubernetes
-The Makefile includes endpoints for `make k8s` and `make k8s/helm` which will generate resources in a `./.k8s/` folder which can be applied to your own Kubernetes clusters for testing. This uses a component called [Kompose](https://kompose.io/conversion/) for translating the Docker Compose file into resources.
+`make force-reset` - performs a full Docker system prune of all local docker containers, images, networks, and volumes. This can be useful if you accidentally orphaned some docker process or other resources. 
 
+## Kubernetes
+The Makefile includes endpoints for `make k8s` and `make k8s/competition` which will generate a helm chart in a `./.k8s/` folder. The `make k8s` command uses Kind to run Kubernetes locally and will also apply the generated Helm chart onto your cluster. This process uses a component called [Kompose](https://kompose.io/conversion/) for translating the Docker Compose file into resources. The CRS Sandbox will include a CI/CD action which the private repos must also use which will generate and push the container images to the respective per-competitor private Github repos as well as the Helm chart as an OCI compliant chart. 
 
 ## Architecture Diagram
 
