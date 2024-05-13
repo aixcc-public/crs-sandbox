@@ -91,7 +91,7 @@ We've included a Makefile with helpful targets to make working with the CRS Sand
 
 ## Data Sharing & Volumes
 A CRS MUST copy CP repositories from `/cp_root` to a writable location such as `/crs_scratch` for building and testing CPs.
-A CRS MUST not modify data within `/cp_root` directly. 
+A CRS MUST NOT modify data within `/cp_root` directly. 
 A CRS MUST use `/crs_scratch` as the only shared filesystem between containers.
 No other folders or volumes will be shared between containers. 
 
