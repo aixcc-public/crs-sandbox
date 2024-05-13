@@ -28,13 +28,19 @@ services:
       - competition
       - test
     image: docker:24-dind
-    command: [ "dockerd", "-H", "tcp://0.0.0.0:2375", "--tls=false" ]
+    command: [ "dockerd", "-H", "tcp://0.0.0.0:2375", "--tls=false", "--storage-driver=overlay2" ]
     restart: always
     privileged: true # This must run with privlege to support nested virtualization within the public Linux CP for `virtme-ng`
     ports:
       - "2375:2375"
     environment:
       - DOCKER_TLS_CERTDIR # intentionally blank to optimize runtime
+    volumes:
+      - type: bind 
+        source: ${PWD}/crs_scratch
+        target: /crs_scratch
+        bind:
+          propagation: rshared
   iapi:
     profiles:
       - development
