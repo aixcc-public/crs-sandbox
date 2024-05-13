@@ -89,6 +89,12 @@ This repo defines its dependencies in a [`.tool-versions`](./.tool-versions) fil
 
 We've included a Makefile with helpful targets to make working with the CRS Sandbox easier. However, you can copy any commands and run them on your own. Please note the use of `--profile` with all `docker compose` commands. This is so we can easily swap `--profile development` with `--profile competition` at competition time, but competitors can use the `--profile development` to run the local copy of emulated resources.
 
+## Data Sharing & Volumes
+A CRS MUST copy CP repositories from `/cp_root` to a writable location such as `/crs_scratch` for building and testing CPs.
+A CRS MUST not modify data within `/cp_root` directly. 
+A CRS MUST use `/crs_scratch` as the only shared filesystem between containers.
+No other folders or volumes will be shared between containers. 
+
 ## Using Make
 A Makefile has been provided with a number of a commands to make it easy to clone the exemplar repos, stand up the environment, and a variety of other actions.
 
