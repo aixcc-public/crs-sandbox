@@ -38,8 +38,12 @@ services:
       ### THESE VOLUMES MUST BE INCLUDED WITHOUT MODIFICATION TO ALL CRS CONTAINERS ### 
       # A CRS MUST copy CP repositories from `/cp_root` to a writable location such as `/crs_scratch` for building and testing CPs.
       # A CRS MUST not modify settings within this section.
+      - type: bind 
+        source: ${PWD}/crs_scratch
+        target: /crs_scratch
+        bind:
+          propagation: rshared
       - ./cp_root:/cp_root
-      - ./crs_scratch:/crs_scratch
       #################################################################################
 
     environment:
