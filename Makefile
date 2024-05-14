@@ -6,15 +6,16 @@ DOCKER_COMPOSE_FILE = $(ROOT_DIR)/compose.yaml
 HOST_CP_ROOT_DIR = $(ROOT_DIR)/cp_root
 CP_CONFIG_FILE ?= $(ROOT_DIR)/cp_config.yaml
 
-# Check if GIT_CLONE_TOKEN is set, override the clone credentials
-ifdef GIT_CLONE_TOKEN
-    git config credential.helper cache
-    git config credential.helper "!f() { echo username=x-access-token; echo password=$$GIT_CLONE_TOKEN; }; f"
-endif
-
 # Check for required file that will error out elsewhere if not present
 ifeq (,$(wildcard $(CP_CONFIG_FILE)))
 $(error Required file not found: $(CP_CONFIG_FILE))
+endif
+
+# Check if GIT_CLONE_TOKEN is set, override the clone credentials
+ifdef GIT_CLONE_TOKEN
+	GIT_CLONE_URL_PREFIX = https://x-access-token:$(GIT_CLONE_TOKEN)@github.com/
+else
+	GIT_CLONE_URL_PREFIX = git@github.com:
 endif
 
 # Check for required executables (dependencies)
@@ -88,6 +89,7 @@ $(HOST_CP_ROOT_DIR)/.pulled_%:
 	@$(RM) -r $(CP_ROOT_REPO_SUBDIR)
 	@mkdir -p $(CP_ROOT_REPO_SUBDIR)
 	@yq -r '.cp_targets["$(REVERT_CP_TARGETS_DIRS_ESCAPE_STR)"].url' $(CP_CONFIG_FILE) | \
+		sed 's#^git@github.com:#$(GIT_CLONE_URL_PREFIX)#' | \
 		xargs -I {} git clone --depth 1 {} $(CP_ROOT_REPO_SUBDIR)
 	@yq -r '.cp_targets["$(REVERT_CP_TARGETS_DIRS_ESCAPE_STR)"] | .ref // "main"' $(CP_CONFIG_FILE) | \
 		xargs -I {} sh -c \
