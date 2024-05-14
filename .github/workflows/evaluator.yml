@@ -35,9 +35,20 @@ jobs:
       - name: Move sandbox/example.env to sandbox/env
         run: mv sandbox/example.env sandbox/env
 
+      - name: Add SSH key
+        env:
+            SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+            mkdir -p /home/runner/.ssh
+            ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
+            echo "${{ secrets.CRS_EVALUATOR_EXEMPLAR_CLONE_SSH_KEY }}" > /home/runner/.ssh/github_actions
+            chmod 600 /home/runner/.ssh/github_actions
+            ssh-agent -a $SSH_AUTH_SOCK > /dev/null	
+            ssh-add /home/runner/.ssh/github_actions
+
       - name: Test Makefile targets
         env:
-          GIT_CLONE_TOKEN: ${{ secrets.CICD_EXEMPLAR_CLONE_PAT }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
           make build
           make up
