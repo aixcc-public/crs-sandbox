@@ -9,7 +9,7 @@
 cp_root/*
 
 ## CRS scratch space
-#crs_scratch/*
+crs_scratch/*
 
 ## LLM creds
 **/vertex_key.json
