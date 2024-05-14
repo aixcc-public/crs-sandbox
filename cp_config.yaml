@@ -7,6 +7,6 @@
 # of the specified repo from "url".
 
 cp_targets:
-    jenkins:
+    mock-cp:
         url: git@github.com:aixcc-sc/mock-cp.git
         ref: v2.0.0
