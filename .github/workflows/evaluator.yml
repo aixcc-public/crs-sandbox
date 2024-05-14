@@ -58,16 +58,27 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
+          echo "make build"
           make build
+          echo "make up"
           make up
+          echo "make down"
           make down
+          echo "make destroy"
           make destroy
+          echo "make test"
           make test
+          echo "make test/destroy"
           make test/destroy
+          echo "make k8s"
           make k8s
+          echo "make k8s/clean"
           make k8s/clean
+          echo "make cps"
           make cps
+          echo "make cps/clean"
           make cps/clean
+          echo "make clean"
           make clean
 
       - name: Check additional configurations
