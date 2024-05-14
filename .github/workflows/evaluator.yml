@@ -60,11 +60,7 @@ jobs:
         run: |
           make build
           make up
-          make logs
-          make ps
-          make restart
-          make stop
-          make up
+          make down
           make destroy
           make test
           make test/destroy
