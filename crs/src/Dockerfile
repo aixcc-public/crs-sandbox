@@ -45,14 +45,15 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         vim-tiny \
         wget \
         xz-utils \
-        zip \
-        && \
+        zip
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-RUN python3 -m pip install --upgrade pip setuptools && \
-    python3 -m pip install \
-        yq==3.2.3
+ARG YQ_VERSION=4.43.1
+ARG YQ_BINARY=yq_linux_amd64
+RUN wget https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/${YQ_BINARY} -O /usr/bin/yq && chmod +x /usr/bin/yq
 
 # Create working directory
 ENV WORK=/root/work
