@@ -53,6 +53,20 @@ jobs:
           registry: ghcr.io
           username: gha
           password: ${{ github.token }}
+          
+      - name: Test CP cloning
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          # Test to see if custom targets like cloning CP repos work correctly.
+          # Simulating the expected environment and command execution
+          make cps
+          # Ensure cloned directories exist
+          if [ ! -d "${{ github.workspace }}/cp_root" ]; then
+            echo "CP repos did not clone correctly."
+            exit 1
+          fi
+          make cps/clean  # Cleanup after test
 
       - name: Test Makefile targets
         env:
@@ -66,18 +80,6 @@ jobs:
           make cps
           make cps/clean
           make clean
-
-      - name: Check additional configurations
-        run: |
-          # Test to see if custom targets like cloning CP repos work correctly.
-          # Simulating the expected environment and command execution
-          make cps
-          # Ensure cloned directories exist
-          if [ ! -d "${{ github.workspace }}/cp_root" ]; then
-            echo "CP repos did not clone correctly."
-            exit 1
-          fi
-          make cps/clean  # Cleanup after test
 
       - name: Show help
         run: make help
