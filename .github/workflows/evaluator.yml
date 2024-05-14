@@ -46,6 +46,14 @@ jobs:
             ssh-agent -a $SSH_AUTH_SOCK > /dev/null	
             ssh-add /home/runner/.ssh/github_actions
 
+
+      - name: Docker Registry Login
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: gha
+          password: ${{ github.token }}
+
       - name: Test Makefile targets
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
