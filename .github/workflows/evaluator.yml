@@ -9,9 +9,6 @@ on:
     branches:
       - main
 
-env:
-  DOCKER_DAEMON_ARGS: "-H tcp://0.0.0.0:2375 --tls=false --storage-driver=overlay2"
-
 jobs:
   makefile-validation:
     runs-on: ubuntu-latest
@@ -23,6 +20,8 @@ jobs:
           - ${{ github.workspace }}/crs_scratch:/crs_scratch
         ports:
           - 2375:2375
+        env:
+          DOCKER_DAEMON_ARGS: "-H tcp://0.0.0.0:2375 --tls=false --storage-driver=overlay2"
     steps:
       - name: Check out code
         uses: actions/checkout@v2
