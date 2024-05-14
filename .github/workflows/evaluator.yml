@@ -31,14 +31,10 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
           echo "DOCKER_HOST=tcp://docker:2375/" >> $GITHUB_ENV
-    
-      - name: Setup Mise
-        uses: jdx/mise-action@v2
-        with:
-          version: 2024.5.3 # [default: latest] mise version to install
-          install: true # [default: true] run `mise install`
-          cache: true # [default: true] cache mise using GitHub's cache
-
+          curl https://mise.jdx.dev/install.sh | sh
+          echo "$HOME/.local/share/mise/bin" >> $GITHUB_PATH
+          echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
+          mise install
 
       - name: Check required files
         run: |
