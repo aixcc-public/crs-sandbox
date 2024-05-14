@@ -6,10 +6,10 @@ DOCKER_COMPOSE_FILE = $(ROOT_DIR)/compose.yaml
 HOST_CP_ROOT_DIR = $(ROOT_DIR)/cp_root
 CP_CONFIG_FILE ?= $(ROOT_DIR)/cp_config.yaml
 
-# Check if GIT_CLONE_TOKEN is set and if so override the GIT_SSH_COMMAND so it is used
+# Check if GIT_CLONE_TOKEN is set, override the clone credentials
 ifdef GIT_CLONE_TOKEN
-    # Export GIT_SSH_COMMAND with the provided value
-    export GIT_SSH_COMMAND='ssh -o HostName=github.com -o IdentitiesOnly=yes -o PreferredAuthentications=publickey -i /dev/null -p 443 -u $(GIT_CLONE_TOKEN)'
+    git config credential.helper cache
+	git config credential.helper "!f() { echo username=x-access-token; echo password=$$GIT_CLONE_TOKEN; }; f"
 endif
 
 # Check for required file that will error out elsewhere if not present
