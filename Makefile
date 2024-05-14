@@ -11,13 +11,6 @@ ifeq (,$(wildcard $(CP_CONFIG_FILE)))
 $(error Required file not found: $(CP_CONFIG_FILE))
 endif
 
-# Check if GIT_CLONE_TOKEN is set, override the clone credentials
-ifdef GIT_CLONE_TOKEN
-	GIT_CLONE_URL_PREFIX = https://x-access-token:$(GIT_CLONE_TOKEN)@github.com/
-else
-	GIT_CLONE_URL_PREFIX = git@github.com:
-endif
-
 # Check for required executables (dependencies)
 __UNUSED_REQUIRED_EXE = yq docker kompose
 __UNUSED_EVAL_EXES := $(foreach exe,$(__UNUSED_REQUIRED_EXE), \
@@ -89,7 +82,6 @@ $(HOST_CP_ROOT_DIR)/.pulled_%:
 	@$(RM) -r $(CP_ROOT_REPO_SUBDIR)
 	@mkdir -p $(CP_ROOT_REPO_SUBDIR)
 	@yq -r '.cp_targets["$(REVERT_CP_TARGETS_DIRS_ESCAPE_STR)"].url' $(CP_CONFIG_FILE) | \
-		sed 's#^git@github.com:#$(GIT_CLONE_URL_PREFIX)#' | \
 		xargs -I {} git clone --depth 1 {} $(CP_ROOT_REPO_SUBDIR)
 	@yq -r '.cp_targets["$(REVERT_CP_TARGETS_DIRS_ESCAPE_STR)"] | .ref // "main"' $(CP_CONFIG_FILE) | \
 		xargs -I {} sh -c \
