@@ -9,13 +9,16 @@ on:
     branches:
       - main
 
+env:
+  DOCKER_DAEMON_ARGS: "-H tcp://0.0.0.0:2375 --tls=false --storage-driver=overlay2"
+
 jobs:
   makefile-validation:
     runs-on: ubuntu-latest
     services:
       docker:
-        image: docker:dind
-        options: --privileged --name dind --entrypoint "dockerd --tls=false --storage-driver=overlaysfs --H tcp://0.0.0.0:2375"
+        image: docker:24-dind
+        options: --privileged --name dind
         volumes:
           - ${{ github.workspace }}/crs_scratch:/crs_scratch
         ports:
