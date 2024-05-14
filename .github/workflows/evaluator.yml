@@ -32,10 +32,8 @@ jobs:
           sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
           echo "DOCKER_HOST=tcp://docker:2375/" >> $GITHUB_ENV
           curl https://mise.run | sh
-          echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
           mise install
-
-
+          echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
 
       - name: Check required files
         run: |
@@ -43,6 +41,9 @@ jobs:
             echo "Required file not found: cp_config.yaml"
             exit 1
           fi
+
+      - name: Move sandbox/example.env to sandbox/env
+        run: mv sandbox/example.env sandbox/env
 
       - name: Test Makefile targets
         run: |
