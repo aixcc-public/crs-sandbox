@@ -9,7 +9,7 @@ CP_CONFIG_FILE ?= $(ROOT_DIR)/cp_config.yaml
 # Check if GIT_CLONE_TOKEN is set, override the clone credentials
 ifdef GIT_CLONE_TOKEN
     git config credential.helper cache
-	git config credential.helper "!f() { echo username=x-access-token; echo password=$$GIT_CLONE_TOKEN; }; f"
+    git config credential.helper "!f() { echo username=x-access-token; echo password=$$GIT_CLONE_TOKEN; }; f"
 endif
 
 # Check for required file that will error out elsewhere if not present
