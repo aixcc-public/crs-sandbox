@@ -15,7 +15,7 @@ jobs:
     services:
       docker:
         image: docker:dind
-        options: --privileged --name dind
+        options: --privileged --name dind --tls=false --storage-driver=overlaysfs --host tcp://0.0.0.0:2375
         volumes:
           - ${{ github.workspace }}/crs_scratch:/crs_scratch
         ports:
