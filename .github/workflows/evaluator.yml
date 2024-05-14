@@ -12,16 +12,6 @@ on:
 jobs:
   makefile-validation:
     runs-on: ubuntu-latest
-    services:
-      docker:
-        image: docker:24-dind
-        options: --privileged --name dind
-        volumes:
-          - ${{ github.workspace }}/crs_scratch:/crs_scratch
-        ports:
-          - 2375:2375
-        env:
-          DOCKER_DAEMON_ARGS: "-H tcp://0.0.0.0:2375 --tls=false --storage-driver=overlay2"
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -32,7 +22,6 @@ jobs:
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.7.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
           sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
-          echo "DOCKER_HOST=tcp://127.0.0.1:2375" >> $GITHUB_ENV
           curl https://mise.jdx.dev/install.sh | sh
           echo "$HOME/.local/share/mise/bin" >> $GITHUB_PATH
           echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
