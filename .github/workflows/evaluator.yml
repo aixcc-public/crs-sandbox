@@ -1,6 +1,4 @@
 name: CRS Evaluator
-
-
 on:
   push:
     branches:
@@ -38,6 +36,8 @@ jobs:
         run: mv sandbox/example.env sandbox/env
 
       - name: Test Makefile targets
+        env:
+          GIT_CLONE_TOKEN: ${{ secrets.CICD_EXEMPLAR_CLONE_PAT }}
         run: |
           make build
           make up
