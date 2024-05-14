@@ -1,0 +1,78 @@
+name: CRS Evaluator
+
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  makefile-validation:
+    runs-on: ubuntu-latest
+    services:
+      docker:
+        image: docker:dind
+        options: --privileged --name dind
+        volumes:
+          - ${{ github.workspace }}/crs_scratch:/crs_scratch
+        ports:
+          - 2375:2375
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y kind=0.22.0 kubectl=1.29.2 helm=3.14.4
+          curl -L "https://github.com/docker/compose/releases/download/v2.7.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+          echo "DOCKER_HOST=tcp://docker:2375/" >> $GITHUB_ENV
+          curl https://mise.run | sh
+          echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
+          mise install
+
+
+
+      - name: Check required files
+        run: |
+          if [ ! -f "${{ github.workspace }}/cp_config.yaml" ]; then
+            echo "Required file not found: cp_config.yaml"
+            exit 1
+          fi
+
+      - name: Test Makefile targets
+        run: |
+          make build
+          make up
+          make logs
+          make ps
+          make restart
+          make stop
+          make up
+          make destroy
+          make test
+          make test/destroy
+          make k8s
+          make k8s/clean
+          make cps
+          make cps/clean
+          make clean
+
+      - name: Check additional configurations
+        run: |
+          # Test to see if custom targets like cloning CP repos work correctly.
+          # Simulating the expected environment and command execution
+          make cps
+          # Ensure cloned directories exist
+          if [ ! -d "${{ github.workspace }}/cp_root" ]; then
+            echo "CP repos did not clone correctly."
+            exit 1
+          fi
+          make cps/clean  # Cleanup after test
+
+      - name: Show help
+        run: make help
