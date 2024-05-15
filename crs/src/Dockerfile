@@ -67,5 +67,3 @@ WORKDIR $CRS_HOME
 COPY --chmod=0755 ./crs/ .
 
 WORKDIR $WORK
-ENTRYPOINT ["/root/crs/src/docker/entrypoint.sh"]
-CMD ["/bin/bash"]
