@@ -45,11 +45,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         vim-tiny \
         wget \
         xz-utils \
-        zip
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
+        zip && \
+        apt-get autoremove -y && \
+        rm -rf /var/lib/apt/lists/*
 
 ARG YQ_VERSION=4.43.1
 ARG YQ_BINARY=yq_linux_amd64
