@@ -1,4 +1,4 @@
-name: Create and publish a Docker images for CRS Sandbox
+name: Create and publish a Docker images for the CRS
 permissions: read-all
 # Configures this workflow to run every time a release is published
 on:
@@ -8,7 +8,6 @@ on:
 # Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: mock-crs 
 
 # There is a single job in this workflow.
 jobs:
@@ -18,6 +17,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # COMPETITORS: Update this list of docker files to include all images needed for your CRS
+        # These images will be copied into your CRS execution environment at competition time
+        # REMINDER: A CRS WILL NOT have internet access beyond iAPI and LiteLLM, so all containers images MUST be able to run without internet access. 
+        # You MUST include your specific private CRS repo prefix so replace `ghcr.io/aixcc-sc/crs-sandbox` with `ghcr.io/aixcc-sc/crs-XXXXXXXX` or whatever
+        # your private CRS repo is called but only for containers you are adding or those container images.
+
+        # DO NOT add version labels here. That should be managed using the Github release process in your CRS repo. 
+        # Please see: https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository
+        
+
         include:
           - dockerfile: ./crs/src/Dockerfile
             image: ghcr.io/aixcc-sc/crs-sandbox/mock-crs
