@@ -46,16 +46,10 @@ services:
       - development
       - competition
       - test
-    image: ghcr.io/aixcc-sc/iapi:v3.0.0
+    image: ghcr.io/aixcc-sc/iapi:v4.0.1
     restart: always
     ports:
       - "8080:80"
-    healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost || exit 1"]
-      interval: 5s
-      retries: 5
-      start_period: 3s
-      timeout: 5s
     environment:
       - AIXCC_API_HOSTNAME=https://api.game-services.aixcc.tech
   db:
