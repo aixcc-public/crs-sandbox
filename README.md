@@ -29,7 +29,8 @@ This is so the AIxCC infrastructure team can override the per-competitor secrets
 
 There are currently 4 LLM Provider environment variables declared but not populated in example.env, which will be populated at competition time:
 - OPENAI\_API\_KEY
-- AZUREML\_API\_KEY
+- AZURE\_API\_KEY
+- AZURE\_API\_BASE
 - GOOGLE_APPLICATION_CREDENTIAL
 - ANTHROPIC\_API\_KEY
 Note: For local development the example.env file should be renamed to env.
