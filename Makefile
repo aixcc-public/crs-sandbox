@@ -87,7 +87,7 @@ $(HOST_CP_ROOT_DIR)/.pulled_%:
 		xargs -I {} sh -c \
 			"git -C $(CP_ROOT_REPO_SUBDIR) fetch --depth 1 origin {}; \
 			git -C $(CP_ROOT_REPO_SUBDIR) checkout --quiet {};"
-	$(CP_ROOT_REPO_SUBDIR)/run.sh pull_source
+	make -C $(CP_ROOT_REPO_SUBDIR) cpsrc-prepare
 	@touch $@
 
 cps: $(CP_MAKE_TARGETS) ## Clone CP repos
