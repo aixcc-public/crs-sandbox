@@ -129,7 +129,7 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
           make build
-          make up
+          make up-attached
 
   run-kubernetes:
     runs-on: ubuntu-latest
