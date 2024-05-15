@@ -38,6 +38,9 @@ build: ## Build the project
 up: cps ## Start containers
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development up -d $(c)
 
+up-attached: cps ## Start containers
+	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development up --abort-on-container-exit $(c)
+
 start: ## Start containers
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development start $(c)
 
@@ -108,7 +111,7 @@ k8s: k8s/clean build ## Generates helm chart locally for the development profile
 	@docker pull ghcr.io/berriai/litellm-database:main-v1.35.10
 	@docker pull docker:24-dind 
 	@docker pull postgres:16.2-alpine3.19
-	@kind load docker-image crs-sandbox-crs ghcr.io/aixcc-sc/iapi:v2.0.0 ghcr.io/berriai/litellm-database:main-v1.35.10 docker:24-dind postgres:16.2-alpine3.19
+	@kind load docker-image ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0 ghcr.io/aixcc-sc/iapi:v2.0.0 ghcr.io/berriai/litellm-database:main-v1.35.10 docker:24-dind postgres:16.2-alpine3.19
 	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_development_overrides.yaml" kompose convert --profile development --chart --out .k8s
 	@helm install crs ./.k8s
 

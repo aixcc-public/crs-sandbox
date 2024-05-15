@@ -29,10 +29,11 @@ services:
       - development
       - competition
       - test
-    image: crs-sandbox-crs
+    image: ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
     build:
       context: . # Note that this uses the base folder for context, you may not need this for your CRS
       dockerfile: crs/src/Dockerfile
+    command: ["make", "-C", "/root/crs", "test"]
     volumes:
       #################################################################################
       ### THESE VOLUMES MUST BE INCLUDED WITHOUT MODIFICATION TO ALL CRS CONTAINERS ### 
