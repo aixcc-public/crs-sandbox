@@ -79,12 +79,6 @@ Most dependencies in this repo can be automatically managed by `mise`, but you'l
 - docker-compose >= 2.24.7
 - GNU make >= 4.3
 
-## Local Kubernetes Testing Dependencies
-These are only needed if you wish to test the generated helm charts
-- kind >= 0.22.0
-- kubectl >= 1.29.2
-- helm >= 3.14.4
-
 ### Dependencies managed using mise
 This repo defines its dependencies in a [`.tool-versions`](./.tool-versions) file.  [`mise`](https://mise.jdx.dev/getting-started.html#quickstart) can read this file and automatically install the tools at the required versions.  Install `mise`, set it up in your shell, and then run `mise install`.  `mise` will then manage your `PATH` variable to make the tools available whenever you `cd` into this repo.
 
@@ -95,6 +89,24 @@ A CRS MUST copy CP repositories from `/cp_root` to a writable location such as `
 A CRS MUST NOT modify data within `/cp_root` directly. 
 A CRS MUST use `/crs_scratch` as the only shared filesystem between containers.
 No other folders or volumes will be shared between containers. 
+
+## No Internet Access
+As stated previously, a CRS will NOT have internet access except for via the LiteLLM proxy to the configured LLM providers. 
+
+Because of this competitors MUST provide all artifacts within their Docker container images. 
+
+All images needed to execute a CRS MUST be included under `.github/workflows/package.yml` under the `jobs.build-and-push-image.strategy.matrix.include` section. 
+
+The Game Architecture team will migrate these images to the competition environment prior to starting your CRS.
+
+## Release Process
+In order for teams to test various iterations please use the following release versioning:
+
+`asc-crs-20240515-rev1` using `asc-crs-YYYYMMDD-rev<revision_number>` format by following the Github Release process with https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository
+
+Once you've determined your solution is competition ready, please add `asc-crs-prime-time` as the final tag using the Github release process 
+
+This will automatically tag any Docker images you've specified under `.github/workflows/package.yml` outlined above.
 
 ## Using Make
 A Makefile has been provided with a number of a commands to make it easy to clone the exemplar repos, stand up the environment, and a variety of other actions.
