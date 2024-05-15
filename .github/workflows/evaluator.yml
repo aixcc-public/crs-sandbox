@@ -9,7 +9,7 @@ on:
 
 jobs:
   run-tests:
-    runs-on: ubuntu-latest
+    runs-on: large-runner
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -79,7 +79,7 @@ jobs:
         run: make help
 
   docker-compose:
-    runs-on: ubuntu-latest
+    runs-on: large-runner
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -132,7 +132,7 @@ jobs:
           make up-attached
 
   run-kubernetes:
-    runs-on: ubuntu-latest
+    runs-on: large-runner
     steps:
       - name: Check out code
         uses: actions/checkout@v2

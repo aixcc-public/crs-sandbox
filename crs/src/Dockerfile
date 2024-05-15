@@ -17,12 +17,15 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         automake \
         autotools-dev \
         bash \
+        bsdextrautils \
         build-essential \
         binutils \
+        ca-certificates \
         curl \
         file \
         gnupg2 \
         git \
+        git-lfs \
         gzip \
         jq \
         libcap2 \
@@ -42,7 +45,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         tar \
         tzdata \
         unzip \
-        vim-tiny \
+        vim \
         wget \
         xz-utils \
         zip && \
@@ -52,6 +55,23 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 ARG YQ_VERSION=4.43.1
 ARG YQ_BINARY=yq_linux_amd64
 RUN wget https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/${YQ_BINARY} -O /usr/bin/yq && chmod +x /usr/bin/yq
+
+# Install Docker for CP repo build and test
+RUN install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && \
+    chmod a+r /etc/apt/keyrings/docker.asc && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+        $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        containerd.io \
+        docker-ce \
+        docker-ce-cli \
+# TODO: docker-buildx-plugin removed at a later date
+        docker-buildx-plugin \
+        && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
 
 # Create working directory
 ENV WORK=/root/work
