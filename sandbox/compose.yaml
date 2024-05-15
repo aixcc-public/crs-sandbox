@@ -51,8 +51,11 @@ services:
     ports:
       - "8080:80"
     healthcheck:
-      test: ["CMD-SHELL", "wget -O /dev/null http://localhost || exit 1"]
-      timeout: 10s
+      test: ["CMD-SHELL", "curl --fail http://localhost || exit 1"]
+      interval: 5s
+      retries: 5
+      start_period: 3s
+      timeout: 5s
     environment:
       - AIXCC_API_HOSTNAME=https://api.game-services.aixcc.tech
   db:
@@ -86,6 +89,7 @@ services:
     env_file: env
     environment:
       - DATABASE_URL=postgresql://aixcc:aixcc@db
+      - AZURE_API_BASE=https://eastus2aoi.openai.azure.com/
     healthcheck:
       test: ["CMD-SHELL", "python3", "--version"]
       interval: 5s
