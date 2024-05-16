@@ -85,7 +85,7 @@ $(HOST_CP_ROOT_DIR)/.pulled_%:
 	@$(RM) -r $(CP_ROOT_REPO_SUBDIR)
 	@mkdir -p $(CP_ROOT_REPO_SUBDIR)
 	@yq -r '.cp_targets["$(REVERT_CP_TARGETS_DIRS_ESCAPE_STR)"].url' $(CP_CONFIG_FILE) | \
-		xargs -I {} git clone --depth 1 {} $(CP_ROOT_REPO_SUBDIR)
+		xargs -I {} git clone {} $(CP_ROOT_REPO_SUBDIR)
 	@yq -r '.cp_targets["$(REVERT_CP_TARGETS_DIRS_ESCAPE_STR)"] | .ref // "main"' $(CP_CONFIG_FILE) | \
 		xargs -I {} sh -c \
 			"git -C $(CP_ROOT_REPO_SUBDIR) fetch --depth 1 origin {}; \
