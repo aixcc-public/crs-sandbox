@@ -46,7 +46,7 @@ services:
       - development
       - competition
       - test
-    image: ghcr.io/aixcc-sc/iapi:v4.0.1
+    image: ghcr.io/aixcc-sc/iapi:v4.0.3
     restart: always
     ports:
       - "8080:80"
