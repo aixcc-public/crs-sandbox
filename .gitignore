@@ -11,5 +11,8 @@ cp_root/*
 ## CRS scratch space
 crs_scratch/*
 
+## Charts
+charts/*
+
 ## LLM creds
 **/vertex_key.json
