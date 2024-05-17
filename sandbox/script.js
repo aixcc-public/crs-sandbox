@@ -5,8 +5,8 @@ import { textSummary } from 'https://jslib.k6.io/k6-summary/0.1.0/index.js';
 
 export const options = {
   thresholds: {
-    http_req_duration: [`p(99)<200`],
-    checks: ['rate>0.80'],
+    http_req_duration: [`p(90)<300`],
+    checks: ['rate==1.0'],
   },
   scenarios: {
     liteLLMScenario: {

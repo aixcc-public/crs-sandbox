@@ -15,7 +15,7 @@
 import http from "k6/http";
 import { group, check, sleep } from "k6";
 
-const BASE_URL = "http://iapi/";
+const BASE_URL = "http://iapi";
 const SLEEP_DURATION = 0.1;
 
 export default function() {
@@ -26,10 +26,10 @@ export default function() {
               "cp_name": "linux kernel",
               "pou": {
                 "commit_sha1": "2923ffa6e0572ee6572245f980acfcfb872fcf74",
-                "sanitizer": "KASAN: slab-out-of-bounds"
+                "sanitizer": "id_1"
               },
               "pov": {
-                "harness": "linux_test_harness",
+                "harness": "id_1",
                 "data": "LS0tIGhlbGxvLmMJMjAxNC0xMC0wNyAxODoxNzo0OS4wMDAwMDAwMDAgKzA1MzANCisrKyBoZWxsb19uZXcuYwkyMDE0LTEwLTA3IDE4OjE3OjU0LjAwMDAwMDAwMCArMDUzMA0KQEAgLTEsNSArMSw2IEBADQogI2luY2x1ZGUgPHN0ZGlvLmg+DQogDQotaW50IG1haW4oKSB7DQoraW50IG1haW4oaW50IGFyZ2MsIGNoYXIgKmFyZ3ZbXSkgew0KIAlwcmludGYoIkhlbGxvIFdvcmxkXG4iKTsNCisJcmV0dXJuIDA7DQogfQ=="
               }
             };
