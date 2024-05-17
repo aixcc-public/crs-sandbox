@@ -36,6 +36,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # important parameter
       # Uses the `docker/login-action` action to log in to the Container registry registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
@@ -60,3 +62,46 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.7.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
+          curl https://mise.jdx.dev/install.sh | sh
+          echo "$HOME/.local/share/mise/bin" >> $GITHUB_PATH
+          echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
+          mise install
+
+      - name: Create Competition Helm Resources
+        run: |
+          make k8s/competition
+
+      - name: Modify Generated Helm Chart
+        run: |
+          # Variables for new values
+          NEW_DESCRIPTION="AIxCC Competitor Cyber Reasoning System (CRS)"
+          NEW_NAME="crs"
+          VERSION_STRING=${{ github.event.release.tag_name }}
+          NEW_VERSION="${VERSION_STRING#v}"
+
+          # Path to the generated Chart.yaml
+          CHART_FILE=".k8s/Chart.yaml"
+
+          # Modify Chart.yaml using yq
+          yq eval ".description = \"$NEW_DESCRIPTION\"" -i $CHART_FILE
+          yq eval ".name = \"$NEW_NAME\"" -i $CHART_FILE
+          yq eval ".version = \"$NEW_VERSION\"" -i $CHART_FILE
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.6.0
+        with:
+          charts_dir: .k8s
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_RELEASE_NAME_TEMPLATE: "crs"
+          CR_OWNER: aixcc
+          CR_PACKAGE_PATH: .k8s
+          CR_SKIP_EXISTING: false
+          CR_PACKAGES_WITH_INDEX: true
