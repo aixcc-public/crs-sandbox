@@ -51,7 +51,7 @@ services:
     ports:
       - "8080:80"
     environment:
-      - AIXCC_API_HOSTNAME=https://api.game-services.aixcc.tech
+      - AIXCC_API_HOSTNAME=http://api.game-services.aixcc.tech
   db:
     profiles:
       - development
