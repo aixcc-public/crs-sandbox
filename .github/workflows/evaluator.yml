@@ -11,7 +11,7 @@ on:
       - main
 
 jobs:
-  run-tests:
+  run-loadtests:
     runs-on: large-runner
     steps:
       - name: Check out code
@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.7.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
           sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
           curl https://mise.jdx.dev/install.sh | sh
@@ -46,7 +46,7 @@ jobs:
             ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
             echo "${{ secrets.CRS_EVALUATOR_EXEMPLAR_CLONE_SSH_KEY }}" > /home/runner/.ssh/github_actions
             chmod 600 /home/runner/.ssh/github_actions
-            ssh-agent -a $SSH_AUTH_SOCK > /dev/null	
+            ssh-agent -a $SSH_AUTH_SOCK > /dev/null
             ssh-add /home/runner/.ssh/github_actions
 
 
@@ -56,7 +56,7 @@ jobs:
           registry: ghcr.io
           username: gha
           password: ${{ github.token }}
-          
+
       - name: Test CP cloning
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -75,13 +75,13 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
-          make test
-          make test/destroy
+          make loadtest
+          make loadtest/destroy
 
       - name: Show help
         run: make help
 
-  docker-compose:
+  run-mock-crs:
     runs-on: large-runner
     steps:
       - name: Check out code
@@ -90,7 +90,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.7.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
           sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
           curl https://mise.jdx.dev/install.sh | sh
@@ -116,7 +116,7 @@ jobs:
             ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
             echo "${{ secrets.CRS_EVALUATOR_EXEMPLAR_CLONE_SSH_KEY }}" > /home/runner/.ssh/github_actions
             chmod 600 /home/runner/.ssh/github_actions
-            ssh-agent -a $SSH_AUTH_SOCK > /dev/null	
+            ssh-agent -a $SSH_AUTH_SOCK > /dev/null
             ssh-add /home/runner/.ssh/github_actions
 
 
@@ -126,8 +126,8 @@ jobs:
           registry: ghcr.io
           username: gha
           password: ${{ github.token }}
-          
-      - name: Run Docker Compose 
+
+      - name: Run Docker Compose
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
@@ -143,7 +143,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.7.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
           sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
           curl https://mise.jdx.dev/install.sh | sh

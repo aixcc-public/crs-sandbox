@@ -1,6 +1,8 @@
 ROOT_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 DOCKER_COMPOSE_FILE = $(ROOT_DIR)/compose.yaml
+DOCKER_COMPOSE_PORTS_FILE = $(ROOT_DIR)/compose_ports.yaml
+DOCKER_COMPOSE_LOCAL_ARGS = -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_PORTS_FILE) --profile development
 
 # variables that control the CP repos
 HOST_CP_ROOT_DIR = $(ROOT_DIR)/cp_root
@@ -27,56 +29,63 @@ endif
 CP_TARGETS_DIRS = $(shell yq -r '.cp_targets | keys | .[]' $(CP_CONFIG_FILE))
 CP_MAKE_TARGETS = $(addprefix $(HOST_CP_ROOT_DIR)/.pulled_, $(subst :,_colon_, $(subst /,_slash_, $(CP_TARGETS_DIRS))))
 
-.PHONY: help build up start down destroy stop restart logs logs-crs logs-litellm logs-iapi ps crs-shell litellm-shell cps/clean cps
+.PHONY: help build up start down destroy stop restart logs logs-crs logs-litellm logs-iapi ps crs-shell litellm-shell cps/clean cps computed-env
 
 help: ## Display available targets and their help strings
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_/-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(THIS_FILE) | sort
 
 build: ## Build the project
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development build $(c)
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) build $(c)
 
-up: cps ## Start containers
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development up -d $(c)
+computed-env:
+	@sed -i '/CAPI_AUTH_HEADER=*/d' sandbox/env
+	$(eval include sandbox/env)
+	@echo -n "CAPI_AUTH_HEADER=\"Basic " >> sandbox/env
+	@echo -n "${CAPI_ID}:${CAPI_TOKEN}" | base64 | tr -d '\n' >> sandbox/env
+	@echo \" >> sandbox/env
 
-up-attached: cps ## Start containers
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development up --abort-on-container-exit $(c)
+up: cps computed-env ## Start containers
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) up -d $(c)
+
+up-attached: cps computed-env ## Start containers
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) up --abort-on-container-exit $(c)
 
 start: ## Start containers
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development start $(c)
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) start $(c)
 
 down: ## Stop and remove containers
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development down --remove-orphans $(c)
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) down --remove-orphans $(c)
 
 destroy: ## Stop and remove containers with volumes
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development down --volumes --remove-orphans $(c)
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) down --volumes --remove-orphans $(c)
 
 stop: ## Stop containers
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development stop $(c)
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) stop $(c)
 
-restart: ## Restart containers
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development stop $(c)
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development up -d $(c)
+restart: computed-env ## Restart containers
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) stop $(c)
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) up -d $(c)
 
 logs: ## Show logs for containers
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development logs --tail=100 -f $(c)
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) logs --tail=100 -f $(c)
 
 logs-crs: ## Show logs for crs container
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development logs --tail=100 -f crs
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) logs --tail=100 -f crs
 
 logs-litellm: ## Show logs for litellm container
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development logs --tail=100 -f litellm
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) logs --tail=100 -f litellm
 
 logs-iapi: ## Show logs for iapi container
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development logs --tail=100 -f iapi
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) logs --tail=100 -f iapi
 
 ps: ## List containers
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development ps
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) ps
 
 crs-shell: ## Access the crs shell
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development exec crs /bin/bash
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) exec crs /bin/bash
 
 litellm-shell: ## Access the litellm shell
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile development exec litellm /bin/bash
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) exec litellm /bin/bash
 
 ## Internal target to clone and pull the CP source for each CP repo
 $(HOST_CP_ROOT_DIR)/.pulled_%:
@@ -98,11 +107,10 @@ cps: $(CP_MAKE_TARGETS) ## Clone CP repos
 cps/clean: ## Clean up the cloned CP repos
 	@rm -rf $(HOST_CP_ROOT_DIR)
 
-test: ## Run tests
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile test up --exit-code-from test --attach test --build $(c)
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile test logs test --follow $(c)
-test/destroy: ## Stop and remove containers with volumes
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile test down --volumes --remove-orphans $(c)
+loadtest: computed-env ## Run k6 load tests
+	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile loadtest up --exit-code-from test --build $(c)
+loadtest/destroy: ## Stop and remove containers with volumes
+	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile loadtest down --volumes --remove-orphans $(c)
 
 k8s: k8s/clean build ## Generates helm chart locally for the development profile for kind testing, etc. build is called for local image generation
 	@kind create cluster --wait 1m

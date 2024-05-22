@@ -1,19 +1,17 @@
 ######################################
-# COMPETITORS: DO NOT MODIFY THIS FILE
-######################################
-
+---
 services:
-  test: 
-    profiles: 
-      - test
+  test:
+    profiles:
+      - loadtest
     build:
       context: .
       dockerfile: Dockerfile
     environment:
       # These values will be modified automatically at competition time
-      - DOCKER_HOST=tcp://dind:2375 
+      - DOCKER_HOST=tcp://dind:2375
       - AIXCC_LITELLM_HOSTNAME=http://litellm
-      - AIXCC_API_HOSTNAME=http://iapi"
+      - AIXCC_API_HOSTNAME=http://iapi:8080
       - AIXCC_CP_ROOT=/cp_root
       - AIXCC_CRS_SCRATCH_SPACE=/crs_scratch
       - LITELLM_KEY=sk-1234
@@ -22,21 +20,19 @@ services:
         condition: service_healthy
       iapi:
         condition: service_healthy
-  dind: 
+  dind:
     profiles:
       - development
       - competition
-      - test
+      - loadtest
     image: docker:24-dind
-    command: [ "dockerd", "-H", "tcp://0.0.0.0:2375", "--tls=false", "--storage-driver=overlay2" ]
+    command: ["dockerd", "-H", "tcp://0.0.0.0:2375", "--tls=false", "--storage-driver=overlay2"]
     restart: always
     privileged: true # This must run with privlege to support nested virtualization within the public Linux CP for `virtme-ng`
-    ports:
-      - "2375:2375"
     environment:
       - DOCKER_TLS_CERTDIR # intentionally blank to optimize runtime
     volumes:
-      - type: bind 
+      - type: bind
         source: ${PWD}/crs_scratch
         target: /crs_scratch
         bind:
@@ -45,31 +41,72 @@ services:
     profiles:
       - development
       - competition
-      - test
-    image: ghcr.io/aixcc-sc/iapi:v4.0.3
+      - loadtest
+    image: nginx
+    env_file: env
+    configs:
+      - source: nginx_config
+        target: /etc/nginx/templates/default.conf.template
+    healthcheck:
+      # this passes through to the capi
+      test: ["CMD-SHELL", "curl --fail http://localhost:8080/health/ || exit 1"]
+      interval: 5s
+      retries: 5
+      start_period: 3s
+      timeout: 5s
+    depends_on:
+      capi:
+        condition: service_healthy
+  capi:
+    profiles:
+      - development
+      - loadtest
+    image: ghcr.io/aixcc-sc/capi:v0.0.3
     restart: always
-    ports:
-      - "8080:80"
+    env_file: env
     environment:
-      - AIXCC_API_HOSTNAME=http://api.game-services.aixcc.tech
+      - DOCKER_HOST=tcp://dind:2375
+      - CAPI_TEMPDIR=/crs_scratch
+      - CAPI_DATABASE_PASSWORD=aixcc
+      - CAPI_DATABASE_USERNAME=aixcc
+      - CAPI_DATABASE_NAME=capi
+      - CAPI_DATABASE_HOST=db
+      - CAPI_DATABASE_PORT=5432
+    configs:
+      - source: capi_config
+        target: /etc/capi/config.yaml
+    volumes:
+      - type: bind
+        source: ${PWD}/crs_scratch
+        target: /crs_scratch
+        bind:
+          propagation: rshared
+    depends_on:
+      db:
+        condition: service_healthy
   db:
     profiles:
       - development
-      - test
+      - loadtest
     image: postgres:16.2-alpine3.19
     restart: always
     shm_size: 128mb
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=aixcc
       - POSTGRES_USER=aixcc
-      - POSTGRES_PORT=5432
       - POSTGRES_DATABASE=litellm
+    configs:
+      - source: capi_db_setup
+        target: /docker-entrypoint-initdb.d/capi-db-setup.sh
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "capi"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
   litellm:
     profiles:
       - development
-      - test
+      - loadtest
     image: ghcr.io/berriai/litellm-database:main-v1.35.10
     restart: always
     configs:
@@ -77,9 +114,7 @@ services:
         target: /app/config.yaml
       - source: litellm_vertex_config
         target: /vertex_key.json
-    command: [ "--config", "/app/config.yaml", "--port", "80", "--num_workers", "8" ]
-    ports:
-      - "8081:80"
+    command: ["--config", "/app/config.yaml", "--port", "80", "--num_workers", "8"]
     env_file: env
     environment:
       - DATABASE_URL=postgresql://aixcc:aixcc@db
@@ -90,10 +125,17 @@ services:
       timeout: 5s
       retries: 10
       start_period: 1s
-
+    depends_on:
+      db:
+        condition: service_healthy
 configs:
   litellm_config:
     file: ./litellm/local_litellm_config.yaml
   litellm_vertex_config:
     file: ./litellm/vertex_key.json
-
+  capi_config:
+    file: ./capi/config.yaml
+  nginx_config:
+    file: ./nginx/default.conf.template
+  capi_db_setup:
+    file: ./capi/db_setup.sh

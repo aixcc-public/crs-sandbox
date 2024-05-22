@@ -28,7 +28,6 @@ services:
     profiles:
       - development
       - competition
-      - test
     image: ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
     build:
       context: . # Note that this uses the base folder for context, you may not need this for your CRS
@@ -51,7 +50,7 @@ services:
       # These values will be modified automatically at competition time
       - DOCKER_HOST=tcp://dind:2375 
       - AIXCC_LITELLM_HOSTNAME=http://litellm
-      - AIXCC_API_HOSTNAME=http://iapi
+      - AIXCC_API_HOSTNAME=http://iapi:8080
       - AIXCC_CP_ROOT=/cp_root
       - AIXCC_CRS_SCRATCH_SPACE=/crs_scratch
       - LITELLM_KEY=sk-1234

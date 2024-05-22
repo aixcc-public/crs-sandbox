@@ -1,0 +1,17 @@
+---
+services:
+  dind:
+    ports:
+      - "2375:2375"
+  iapi:
+    ports:
+      - "8080:8080"
+  capi:
+    ports:
+      - "8082:8080"
+  db:
+    ports:
+      - "5432:5432"
+  litellm:
+    ports:
+      - "8081:80"
