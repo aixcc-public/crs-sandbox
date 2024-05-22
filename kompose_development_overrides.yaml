@@ -4,6 +4,21 @@ services:
     volumes:
       - cp_root:/cp_root
       - crs_scratch:/crs_scratch
+  dind:
+    ports:
+      - "2375"
+  iapi:
+    ports:
+      - "8080"
+  capi:
+    ports:
+      - "8082"
+  db:
+    ports:
+      - "5432"
+  litellm:
+    ports:
+      - "8081"
 
 volumes:
   cp_root:

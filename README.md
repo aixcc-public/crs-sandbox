@@ -76,7 +76,7 @@ In order to work with the CRS Sandbox you must setup your Github personal access
 Most dependencies in this repo can be automatically managed by `mise`, but you'll have to install the following yourself:
 
 - docker >= 24.0.5
-- docker-compose >= 2.24.7
+- docker-compose >= 2.26.1
 - GNU make >= 4.3
 
 ### Dependencies managed using mise
