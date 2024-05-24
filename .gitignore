@@ -11,6 +11,9 @@ cp_root/*
 ## CRS scratch space
 crs_scratch/*
 
+## DIND cache space
+dind_cache/*
+
 ## Charts
 charts/*
 
