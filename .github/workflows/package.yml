@@ -15,13 +15,13 @@ jobs:
       matrix:
         # COMPETITORS: Update this list of docker files to include all images needed for your CRS
         # These images will be copied into your CRS execution environment at competition time
-        # REMINDER: A CRS WILL NOT have internet access beyond iAPI and LiteLLM, so all containers images MUST be able to run without internet access. 
+        # REMINDER: A CRS WILL NOT have internet access beyond iAPI and LiteLLM, so all containers images MUST be able to run without internet access.
         # You MUST include your specific private CRS repo prefix so replace `ghcr.io/aixcc-sc/crs-sandbox` with `ghcr.io/aixcc-sc/crs-XXXXXXXX` or whatever
         # your private CRS repo is called but only for containers you are adding or those container images.
 
-        # DO NOT add version labels here. That should be managed using the Github release process in your CRS repo. 
+        # DO NOT add version labels here. That should be managed using the Github release process in your CRS repo.
         # Please see: https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository
-        
+
 
         include:
           - dockerfile: ./crs/src/Dockerfile
@@ -67,8 +67,8 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
           curl https://mise.jdx.dev/install.sh | sh
-          echo "$HOME/.local/share/mise/bin" >> $GITHUB_PATH
-          echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
+          echo "$HOME/.local/share/mise/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
           mise install
 
       - name: Configure Git
@@ -86,7 +86,7 @@ jobs:
           VERSION_STRING=${{ github.event.release.tag_name }}
           NEW_VERSION="${VERSION_STRING#v}"
           cd ./charts && helm package crs --version "$NEW_VERSION"
-          gh release upload ${{github.event.release.tag_name}} crs-${NEW_VERSION}.tgz   
+          gh release upload "${{github.event.release.tag_name}}" "crs-${NEW_VERSION}.tgz"
         env:
           GITHUB_TOKEN: ${{ github.token }}
 

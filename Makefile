@@ -116,7 +116,7 @@ k8s: k8s/clean build ## Generates helm chart locally for the development profile
 	@kind create cluster --wait 1m
 	@docker pull ghcr.io/aixcc-sc/iapi:v4.0.3
 	@docker pull ghcr.io/berriai/litellm-database:main-v1.35.10
-	@docker pull docker:24-dind 
+	@docker pull docker:24-dind
 	@docker pull postgres:16.2-alpine3.19
 	@kind load docker-image ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0 ghcr.io/aixcc-sc/iapi:v4.0.3 ghcr.io/berriai/litellm-database:main-v1.35.10 docker:24-dind postgres:16.2-alpine3.19
 	@mkdir $(ROOT_DIR)/charts
