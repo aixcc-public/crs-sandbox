@@ -12,304 +12,283 @@
 
 // TODO: Fix test coverage, currently only 11% of the tests passing
 
+import http from 'k6/http'
+import { group, check } from 'k6'
 
-import http from "k6/http";
-import { group, check, sleep } from "k6";
-
-function makeTestId(length) {
-    let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      counter += 1;
-    }
-    return "test-" + result;
+function makeTestId (length) {
+  let result = ''
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const charactersLength = characters.length
+  let counter = 0
+  while (counter < length) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength))
+    counter += 1
+  }
+  return 'test-' + result
 }
 
-const BASE_URL = "http://litellm";
-// Sleep duration between successive requests.
-// You might want to edit the value of this variable or remove calls to the sleep function on the script.
-const SLEEP_DURATION = 0.1;
+const BASE_URL = 'http://litellm'
 // Global variables should be initialized.
-let authorization = `Bearer ${__ENV.LITELLM_KEY}`;
-var models_list = ["gpt-4", "gpt-4-turbo", "claude-3-opus"];
+const authorization = `Bearer ${__ENV.LITELLM_KEY}` // eslint-disable-line
+const models_list = ['gpt-4', 'gpt-4-turbo', 'claude-3-opus']
 
+export default function () {
+  // Good Tests
+  group('/health/liveliness', () => {
+    // Request No. 1: health_liveliness_health_liveliness_get
+    {
+      const url = BASE_URL + '/health/liveliness'
+      const request = http.get(url)
 
-export default function() {
-   // Good Tests
-   group("/health/liveliness", () => {
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-        // Request No. 1: health_liveliness_health_liveliness_get
-        {
-            let url = BASE_URL + `/health/liveliness`;
-            let request = http.get(url);
+  group('/test', () => {
+    // Request No. 1: test_endpoint_test_get
+    {
+      const url = BASE_URL + '/test'
+      const request = http.get(url)
 
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-    group("/test", () => {
+  group('/', () => {
+    // Request No. 1: home__get
+    {
+      const url = BASE_URL + '/'
+      const request = http.get(url)
 
-        // Request No. 1: test_endpoint_test_get
-        {
-            let url = BASE_URL + `/test`;
-            let request = http.get(url);
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+  group('/health', () => {
+    const model = 'gpt-4-turbo' // specify value as there is no example value for this parameter in OpenAPI spec
 
-    group("/", () => {
+    // Request No. 1: health_endpoint_health_get
+    {
+      const url = BASE_URL + `/health?model=${model}`
+      const params = { headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `${authorization}` } }
+      const request = http.get(url, params)
 
-        // Request No. 1: home__get
-        {
-            let url = BASE_URL + `/`;
-            let request = http.get(url);
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+  group('/models', () => {
+    // Request No. 1: model_list_models_get
+    {
+      const url = BASE_URL + '/models'
+      const params = { headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `${authorization}` } }
+      const request = http.get(url, params)
 
-    group("/health", () => {
-        let model = 'gpt-4-turbo'; // specify value as there is no example value for this parameter in OpenAPI spec
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-        // Request No. 1: health_endpoint_health_get
-        {
-            let url = BASE_URL + `/health?model=${model}`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.get(url, params);
+  group('/health/readiness', () => {
+    // Request No. 1: health_readiness_health_readiness_get
+    {
+      const url = BASE_URL + '/health/readiness'
+      const request = http.get(url)
 
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-    group("/models", () => {
+  group('/routes', () => {
+    // Request No. 1: get_routes_routes_get
+    {
+      const url = BASE_URL + '/routes'
+      const request = http.get(url)
 
-        // Request No. 1: model_list_models_get
-        {
-            let url = BASE_URL + `/models`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.get(url, params);
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+  group('/team/info', () => {
+    const teamId = '1' // specify value as there is no example value for this parameter in OpenAPI spec
 
-    group("/health/readiness", () => {
+    // Request No. 1: team_info_team_info_get
+    {
+      const url = BASE_URL + `/team/info?team_id=${teamId}`
+      const params = { headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `${authorization}` } }
+      const request = http.get(url, params)
 
-        // Request No. 1: health_readiness_health_readiness_get
-        {
-            let url = BASE_URL + `/health/readiness`;
-            let request = http.get(url);
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+  group('/spend/users', () => {
+    const userId = '1' // specify value as there is no example value for this parameter in OpenAPI spec
 
-    group("/routes", () => {
+    // Request No. 1: spend_user_fn_spend_users_get
+    {
+      const url = BASE_URL + `/spend/users?user_id=${userId}`
+      const params = { headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `${authorization}` } }
+      const request = http.get(url, params)
 
-        // Request No. 1: get_routes_routes_get
-        {
-            let url = BASE_URL + `/routes`;
-            let request = http.get(url);
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+  group('/model/info', () => {
+    // Request No. 1: model_info_v1_model_info_get
+    {
+      const url = BASE_URL + '/model/info'
+      const params = { headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `${authorization}` } }
+      const request = http.get(url, params)
 
-    group("/team/info", () => {
-        let teamId = '1'; // specify value as there is no example value for this parameter in OpenAPI spec
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-        // Request No. 1: team_info_team_info_get
-        {
-            let url = BASE_URL + `/team/info?team_id=${teamId}`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.get(url, params);
+  group('/user/new', () => {
+    // Request No. 1: new_user_user_new_post
+    {
+      const url = BASE_URL + '/user/new'
+      // TODO: edit the parameters of the request body.
+      const body = { models: models_list, spend: 100, maxBudget: 100, userId: 2, teamId: 2, maxParallelRequests: 3, metadata: {}, tpmLimit: 5000, rpmLimit: 5, budgetDuration: '365d', allowedCacheControls: {}, keyAlias: 'testkey-2', duration: '365d', aliases: {}, config: {}, permissions: {}, modelMaxBudget: {}, userEmail: {}, userRole: {} }
+      const params = { headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `${authorization}` } }
+      const request = http.post(url, JSON.stringify(body), params)
 
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-    group("/spend/users", () => {
-        let userId = '1'; // specify value as there is no example value for this parameter in OpenAPI spec
+  group('/team/new', () => {
+    // Request No. 1: new_team_team_new_post
+    {
+      const url = BASE_URL + '/team/new'
+      const teamName = makeTestId(10)
+      // TODO: edit the parameters of the request body.
+      const body = { teamAlias: teamName, teamId: 5, admins: ['testuser-1'], members: ['testuser-1'], membersWithRoles: [], metadata: {}, tpmLimit: {}, rpmLimit: {}, maxBudget: {}, models: models_list }
+      const params = { headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `${authorization}` } }
+      const request = http.post(url, JSON.stringify(body), params)
 
-        // Request No. 1: spend_user_fn_spend_users_get
-        {
-            let url = BASE_URL + `/spend/users?user_id=${userId}`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.get(url, params);
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+  group('/v1/models', () => {
+    // Request No. 1: model_list_v1_models_get
+    {
+      const url = BASE_URL + '/v1/models'
+      const params = { headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `${authorization}` } }
+      const request = http.get(url, params)
 
-    group("/model/info", () => {
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-        // Request No. 1: model_info_v1_model_info_get
-        {
-            let url = BASE_URL + `/model/info`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.get(url, params);
+  group('/user/info', () => {
+    const userId = '1' // specify value as there is no example value for this parameter in OpenAPI spec
+    const viewAll = 'false' // specify value as there is no example value for this parameter in OpenAPI spec
 
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+    // Request No. 1: user_info_user_info_get
+    {
+      const url = BASE_URL + `/user/info?user_id=${userId}&view_all=${viewAll}`
+      const params = { headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `${authorization}` } }
+      const request = http.get(url, params)
 
-    group("/user/new", () => {
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-        // Request No. 1: new_user_user_new_post
-        {
-            let url = BASE_URL + `/user/new`;
-            // TODO: edit the parameters of the request body.
-            let body = {"models": models_list, "spend": 100, "maxBudget": 100, "userId": 2, "teamId": 2, "maxParallelRequests": 3, "metadata": {}, "tpmLimit": 5000, "rpmLimit": 5, "budgetDuration": "365d", "allowedCacheControls": {}, "keyAlias": "testkey-2", "duration": "365d", "aliases": {}, "config": {}, "permissions": {}, "modelMaxBudget": {}, "userEmail": {}, "userRole": {}};
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.post(url, JSON.stringify(body), params);
+  group('/user/get_requests', () => {
+    // Request No. 1: user_get_requests_user_get_requests_get
+    {
+      const url = BASE_URL + '/user/get_requests'
+      const params = { headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `${authorization}` } }
+      const request = http.get(url, params)
 
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-    group("/team/new", () => {
+  group('/key/generate', () => {
+    // Request No. 1: generate_key_fn_key_generate_post
+    {
+      const url = BASE_URL + '/key/generate'
+      // TODO: edit the parameters of the request body.
+      const body = { models: models_list, spend: 0, maxBudget: 500, userId: 'test-001', teamId: 5, maxParallelRequests: 2, metadata: {}, tpmLimit: 500, rpmLimit: 50, budgetDuration: '365d', allowedCacheControls: {}, keyAlias: 'test-key-1', duration: '365d', aliases: {}, config: {}, permissions: {}, modelMaxBudget: {} }
+      const params = { headers: { 'Content-Type': 'application/json', Authorization: `${authorization}`, Accept: 'application/json' } }
+      const request = http.post(url, JSON.stringify(body), params)
 
-        // Request No. 1: new_team_team_new_post
-        {
-            let url = BASE_URL + `/team/new`;
-            let teamName = makeTestId(10);
-            // TODO: edit the parameters of the request body.
-            let body = {"teamAlias": teamName, "teamId": 5, "admins": ["testuser-1"], "members": ["testuser-1"], "membersWithRoles": [], "metadata": {}, "tpmLimit": {}, "rpmLimit": {}, "maxBudget": {}, "models": models_list};
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.post(url, JSON.stringify(body), params);
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+  group('/v2/model/info', () => {
+    // Request No. 1: model_info_v2_v2_model_info_get
+    {
+      const url = BASE_URL + '/v2/model/info'
+      const params = { headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `${authorization}` } }
+      const request = http.get(url, params)
 
-    group("/v1/models", () => {
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-        // Request No. 1: model_list_v1_models_get
-        {
-            let url = BASE_URL + `/v1/models`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.get(url, params);
+  group('/spend/keys', () => {
+    // Request No. 1: spend_key_fn_spend_keys_get
+    {
+      const url = BASE_URL + '/spend/keys'
+      const params = { headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `${authorization}` } }
+      const request = http.get(url, params)
 
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 
-    group("/user/info", () => {
-        let userId = '1'; // specify value as there is no example value for this parameter in OpenAPI spec
-        let viewAll = 'false'; // specify value as there is no example value for this parameter in OpenAPI spec
+  group('/v1/model/info', () => {
+    // Request No. 1: model_info_v1_v1_model_info_get
+    {
+      const url = BASE_URL + '/v1/model/info'
+      const params = { headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `${authorization}` } }
+      const request = http.get(url, params)
 
-        // Request No. 1: user_info_user_info_get
-        {
-            let url = BASE_URL + `/user/info?user_id=${userId}&view_all=${viewAll}`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.get(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
-
-    group("/user/get_requests", () => {
-
-        // Request No. 1: user_get_requests_user_get_requests_get
-        {
-            let url = BASE_URL + `/user/get_requests`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.get(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
-
-    group("/key/generate", () => {
-
-        // Request No. 1: generate_key_fn_key_generate_post
-        {
-            let url = BASE_URL + `/key/generate`;
-            // TODO: edit the parameters of the request body.
-            let body = {"models": models_list, "spend": 0, "maxBudget": 500, "userId": "test-001", "teamId": 5, "maxParallelRequests": 2, "metadata": {}, "tpmLimit": 500, "rpmLimit": 50, "budgetDuration": "365d", "allowedCacheControls": {}, "keyAlias": "test-key-1", "duration": "365d", "aliases": {}, "config": {}, "permissions": {}, "modelMaxBudget": {}};
-            let params = {headers: {"Content-Type": "application/json", "Authorization": `${authorization}`, "Accept": "application/json"}};
-            let request = http.post(url, JSON.stringify(body), params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
-
-    group("/v2/model/info", () => {
-
-        // Request No. 1: model_info_v2_v2_model_info_get
-        {
-            let url = BASE_URL + `/v2/model/info`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.get(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
-
-    group("/spend/keys", () => {
-
-        // Request No. 1: spend_key_fn_spend_keys_get
-        {
-            let url = BASE_URL + `/spend/keys`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.get(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
-
-    group("/v1/model/info", () => {
-
-        // Request No. 1: model_info_v1_v1_model_info_get
-        {
-            let url = BASE_URL + `/v1/model/info`;
-            let params = {headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": `${authorization}`}};
-            let request = http.get(url, params);
-
-            check(request, {
-                "Successful Response": (r) => r.status === 200
-            });
-        }
-    });
-    
+      check(request, {
+        'Successful Response': (r) => r.status === 200
+      })
+    }
+  })
 }

@@ -1,3 +1,4 @@
+---
 # Each item listed under "cp_targets" is treated as a CP repository
 # to initialize in the target CP volume (e.g., ./cp_root)
 #

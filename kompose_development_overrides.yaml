@@ -1,3 +1,4 @@
+---
 # Changes the bind mount of ./cp_root to specify Persistent Volume that will be populated at competition time
 services:
   crs:

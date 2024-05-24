@@ -1,5 +1,5 @@
 # DO NOT MODIFY THIS FILE
-# ALL CRS SUBMISSIONS MUST PASS THIS EVALUATION 
+# ALL CRS SUBMISSIONS MUST PASS THIS EVALUATION
 
 name: CRS Evaluator
 on:
@@ -11,6 +11,25 @@ on:
       - main
 
 jobs:
+  run-lint:
+    runs-on: large-runner
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          # Full git history is needed to get a proper list of changed files within `super-linter`
+          fetch-depth: 0
+      - name: Lint Code Base
+        uses: github/super-linter@v6
+        env:
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_CHECKOV: false
+          VALIDATE_JSCPD: false
+          VALIDATE_JAVASCRIPT_STANDARD: false
+
+          DEFAULT_BRANCH: "main"
+          GITHUB_TOKEN: ${{ github.token }}
+
   run-loadtests:
     runs-on: large-runner
     steps:
@@ -22,10 +41,10 @@ jobs:
           sudo apt-get update
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
-          sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
-          curl https://mise.jdx.dev/install.sh | sh
-          echo "$HOME/.local/share/mise/bin" >> $GITHUB_PATH
-          echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
+          sudo curl -Lo ./kind "https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64"
+          curl "https://mise.jdx.dev/install.sh" | sh
+          echo "$HOME/.local/share/mise/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
           mise install
 
       - name: Check required files
@@ -46,7 +65,7 @@ jobs:
             ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
             echo "${{ secrets.CRS_EVALUATOR_EXEMPLAR_CLONE_SSH_KEY }}" > /home/runner/.ssh/github_actions
             chmod 600 /home/runner/.ssh/github_actions
-            ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+            ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
             ssh-add /home/runner/.ssh/github_actions
 
 
@@ -85,7 +104,7 @@ jobs:
     runs-on: large-runner
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
@@ -94,8 +113,8 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
           curl https://mise.jdx.dev/install.sh | sh
-          echo "$HOME/.local/share/mise/bin" >> $GITHUB_PATH
-          echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
+          echo "$HOME/.local/share/mise/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
           mise install
 
       - name: Check required files
@@ -116,7 +135,7 @@ jobs:
             ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
             echo "${{ secrets.CRS_EVALUATOR_EXEMPLAR_CLONE_SSH_KEY }}" > /home/runner/.ssh/github_actions
             chmod 600 /home/runner/.ssh/github_actions
-            ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+            ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
             ssh-add /home/runner/.ssh/github_actions
 
 
@@ -138,7 +157,7 @@ jobs:
     runs-on: large-runner
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
@@ -147,8 +166,8 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
           curl https://mise.jdx.dev/install.sh | sh
-          echo "$HOME/.local/share/mise/bin" >> $GITHUB_PATH
-          echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
+          echo "$HOME/.local/share/mise/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
           mise install
 
       - name: Check required files
@@ -169,7 +188,7 @@ jobs:
             ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
             echo "${{ secrets.CRS_EVALUATOR_EXEMPLAR_CLONE_SSH_KEY }}" > /home/runner/.ssh/github_actions
             chmod 600 /home/runner/.ssh/github_actions
-            ssh-agent -a $SSH_AUTH_SOCK > /dev/null	
+            ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
             ssh-add /home/runner/.ssh/github_actions
 
 
