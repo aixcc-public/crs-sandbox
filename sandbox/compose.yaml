@@ -37,6 +37,11 @@ services:
         target: /crs_scratch
         bind:
           propagation: rshared
+      - type: bind
+        source: ${PWD}/dind_cache
+        target: /var/lib/docker
+        bind:
+          propagation: rshared
   iapi:
     profiles:
       - development
@@ -54,9 +59,6 @@ services:
       retries: 5
       start_period: 3s
       timeout: 5s
-    depends_on:
-      capi:
-        condition: service_healthy
   capi:
     profiles:
       - development

@@ -29,7 +29,7 @@ endif
 CP_TARGETS_DIRS = $(shell yq -r '.cp_targets | keys | .[]' $(CP_CONFIG_FILE))
 CP_MAKE_TARGETS = $(addprefix $(HOST_CP_ROOT_DIR)/.pulled_, $(subst :,_colon_, $(subst /,_slash_, $(CP_TARGETS_DIRS))))
 
-.PHONY: help build up start down destroy stop restart logs logs-crs logs-litellm logs-iapi ps crs-shell litellm-shell cps/clean cps computed-env
+.PHONY: help build up start down destroy stop restart logs logs-crs logs-litellm logs-iapi ps crs-shell litellm-shell cps/clean cps computed-env clear-dind-cache
 
 help: ## Display available targets and their help strings
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_/-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(THIS_FILE) | sort
@@ -56,8 +56,11 @@ start: ## Start containers
 down: ## Stop and remove containers
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) down --remove-orphans $(c)
 
-destroy: ## Stop and remove containers with volumes
+destroy: clear-dind-cache ## Stop and remove containers with volumes
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) down --volumes --remove-orphans $(c)
+
+clear-dind-cache: ## Clears out DIND cached artifacts
+	@rm -rf $(ROOT_DIR)/dind_cache/*
 
 stop: ## Stop containers
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) stop $(c)
@@ -141,7 +144,7 @@ k8s/competition: k8s/clean ## Generates the competition helm chart for use durin
 	@yq eval ".name = \"crs\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
 
 
-clean: cps/clean k8s/clean down
+clean: cps/clean k8s/clean down clear-dind-cache
 
 force-reset: ## Remove all local docker containers, networks, volumes, and images
 	@docker system prune --all
