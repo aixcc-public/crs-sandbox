@@ -1,41 +1,40 @@
-import { default as litellm } from './litellm/script.js';
-import { default as iapi } from './iapi/script.js';
-import { textSummary } from 'https://jslib.k6.io/k6-summary/0.1.0/index.js';
-
+import { default as litellm } from './litellm/script.js'
+import { default as iapi } from './iapi/script.js'
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.1.0/index.js'
 
 export const options = {
   thresholds: {
-    http_req_duration: [`p(90)<300`],
-    checks: ['rate==1.0'],
+    http_req_duration: ['p(90)<300'],
+    checks: ['rate==1.0']
   },
   scenarios: {
-    liteLLMScenario: {
+    liteLlmScenario: { // changed from liteLLMScenario
       exec: 'litellmRun',
       executor: 'per-vu-iterations',
       vus: 1,
       iterations: 10,
-      maxDuration: '10s',
+      maxDuration: '10s'
     },
     iapiScenario: {
       exec: 'iapiRun',
       executor: 'per-vu-iterations',
       vus: 1,
       iterations: 10,
-      maxDuration: '10s',
-    },
-  },
-};
-
-export function litellmRun() {
-  litellm();
+      maxDuration: '10s'
+    }
+  }
 }
 
-export function iapiRun() {
-  iapi();
+export function litellmRun () {
+  litellm()
 }
 
-export function handleSummary(data) {
+export function iapiRun () {
+  iapi()
+}
+
+export function handleSummary (data) {
   return {
-    stdout: textSummary(data, { indent: ' ', enableColors: true }),
-  };
+    stdout: textSummary(data, { indent: ' ', enableColors: true })
+  }
 }
