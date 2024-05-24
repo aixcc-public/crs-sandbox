@@ -205,3 +205,10 @@ jobs:
         run: |
           make k8s
           make k8s/clean
+
+      - name: Run Kompose Generator for ASC Resources
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          make k8s/competition
+          make k8s/clean
