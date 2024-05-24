@@ -8,6 +8,9 @@ services:
   dind:
     ports:
       - "2375"
+    volumes:
+      - dind_cache:/var/lib/docker
+      - crs_scratch:/crs_scratch
   iapi:
     ports:
       - "8080"
@@ -24,3 +27,4 @@ services:
 volumes:
   cp_root:
   crs_scratch:
+  dind_cache:
