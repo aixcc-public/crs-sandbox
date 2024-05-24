@@ -1,5 +1,7 @@
-# This Dockerfile is only used with --profile test in order to exercise various network endpoints for load testing. 
+# This Dockerfile is only used with --profile test in order to exercise various network endpoints for load testing.
 FROM grafana/k6:0.50.0
+
+WORKDIR /app
 
 # Copy your k6 test script to the container
 COPY script.js script.js

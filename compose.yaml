@@ -1,3 +1,4 @@
+---
 ######################################################################################################
 # DO NOT MODIFY THIS FILE ANYWHERE OTHER THAN WITHIN THE CUSTOMIZE BLOCKS
 #
@@ -30,15 +31,15 @@ services:
       - competition
     image: ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
     build:
-      context: . # Note that this uses the base folder for context, you may not need this for your CRS
+      context: .  # Note that this uses the base folder for context, you may not need this for your CRS
       dockerfile: crs/src/Dockerfile
     command: ["make", "-C", "/root/crs", "test"]
     volumes:
       #################################################################################
-      ### THESE VOLUMES MUST BE INCLUDED WITHOUT MODIFICATION TO ALL CRS CONTAINERS ### 
+      ### THESE VOLUMES MUST BE INCLUDED WITHOUT MODIFICATION TO ALL CRS CONTAINERS ###
       # A CRS MUST copy CP repositories from `/cp_root` to a writable location such as `/crs_scratch` for building and testing CPs.
       # A CRS MUST not modify settings within this section.
-      - type: bind 
+      - type: bind
         source: ${PWD}/crs_scratch
         target: /crs_scratch
         bind:
@@ -48,7 +49,7 @@ services:
 
     environment:
       # These values will be modified automatically at competition time
-      - DOCKER_HOST=tcp://dind:2375 
+      - DOCKER_HOST=tcp://dind:2375
       - AIXCC_LITELLM_HOSTNAME=http://litellm
       - AIXCC_API_HOSTNAME=http://iapi:8080
       - AIXCC_CP_ROOT=/cp_root

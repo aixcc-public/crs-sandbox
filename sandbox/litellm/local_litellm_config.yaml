@@ -1,5 +1,6 @@
+---
 model_list:
-# OpenAI
+  # OpenAI
   - model_name: gpt-3.5-turbo-0125
     litellm_params:
       model: openai/gpt-3.5-turbo-0125
@@ -26,7 +27,7 @@ model_list:
     model_info:
       mode: embedding
       base_model: text-embedding-3-small
-# Anthropic/Claude
+  # Anthropic/Claude
   - model_name: claude-3-opus-20240229
     litellm_params:
       model: claude-3-opus-20240229
@@ -39,7 +40,7 @@ model_list:
     litellm_params:
       model: claude-3-haiku-20240307
       api_key: "os.environ/ANTHROPIC_API_KEY"
-# Google/Vertex AI
+  # Google/Vertex AI
   - model_name: gemini-1.0-pro-001
     litellm_params:
       model: gemini-1.0-pro-001
@@ -50,7 +51,7 @@ model_list:
       model: gemini-1.5-pro-preview-0409
       vertex_project: "gen-lang-client-0044517447"
       vertex_location: "us-central1"
-# Microsoft/Azure 
+  # Microsoft/Azure
   - model_name: azure-gpt-3.5-turbo-0613
     litellm_params:
       model: azure/gpt-35-turbo-0613
@@ -83,17 +84,15 @@ model_list:
       api_key: "os.environ/AZURE_API_KEY"
 
 
-
-
 litellm_settings:
-  drop_params: True
-  max_budget: 100 
+  drop_params: true
+  max_budget: 100
   budget_duration: 30d
-general_settings: 
-  master_key: sk-1234 # Leave this default value. 
+general_settings:
+  master_key: sk-1234  # Leave this default value.
 
 router_settings:
-  model_group_alias: 
+  model_group_alias:
     gpt-4-turbo: gpt-4-turbo-2024-04-09
     gpt-4: gpt-4-0613
     gpt-4-turbo-preview: gpt-4-0125-preview
@@ -105,8 +104,8 @@ router_settings:
     claude-3-sonnet: claude-3-sonnet-20240229
     claude-3-haiku: claude-3-haiku-20240307
 
-environment_variables:
-  # settings for using redis caching
-  # REDIS_HOST: redis-16337.c322.us-east-1-2.ec2.cloud.redislabs.com
-  # REDIS_PORT: "16337"
-  # REDIS_PASSWORD: 
+# environment_variables:
+# settings for using redis caching
+# REDIS_HOST: redis-16337.c322.us-east-1-2.ec2.cloud.redislabs.com
+# REDIS_PORT: "16337"
+# REDIS_PASSWORD:
