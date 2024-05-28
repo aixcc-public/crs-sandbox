@@ -29,10 +29,16 @@ services:
     profiles:
       - development
       - competition
+    # Competitors: You MUST change to your repos image name and be versioned pinned to the release intended for competition.
     image: ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
     build:
       context: .  # Note that this uses the base folder for context, you may not need this for your CRS
-      dockerfile: crs/src/Dockerfile
+      # Competitors: You MUST change to your Dockerfile location for your CRS.
+      # This points to the mock_crs by default.
+      dockerfile: mock_crs/src/Dockerfile
+      # Competitors: You will need to change this command to trigger your CRS.
+      # If you have multiple containers for your CRS you must design your own
+      # orchestration and sychronization mechanisms.
     command: ["make", "-C", "/root/crs", "test"]
     volumes:
       #################################################################################
