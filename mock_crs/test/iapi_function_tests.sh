@@ -4,13 +4,13 @@ set -e
 
 # print warning
 warn() {
-    echo "$*" >&2
+	echo "$*" >&2
 }
 
 # exit function that prints a message to stderr and then fails the script
 die() {
-    warn "$*"
-    exit 1
+	warn "$*"
+	exit 1
 }
 
 # find actual wrapper functions

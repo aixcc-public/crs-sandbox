@@ -93,6 +93,6 @@ RUN mkdir -p $WORK && chmod -R 0755 $WORK
 RUN mkdir -p $CRS_HOME && chmod -R 0755 $CRS_HOME
 
 WORKDIR $CRS_HOME
-COPY --chmod=0755 ./crs/ .
+COPY --chmod=0755 ./mock_crs/ .
 
 WORKDIR $WORK

@@ -58,7 +58,7 @@ services:
         target: /etc/nginx/templates/default.conf.template
     healthcheck:
       # this passes through to the capi
-      test: ["CMD-SHELL", "curl --fail http://localhost:8080/health/ || exit 1"]
+      test: ["CMD-SHELL", "curl --fail http://127.0.0.1:8080/health/ || exit 1"]
       interval: 5s
       retries: 5
       start_period: 3s
