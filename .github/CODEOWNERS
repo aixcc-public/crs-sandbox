@@ -14,7 +14,6 @@
 Makefile @aixcc-sc/things
 LICENSE @aixcc-sc/things
 README.md @aixcc-sc/things
-compose_ports.yaml @aixcc-sc/things
 kompose_competition_overrides.yaml @aixcc-sc/things
 kompose_development_overrides.yaml @aixcc-sc/things
 dind_cache/* @aixcc-sc/things
