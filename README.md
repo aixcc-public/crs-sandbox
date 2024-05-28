@@ -30,6 +30,12 @@ Each time the `asc-crs-evaluate` release & tag are re-created, the competitors C
 
 Competitors will have access to logs from their CRS at this time but the access method is TBD.
 
+## Code Owners
+
+Please review the [.github/CODEOWNERS](.github/CODEOWNERS) file.
+This file shows all the files that cannot be modified by competitors.
+The `main` branch protections will prevent making changes to these files.
+
 ## CRS Constraints on Docker and Virtualization
 
 In the competition environment, a CRS is expected to use Docker (via `run.sh`)
@@ -159,6 +165,8 @@ All teams should be using [SemVer 2.0.0](https://semver.org/) to tag releases.
 A team MUST have a tag of `1.0.0` OR greater within their private CRS repository at competition.
 
 Teams MUST NOT use a `v` prefix in their tags.
+
+All releases MUST be from the `main` branch ONLY. Failure to create release tags from `main` will lead to a failed release.
 
 Teams can create these tags by following the GitHub Release process with <https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository>
 
