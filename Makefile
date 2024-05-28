@@ -48,7 +48,7 @@ up: cps computed-env ## Start containers
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) up -d $(c)
 
 up-attached: cps computed-env ## Start containers
-	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) up --abort-on-container-exit $(c)
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) up --build --abort-on-container-exit $(c)
 
 start: ## Start containers
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) start $(c)

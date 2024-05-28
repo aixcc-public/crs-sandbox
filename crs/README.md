@@ -9,4 +9,5 @@ However it is intended that competitors will completely replace all code within 
 The only additional changes to this repository should be to the
 
 - `.github/workflows/crs.yaml`
+- `compose.yaml` to reference your specific containers.
 - `README.md` to assist your team with development.

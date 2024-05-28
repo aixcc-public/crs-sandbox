@@ -25,10 +25,13 @@ Date: TBD
 
 On the above date, the AIxCC Game Architecture team will automatically execute competitors CRSs against a subset of published challenge problems.
 
-Competitors must tag their CRS with `asc-crs-evaluate` during this phase. Competitors may delete and re-create the release & tag multiple times.
-Each time the `asc-crs-evaluate` release & tag are re-created, the competitors CRS will be re-provisioned.
+The CRS MUST be released via [GitHub Release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) and all GitHub actions must pass.
 
-Competitors will have access to logs from their CRS at this time but the access method is TBD.
+Competitors must release new versions of their CRS with an updated tag from `main` after the start of Phase 2.
+
+With each new release of a competitors CRS it will be automatically executed.
+
+Only the latest semantic version of a competitors CRS that is properly tagged from `main` will be tested.
 
 ## Code Owners
 
