@@ -42,6 +42,13 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ github.token }}
+      - name: Ensure release is from main branch
+        run: |
+          BRANCH=$(git symbolic-ref HEAD | sed 's|^refs/heads/||')
+          if [[ "$BRANCH" != "main" ]]; then
+            echo "Releases can only be created from the main branch." >&2
+            exit 1
+          fi
       # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
       - name: Extract metadata (tags, labels) for Docker
         id: meta
