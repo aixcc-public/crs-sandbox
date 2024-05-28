@@ -21,6 +21,8 @@ services:
       iapi:
         condition: service_healthy
   dind:
+    expose:
+      - "2375"
     profiles:
       - development
       - competition
@@ -43,6 +45,8 @@ services:
         bind:
           propagation: rshared
   iapi:
+    expose:
+      - "8080"
     profiles:
       - development
       - competition
@@ -60,6 +64,8 @@ services:
       start_period: 3s
       timeout: 5s
   capi:
+    expose:
+      - "8080"
     profiles:
       - development
       - loadtest
@@ -87,6 +93,8 @@ services:
       db:
         condition: service_healthy
   db:
+    expose:
+      - "5432"
     profiles:
       - development
       - loadtest
@@ -106,6 +114,8 @@ services:
       timeout: 3s
       retries: 3
   litellm:
+    expose:
+      - "80"
     profiles:
       - development
       - loadtest
