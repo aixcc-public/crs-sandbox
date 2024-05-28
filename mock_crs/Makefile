@@ -13,3 +13,8 @@ lint_shell: $(SHELLCHECK_SCRIPTS) ## lint the shell scripts with shellcheck
 	@shellcheck $^
 
 lint: lint_shell ## lint everything
+
+test_iapi: $(ROOT_DIR)/test/iapi_function_tests.sh ## Run iAPI client and wrapper test
+	$<
+
+test: test_iapi ## Run tests
