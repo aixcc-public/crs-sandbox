@@ -1,0 +1,21 @@
+# This file is used just for exposing host ports for local Docker Compose development
+# Competitors: You may modify this file to make local development easier.
+# However, this file will not impact services at competition, only local development.
+
+---
+services:
+  dind:
+    ports:
+      - "2375:2375"
+  iapi:
+    ports:
+      - "8080:8008"
+  capi:
+    ports:
+      - "8082:8080"
+  db:
+    ports:
+      - "5432:5432"
+  litellm:
+    ports:
+      - "8081:80"

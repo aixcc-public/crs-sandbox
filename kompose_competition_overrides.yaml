@@ -14,23 +14,10 @@ services:
       kompose.volume.type: persistentVolumeClaim
       kompose.volume.size: 1Ti
       kompose.volume.storage-class-name: managed-csi-premium
-    ports:
-      - "2375"
     volumes:
       - dind_cache:/var/lib/docker
       - crs_scratch:/crs_scratch
-  iapi:
-    ports:
-      - "8080"
-  capi:
-    ports:
-      - "8082"
-  db:
-    ports:
-      - "5432"
-  litellm:
-    ports:
-      - "8081"
+
 
 volumes:
   cp_root:
