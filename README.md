@@ -83,18 +83,25 @@ Please see the competition rules and technical release as the cut off dates for 
 | OpenAI    | gpt-3.5-turbo          | gpt-3.5-turbo-0125          |
 | OpenAI    | gpt-4                  | gpt-4-0613                  |
 | OpenAI    | gpt-4-turbo            | gpt-4-turbo-2024-04-09      |
+| OpenAI    | gpt-4o                 | gpt-4o-2024-05-13           |
 | OpenAI    | text-embedding-3-large | text-embedding-3-large      |
 | OpenAI    | text-embedding-3-small | text-embedding-3-small      |
 | Anthropic | claude-3-sonnet        | claude-3-sonnet-20240229    |
 | Anthropic | claude-3-opus          | claude-3-opus-20240229      |
 | Anthropic | claude-3-haiku         | claude-3-haiku-20240307     |
-| Google    | gemini-pro             | gemini-1.0-pro-001          |
-| Google    | gemini-1.5-pro         | gemini-1.5-pro-preview-0409 |
+| Google    | gemini-pro             | gemini-1.0-pro-002          |
+| Google    | gemini-1.5-pro         | gemini-1.5-pro-preview-0514 |
+| Google    | textembedding-gecko    | textembedding-gecko@003     |
+
+Note: OpenAI Embedding models have not currently been released in more than a single version, thus pinned/name strings are identical.
+
+All OpenAI models also have an Azure-hosted version that is identical, for load-balancing. Competitors will be able to freely request the
+model they like by the Model name in chart above without having to worry about addressing them directly.
 
 Note: Embedding models have not currently been released in more than a single version.
 
 These are utilized by hitting the LiteLLM /chat/completions endpoint, specifying model and message using the OpenAI JSON request format.
-Note that further models will be supported in subsequent iterations.
+Note: Further models will be supported in subsequent iterations.
 
 ## Local Development
 
