@@ -105,6 +105,8 @@ Note: Further models will be supported in subsequent iterations.
 
 ## Local Development
 
+We recommend using Ubuntu 22.04 LTS for CRS Sandbox development and will be unable to investigate issues with other base operating systems.
+
 ### GitHub Personal Access Token (PAT)
 
 In order to work with the CRS Sandbox you must setup your GitHub personal access token or PAT following these steps.
