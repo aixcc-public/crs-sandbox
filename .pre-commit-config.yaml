@@ -1,4 +1,14 @@
 ---
+exclude: >
+  (?x)(
+      dind_cache|
+      dind_cache/*|
+      crs_scratch|
+      crs_scratch/*|
+      cp_root|
+      cp_root/*
+  )
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: 454ade935bffb366ae7d968c49be309f1041d747
