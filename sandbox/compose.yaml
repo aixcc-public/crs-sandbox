@@ -43,7 +43,7 @@ services:
         source: ${PWD}/dind_cache
         target: /var/lib/docker
         bind:
-          propagation: rshared
+          propagation: rprivate
   iapi:
     expose:
       - "8080"

@@ -6,13 +6,13 @@
 .k8s
 
 ## Cloned exemplar repositories
-cp_root/*
+cp_root/
 
 ## CRS scratch space
-crs_scratch/*
+crs_scratch/
 
 ## DIND cache space
-dind_cache/*
+dind_cache/
 
 ## Charts
 charts/*
@@ -30,4 +30,3 @@ devenv.lock
 
 # direnv
 .direnv
-

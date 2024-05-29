@@ -1,6 +1,6 @@
 # CRS Sandbox
 
-This repository, the `CRS Sandbox` includes a `compose.yaml` file.
+This repository, the `CRS Sandbox` includes a `./compose.yaml` file.
 This file is the only resource competitors will have for infrastructure automation at competition time.
 Environment variables and secrets will be injected into the `compose.yaml` from each competitors private copy of the `CRS Sandbox`.
 
