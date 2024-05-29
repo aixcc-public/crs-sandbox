@@ -4,6 +4,10 @@ DOCKER_COMPOSE_FILE = $(ROOT_DIR)/compose.yaml
 DOCKER_COMPOSE_PORTS_FILE = $(ROOT_DIR)/sandbox/compose_local_overrides.yaml
 DOCKER_COMPOSE_LOCAL_ARGS = -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_PORTS_FILE) --profile development
 
+# variables that control the volumes
+HOST_CRS_SCRATCH = $(ROOT_DIR)/crs_scratch
+HOST_DIND_CACHE = $(ROOT_DIR)/dind_cache
+
 # variables that control the CP repos
 HOST_CP_ROOT_DIR = $(ROOT_DIR)/cp_root
 CP_CONFIG_FILE ?= $(ROOT_DIR)/cp_config.yaml
@@ -44,7 +48,10 @@ computed-env:
 	@echo -n "${CAPI_ID}:${CAPI_TOKEN}" | base64 | tr -d '\n' >> sandbox/env
 	@echo \" >> sandbox/env
 
-up: cps computed-env ## Start containers
+local-volumes:
+	mkdir -p $(HOST_CP_ROOT_DIR) $(HOST_CRS_SCRATCH) $(HOST_DIND_CACHE)
+
+up: local-volumes cps computed-env ## Start containers
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) up -d $(c)
 
 up-attached: cps computed-env ## Start containers
@@ -105,7 +112,7 @@ $(HOST_CP_ROOT_DIR)/.pulled_%:
 	make -C $(CP_ROOT_REPO_SUBDIR) cpsrc-prepare
 	@touch $@
 
-cps: $(CP_MAKE_TARGETS) ## Clone CP repos
+cps: local-volumes $(CP_MAKE_TARGETS) ## Clone CP repos
 
 cps/clean: ## Clean up the cloned CP repos
 	@rm -rf $(HOST_CP_ROOT_DIR)
@@ -143,6 +150,8 @@ k8s/competition: k8s/clean ## Generates the competition helm chart for use durin
 	@yq eval ".description = \"AIxCC Competitor CRS\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
 	@yq eval ".name = \"crs\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
 
+clean-volumes:
+	rm -rf $(HOST_CP_ROOT_DIR) $(HOST_CRS_SCRATCH) $(HOST_DIND_CACHE)
 
 clean: cps/clean k8s/clean down clear-dind-cache
 
