@@ -30,7 +30,7 @@ services:
       - development
       - competition
     # Competitors: You MUST change to your repos image name and be versioned pinned to the release intended for competition.
-    image: nginx:1.25.5
+    image: ghcr.io/aixcc-sc/crs-sandbox/replace-me-crs:v1.0.0
     build:
       context: .  # Note that this uses the base folder for context, you may not need this for your CRS
       # Competitors: You MUST change to your Dockerfile location for your CRS.
@@ -39,7 +39,7 @@ services:
       # Competitors: You will need to change this command to trigger your CRS.
       # If you have multiple containers for your CRS you must design your own
       # orchestration and sychronization mechanisms.
-    command: ["nginx", "-g", "daemon off;"]
+    command: ["./run.sh"]
     volumes:
       #################################################################################
       ### THESE VOLUMES MUST BE INCLUDED WITHOUT MODIFICATION TO ALL CRS CONTAINERS ###

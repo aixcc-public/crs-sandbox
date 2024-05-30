@@ -106,6 +106,96 @@ jobs:
       - name: Show help
         run: make help
 
+  run-e2e-test:
+    runs-on: large-runner
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install jq
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
+          curl https://mise.jdx.dev/install.sh | sh
+          echo "$HOME/.local/share/mise/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
+          mise install
+
+      - name: Check required files
+        run: |
+          if [ ! -f "${{ github.workspace }}/cp_config.yaml" ]; then
+            echo "Required file not found: cp_config.yaml"
+            exit 1
+          fi
+
+      - name: Move sandbox/example.env to sandbox/env
+        run: mv sandbox/example.env sandbox/env
+
+      - name: Disable mock mode
+        run: |
+          sed -i '/AIXCC_MOCK_MODE=*/d' sandbox/env
+          echo "AIXCC_MOCK_MODE=false" >> sandbox/env
+
+      - name: Add SSH key
+        env:
+            SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+            mkdir -p /home/runner/.ssh
+            ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
+            echo "${{ secrets.CRS_EVALUATOR_EXEMPLAR_CLONE_SSH_KEY }}" > /home/runner/.ssh/github_actions
+            chmod 600 /home/runner/.ssh/github_actions
+            ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
+            ssh-add /home/runner/.ssh/github_actions
+
+      - name: Docker Registry Login
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: gha
+          password: ${{ github.token }}
+
+      - name: Set up GHCR auth tokens
+        run: |
+          sed -i '/GITHUB_TOKEN=*/d' sandbox/env
+          sed -i '/GITHUB_USER=*/d' sandbox/env
+          echo "GITHUB_TOKEN=${{ github.token }}" >> sandbox/env
+          echo "GITHUB_USER=gha" >> sandbox/env
+
+      - name: Run Docker Compose
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          make up
+
+      - name: Check audit log contents
+        run: |
+          MAX_SECONDS=600
+          CURRENT_SECONDS=0
+          AUDIT_LOG="./capi_logs/audit.log"
+          POLL_SECONDS=5
+
+          until [ -f $AUDIT_LOG ]; do
+              echo "Waiting for audit log"
+              sleep $POLL_SECONDS
+              ((CURRENT_SECONDS += POLL_SECONDS)) && ((CURRENT_SECONDS == MAX_SECONDS)) && echo "timeout while waiting for audit log to start" && exit 1
+          done
+
+          while [ -z "$(jq <$AUDIT_LOG '. | select( .event_type | match("vd_submission_success"))')" ]; do
+              echo "Waiting for VDS accepted event"
+              sleep $POLL_SECONDS
+              ((CURRENT_SECONDS += POLL_SECONDS)) && ((CURRENT_SECONDS == MAX_SECONDS)) && echo "timeout while waiting for success event" && exit 1
+          done
+
+          echo "CRS passed"
+
+      - name: Show logs
+        run: make logs
+        if: ${{ failure() }}
+
+
   run-mock-crs:
     runs-on: large-runner
     steps:

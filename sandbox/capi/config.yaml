@@ -2,6 +2,3 @@
 auth:
   preload:
     00000000-0000-0000-0000-000000000000: secret
-cp_targets:
-  mock-cp:
-    url: "https://github.com/aixcc-sc/mock-cp.git"

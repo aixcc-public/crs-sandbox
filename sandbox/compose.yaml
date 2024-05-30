@@ -100,17 +100,19 @@ services:
       - mock-crs
       - development
       - loadtest
-    image: ghcr.io/aixcc-sc/capi:v0.0.3
+    image: ghcr.io/aixcc-sc/capi:v2.0.2
     restart: always
     env_file: env
     environment:
+      - AIXCC_AUDIT_FILE=/var/log/capi/audit.log
+      - AIXCC_CP_ROOT=/cp_root
+      - AIXCC_DATABASE_HOST=db
+      - AIXCC_DATABASE_NAME=capi
+      - AIXCC_DATABASE_PASSWORD=aixcc
+      - AIXCC_DATABASE_PORT=5432
+      - AIXCC_DATABASE_USERNAME=aixcc
+      - AIXCC_TEMPDIR=/crs_scratch
       - DOCKER_HOST=tcp://dind:2375
-      - CAPI_TEMPDIR=/crs_scratch
-      - CAPI_DATABASE_PASSWORD=aixcc
-      - CAPI_DATABASE_USERNAME=aixcc
-      - CAPI_DATABASE_NAME=capi
-      - CAPI_DATABASE_HOST=db
-      - CAPI_DATABASE_PORT=5432
     configs:
       - source: capi_config
         target: /etc/capi/config.yaml

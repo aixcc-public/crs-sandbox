@@ -14,6 +14,9 @@ crs_scratch/
 ## DIND cache space
 dind_cache/
 
+## CAPI Audit logs
+capi_logs/
+
 ## Charts
 charts/*
 
