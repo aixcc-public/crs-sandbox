@@ -7,7 +7,7 @@
 
 # AIxCC Things
 .github/workflows/evaluator.yml @aixcc-sc/things
-.github/workflows/package.yml @aixcc-sc/things
+.github/workflows/mock_crs_package.yml @aixcc-sc/things
 .github/workflows/README.md @aixcc-sc/things
 .github/linters/* @aixcc-sc/things
 .tool-versions @aixcc-sc/things

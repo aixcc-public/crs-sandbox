@@ -1,6 +1,34 @@
 ######################################
+# DO NOT MODIFY
+######################################
 ---
 services:
+  mock-crs:
+    profiles:
+      - mock-crs
+    image: ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
+    build:
+      context: ../
+      dockerfile: mock_crs/src/Dockerfile
+    command: ["make", "-C", "/root/crs", "test"]
+    volumes:
+
+      - type: bind
+        source: ${PWD}/crs_scratch
+        target: /crs_scratch
+        bind:
+          propagation: rshared
+      - ./cp_root:/cp_root
+    environment:
+      - DOCKER_HOST=tcp://dind:2375
+      - AIXCC_LITELLM_HOSTNAME=http://litellm
+      - AIXCC_API_HOSTNAME=http://iapi:8080
+      - AIXCC_CP_ROOT=/cp_root
+      - AIXCC_CRS_SCRATCH_SPACE=/crs_scratch
+      - LITELLM_KEY=sk-1234
+    depends_on:
+      iapi:
+        condition: service_healthy
   test:
     profiles:
       - loadtest
@@ -24,6 +52,7 @@ services:
     expose:
       - "2375"
     profiles:
+      - mock-crs
       - development
       - competition
       - loadtest
@@ -48,10 +77,11 @@ services:
     expose:
       - "8080"
     profiles:
+      - mock-crs
       - development
       - competition
       - loadtest
-    image: nginx
+    image: nginx:1.25.5
     env_file: env
     configs:
       - source: nginx_config
@@ -67,6 +97,7 @@ services:
     expose:
       - "8080"
     profiles:
+      - mock-crs
       - development
       - loadtest
     image: ghcr.io/aixcc-sc/capi:v0.0.3
@@ -96,6 +127,7 @@ services:
     expose:
       - "5432"
     profiles:
+      - mock-crs
       - development
       - loadtest
     image: postgres:16.2-alpine3.19
@@ -117,6 +149,7 @@ services:
     expose:
       - "80"
     profiles:
+      - mock-crs
       - development
       - loadtest
     image: ghcr.io/berriai/litellm-database:main-v1.35.10

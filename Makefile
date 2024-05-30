@@ -3,6 +3,7 @@ THIS_FILE := $(lastword $(MAKEFILE_LIST))
 DOCKER_COMPOSE_FILE = $(ROOT_DIR)/compose.yaml
 DOCKER_COMPOSE_PORTS_FILE = $(ROOT_DIR)/sandbox/compose_local_overrides.yaml
 DOCKER_COMPOSE_LOCAL_ARGS = -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_PORTS_FILE) --profile development
+DOCKER_COMPOSE_LOCAL_MOCK_CRS_ARGS = -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_PORTS_FILE) --profile mock-crs
 
 # variables that control the volumes
 HOST_CRS_SCRATCH = $(ROOT_DIR)/crs_scratch
@@ -56,6 +57,10 @@ up: local-volumes cps computed-env ## Start containers
 
 up-attached: cps computed-env ## Start containers
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) up --build --abort-on-container-exit $(c)
+
+
+mock-crs/up-attached: cps computed-env ## Start containers
+	@docker compose $(DOCKER_COMPOSE_LOCAL_MOCK_CRS_ARGS) up --build --abort-on-container-exit $(c)
 
 start: ## Start containers
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) start $(c)
@@ -128,6 +133,7 @@ k8s: k8s/clean build ## Generates helm chart locally for the development profile
 	@docker pull ghcr.io/berriai/litellm-database:main-v1.35.10
 	@docker pull docker:24-dind
 	@docker pull postgres:16.2-alpine3.19
+	@docker pull ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
 	@kind load docker-image ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0 ghcr.io/aixcc-sc/iapi:v4.0.3 ghcr.io/berriai/litellm-database:main-v1.35.10 docker:24-dind postgres:16.2-alpine3.19
 	@mkdir $(ROOT_DIR)/charts
 	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_development_overrides.yaml" kompose convert --profile development --chart --out tmp_charts
