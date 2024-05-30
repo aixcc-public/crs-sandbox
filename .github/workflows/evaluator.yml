@@ -156,8 +156,7 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
-          make build
-          make up-attached
+          make mock-crs/up-attached
 
   run-kubernetes:
     runs-on: large-runner
