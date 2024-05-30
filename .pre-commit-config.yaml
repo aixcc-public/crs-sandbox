@@ -6,7 +6,8 @@ exclude: >
       crs_scratch|
       crs_scratch/*|
       cp_root|
-      cp_root/*
+      cp_root/*|
+      crs/*
   )
 
 repos:
