@@ -8,6 +8,7 @@ DOCKER_COMPOSE_LOCAL_MOCK_CRS_ARGS = -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPO
 # variables that control the volumes
 HOST_CRS_SCRATCH = $(ROOT_DIR)/crs_scratch
 HOST_DIND_CACHE = $(ROOT_DIR)/dind_cache
+HOST_CAPI_LOGS = $(ROOT_DIR)/capi_logs
 
 # variables that control the CP repos
 HOST_CP_ROOT_DIR = $(ROOT_DIR)/cp_root
@@ -50,14 +51,13 @@ computed-env:
 	@echo \" >> sandbox/env
 
 local-volumes:
-	mkdir -p $(HOST_CP_ROOT_DIR) $(HOST_CRS_SCRATCH) $(HOST_DIND_CACHE)
+	mkdir -p $(HOST_CP_ROOT_DIR) $(HOST_CRS_SCRATCH) $(HOST_DIND_CACHE) $(HOST_CAPI_LOGS)
 
 up: local-volumes cps computed-env ## Start containers
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) up -d $(c)
 
 up-attached: cps computed-env ## Start containers
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) up --build --abort-on-container-exit $(c)
-
 
 mock-crs/up-attached: cps computed-env ## Start containers
 	@docker compose $(DOCKER_COMPOSE_LOCAL_MOCK_CRS_ARGS) up --build --abort-on-container-exit $(c)
@@ -72,7 +72,7 @@ destroy: clear-dind-cache ## Stop and remove containers with volumes
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) down --volumes --remove-orphans $(c)
 
 clear-dind-cache: ## Clears out DIND cached artifacts
-	@rm -rf $(ROOT_DIR)/dind_cache/*
+	@sudo rm -rf $(ROOT_DIR)/dind_cache/*
 
 stop: ## Stop containers
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) stop $(c)
@@ -134,7 +134,7 @@ k8s: k8s/clean build ## Generates helm chart locally for the development profile
 	@docker pull docker:24-dind
 	@docker pull postgres:16.2-alpine3.19
 	@docker pull ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
-	@kind load docker-image ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0 ghcr.io/aixcc-sc/iapi:v4.0.3 ghcr.io/berriai/litellm-database:main-v1.35.10 docker:24-dind postgres:16.2-alpine3.19
+	@kind load docker-image ghcr.io/aixcc-sc/iapi:v4.0.3 ghcr.io/berriai/litellm-database:main-v1.35.10 docker:24-dind postgres:16.2-alpine3.19
 	@mkdir $(ROOT_DIR)/charts
 	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_development_overrides.yaml" kompose convert --profile development --chart --out tmp_charts
 	@mv tmp_charts $(ROOT_DIR)/charts/crs
@@ -157,7 +157,7 @@ k8s/competition: k8s/clean ## Generates the competition helm chart for use durin
 	@yq eval ".name = \"crs\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
 
 clean-volumes:
-	rm -rf $(HOST_CP_ROOT_DIR) $(HOST_CRS_SCRATCH) $(HOST_DIND_CACHE)
+	rm -rf $(HOST_CP_ROOT_DIR) $(HOST_CRS_SCRATCH) $(HOST_DIND_CACHE) $(HOST_CAPI_LOGS)
 
 clean: cps/clean k8s/clean down clear-dind-cache
 

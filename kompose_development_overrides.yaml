@@ -9,6 +9,10 @@ services:
     volumes:
       - dind_cache:/var/lib/docker
       - crs_scratch:/crs_scratch
+  capi:
+    volumes:
+      - cp_root:/cp_root
+      - crs_scratch:/crs_scratch
 volumes:
   cp_root:
   crs_scratch:
