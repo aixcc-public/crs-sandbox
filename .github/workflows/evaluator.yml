@@ -31,6 +31,7 @@ jobs:
           VALIDATE_CHECKOV: false
           VALIDATE_JSCPD: false
           VALIDATE_JAVASCRIPT_STANDARD: false
+          FILTER_REGEX_EXCLUDE: ".*crs/.*"
 
           DEFAULT_BRANCH: "main"
           GITHUB_TOKEN: ${{ github.token }}
