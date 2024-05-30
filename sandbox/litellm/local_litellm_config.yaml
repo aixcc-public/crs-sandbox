@@ -1,23 +1,23 @@
 ---
 model_list:
   # OpenAI
-  - model_name: gpt-4o
+  - model_name: oai-gpt-4o
     litellm_params:
       model: openai/gpt-4o-2024-05-13
       api_key: "os.environ/OPENAI_API_KEY"
-  - model_name: gpt-3.5-turbo-0125
+  - model_name: oai-gpt-3.5-turbo
     litellm_params:
       model: openai/gpt-3.5-turbo-0125
       api_key: "os.environ/OPENAI_API_KEY"
-  - model_name: gpt-3.5-turbo-16k
+  - model_name: oai-gpt-3.5-turbo-16k
     litellm_params:
       model: openai/gpt-3.5-turbo-16k-0613
       api_key: "os.environ/OPENAI_API_KEY"
-  - model_name: gpt-4
+  - model_name: oai-gpt-4
     litellm_params:
       model: openai/gpt-4-0613
       api_key: "os.environ/OPENAI_API_KEY"
-  - model_name: gpt-4-turbo
+  - model_name: oai-gpt-4-turbo
     litellm_params:
       model: openai/gpt-4-turbo-2024-04-09
       api_key: "os.environ/OPENAI_API_KEY"
@@ -65,17 +65,17 @@ model_list:
       vertex_project: "gen-lang-client-0044517447"
       vertex_location: "us-central1"
   # Microsoft/Azure
-  - model_name: gpt-3.5-turbo
+  - model_name: azure-gpt-3.5-turbo
     litellm_params:
       model: azure/gpt-35-turbo-0613
       api_base: "os.environ/AZURE_API_BASE"
       api_key: "os.environ/AZURE_API_KEY"
-  - model_name: gpt-3.5-turbo-16k
+  - model_name: azure-gpt-3.5-turbo-16k
     litellm_params:
       model: azure/gpt-35-turbo-16k-0613
       api_base: "os.environ/AZURE_API_BASE"
       api_key: "os.environ/AZURE_API_KEY"
-  - model_name: gpt-4o
+  - model_name: azure-gpt-4o
     litellm_params:
       model: azure/gpt-4o  # pinned in Azure deployment as 2024-05-13
       api_base: "os.environ/AZURE_API_BASE"
@@ -96,3 +96,12 @@ litellm_settings:
   request_timeout: 10
 general_settings:
   master_key: sk-1234  # Leave this default value.
+router_settings:
+  model_group_alias:
+    - azure-gpt-3.5-turbo: azure-gpt-3.5-turbo
+    - azure-gpt-3.5-turbo-16k: azure-gpt-3.5-turbo-16k
+    - azure-gpt-4o: azure-gpt-4o
+    - oai-gpt-3.5-turbo: oai-gpt-3.5-turbo-0125
+    - oai-gpt-3.5-turbo-16k: oai-gpt-3.5-turbo-16k
+    - oai-gpt-4: oai-gpt-4
+    - oai-gpt-4-turbo: oai-gpt-4-turbo

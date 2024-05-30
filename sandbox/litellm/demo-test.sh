@@ -2,7 +2,9 @@
 # Script to demonstrate basic LLM forwarding for the models we currently have API keys and configs for.
 # Internal testing only
 
-MODELS=("gpt-3.5-turbo" "gpt-4" "gpt-4-turbo" "claude-3-opus" "claude-3-sonnet" "claude-3-haiku" "gemini-1.0-pro" "gemini-1.5-pro" "fake-openai-endpoint" "gpt-4o" "gpt-3.5-turbo-16k")
+MODELS=("oai-gpt-3.5-turbo" "oai-gpt-4" "oai-gpt-4-turbo" "oai-gpt-4o" "oai-gpt-3.5-turbo-16k"
+	"claude-3-opus" "claude-3-sonnet" "claude-3-haiku" "gemini-1.0-pro" "gemini-1.5-pro" "fake-openai-endpoint"
+	"azure-gpt-3.5-turbo" "azure-gpt-4o" "azure-gpt-3.5-turbo-16k")
 EMB_MODELS=("text-embedding-3-large" "text-embedding-3-small" "textembedding-gecko@003")
 
 for model in "${MODELS[@]}"; do
