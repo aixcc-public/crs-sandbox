@@ -192,10 +192,10 @@ At competition the AIxCC Game Architecture team will use the latest SemVer tag a
 
 A Makefile has been provided with a number of a commands to make it easy to clone the exemplar repos, stand up the environment, and a variety of other actions.
 
-Copy `sandbox/example.env` to `sandbox/.env` and replace the variables with your own for local development
+Copy `sandbox/example.env` to `sandbox/env` and replace the variables with your own for local development
 
 ```bash
-cp sandbox/example.env sandbox/.env
+cp sandbox/example.env sandbox/env
 ```
 
 `make cps` - clones the exemplar challenges into `./cp_root` folder
