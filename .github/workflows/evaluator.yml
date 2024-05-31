@@ -195,7 +195,7 @@ jobs:
           echo "CRS passed"
 
       - name: Show logs
-        run: make logs
+        run: make logs-nofollow
         if: ${{ failure() }}
 
 

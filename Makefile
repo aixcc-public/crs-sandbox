@@ -84,6 +84,9 @@ restart: computed-env ## Restart containers
 logs: ## Show logs for containers
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) logs --tail=100 -f $(c)
 
+logs-nofollow: ## Show logs for containers
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) logs $(c)
+
 logs-crs: ## Show logs for crs container
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) logs --tail=100 -f crs
 
