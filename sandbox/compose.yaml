@@ -165,7 +165,6 @@ services:
     env_file: env
     environment:
       - DATABASE_URL=postgresql://aixcc:aixcc@db
-      - AZURE_API_BASE=https://eastus2aoi.openai.azure.com/
     healthcheck:
       test: ["CMD-SHELL", "python3", "--version"]
       interval: 5s
