@@ -8,7 +8,8 @@ on:
 # There is a single job in this workflow.
 jobs:
   build-and-push-image:
-    runs-on: large-runner
+    runs-on:
+      group: large-runners
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     strategy:
       fail-fast: false

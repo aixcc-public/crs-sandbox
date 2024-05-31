@@ -12,7 +12,8 @@ on:
 
 jobs:
   run-lint:
-    runs-on: large-runner
+    runs-on:
+      group: large-runners
     permissions:
       contents: read
       packages: read
@@ -37,7 +38,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
 
   run-loadtests:
-    runs-on: large-runner
+    runs-on:
+      group: large-runners
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -107,7 +109,8 @@ jobs:
         run: make help
 
   run-e2e-test:
-    runs-on: large-runner
+    runs-on:
+      group: large-runners
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -197,7 +200,8 @@ jobs:
 
 
   run-mock-crs:
-    runs-on: large-runner
+    runs-on:
+      group: large-runners
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -249,7 +253,8 @@ jobs:
           make mock-crs/up-attached
 
   run-kubernetes:
-    runs-on: large-runner
+    runs-on:
+      group: large-runners
     steps:
       - name: Check out code
         uses: actions/checkout@v3
