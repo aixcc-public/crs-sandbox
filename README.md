@@ -1,8 +1,9 @@
 # CRS Sandbox
 
-This repository, the `CRS Sandbox` includes a `./compose.yaml` file.
+This repository, the `CRS Sandbox` includes a [./compose.yaml](./compose.yaml) file.
 This file is the only resource competitors will have for infrastructure automation at competition time.
-Environment variables and secrets will be injected into the `compose.yaml` from each competitors private copy of the `CRS Sandbox`.
+Environment variables and secrets will be injected into []./compose.yaml](./compose.yaml)
+from each competitors private copy of the `CRS Sandbox`.
 
 Competitor SSO accounts to GitHub will be limited to a basic set of actions for making modifications and merging PRs within the GitHub repository.
 
@@ -16,6 +17,8 @@ On the above date, teams will be provided access to their private CRS repositori
 This repository will be generated from the CRS Sandbox reference repository which will be treated as the template repository.
 
 Merging into main will require the workflows specified in `.github/workflows/evaluator.yml` and `.github/workflows/package.yml` to pass.
+
+Competitors MUST release at least one version of their CRS during Phase 1 to validate their package workflow correctly executes.
 
 Failure to do so will prevent a team's CRS from moving forward to Phase 2.
 
@@ -31,13 +34,36 @@ Competitors must release new versions of their CRS with an updated tag from `mai
 
 With each new release of a competitors CRS it will be automatically executed.
 
-Only the latest semantic version of a competitors CRS that is properly tagged from `main` will be tested.
+Only the latest semantic version of a competitors CRS that is properly tagged from `main` will be tested in Phase 2.
 
 ## Code Owners
 
 Please review the [.github/CODEOWNERS](.github/CODEOWNERS) file.
-This file shows all the files that cannot be modified by competitors.
+
+This file shows all the files that require pull request approval by the Game Architecture team.
 The `main` branch protections will prevent making changes to these files.
+
+The following paths have push protections in place.
+They cannot be modified even within a private branch or pull request.
+
+```bash
+.github/actions/trigger-downstream-sync.js
+.github/workflows/evaluator.yml
+.github/workflows/README.md
+.github/workflows/template-sync.yml
+.github/workflows/trigger-sync-on-release.yml
+.tool-versions
+charts/*
+cp_root/*
+crs_scratch/*
+dind_cache/*
+kompose_competition_overrides.yaml
+kompose_development_overrides.yaml
+LICENSE
+Makefile
+README.md
+sandbox/*
+```
 
 ## CRS Constraints on Docker and Virtualization
 
@@ -69,7 +95,8 @@ There are currently 4 LLM Provider environment variables declared but not popula
 - AZURE\_API\_BASE
 - GOOGLE_APPLICATION_CREDENTIAL
 - ANTHROPIC\_API\_KEY
-Note: For local development the example.env file should be renamed to env.
+Note: For local development the [./sandbox/example.env](./sandbox/example.env) file should be renamed to env.
+This file is included in the .gitignore so competitors don't accidentally push it to their repository.
 
 *TBD* - These variables and the LiteLLM configuration file are not yet complete. This will be released in a CRS sandbox update.
 We will continue iterating on the CRS sandbox as we grow closer to the competition in order to support newer versions of components.
@@ -156,7 +183,7 @@ This is so we can easily swap `--profile development` with `--profile competitio
 A CRS MUST copy CP repositories from `/cp_root` to a writable location such as `/crs_scratch` for building and testing CPs.
 A CRS MUST NOT modify data within `/cp_root` directly.
 A CRS MUST use `/crs_scratch` as the only shared filesystem between containers.
-No other folders or volumes will be shared between containers.
+No other folders or volumes will be shared between containers for competitor use.
 
 ### No internet Access
 
@@ -200,9 +227,6 @@ cp sandbox/example.env sandbox/env
 
 `make cps` - clones the exemplar challenges into `./cp_root` folder
 `make up` - brings up the development CRS Sandbox, you can visit <http://127.0.0.1:8080/docs> to see the iAPI OpenAPI spec.
-
-The CRS Sandbox currently uses Grafana/K6 as a placeholder for the CRS solution itself and is used to validate that the sandbox can reach the proper HTTP endpoints within the iAPI and LiteLLM containers.
-
 `make down` - tears down the development CRS Sandbox
 
 See [Makefile](./Makefile) for more commands
@@ -217,6 +241,8 @@ This process uses a component called [Kompose](https://kompose.io/conversion/) f
 The CRS Sandbox will include a CI/CD action which the private repos must also use.
 This will generate and push the container images to the respective per-competitor private GitHub.
 This will also push the Helm chart as an OCI compliant chart to the private GitHub repos.
+The `evaluator.yml` action runs `make k8s` in every pull request to `main`.
+This is to ensure all resources can be properly translated into a Helm chart and deployed into Kubernetes.
 
 ### Architecture Diagram
 
