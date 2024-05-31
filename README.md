@@ -65,6 +65,16 @@ README.md
 sandbox/*
 ```
 
+## Docker Images
+
+Competitors MUST push all container images that are contained in [compose.yaml](./compose.yaml) to their CRS repository.
+
+All container images MUST contain a tag.
+
+Docker Compose services which contain a `build` section MUST be added to [package.yaml](./.github/workflows/package.yml).
+
+Failure to follow these steps will prevent your CRS images from being able to execute at the competition.
+
 ## CRS Constraints on Docker and Virtualization
 
 In the competition environment, a CRS is expected to use Docker (via `run.sh`)
