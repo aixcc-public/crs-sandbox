@@ -174,9 +174,9 @@ We've modified our original guidance on the tagging process.
 
 All teams should be using [SemVer 2.0.0](https://semver.org/) to tag releases.
 
-A team MUST have a tag of `1.0.0` OR greater within their private CRS repository at competition.
+A team MUST have a tag of `v1.0.0` OR greater within their private CRS repository at competition.
 
-Teams MUST NOT use a `v` prefix in their tags.
+Teams MUST use a `v` prefix in their tags.
 
 All releases MUST be from the `main` branch ONLY. Failure to create release tags from `main` will lead to a failed release.
 
