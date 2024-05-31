@@ -39,3 +39,32 @@ echo "Final VDS Status: ${STATUS}"
 if [ "$STATUS" == "rejected" ]; then
 	exit 1
 fi
+
+CPV_UUID=$(jq <vds.json -r '.cpv_uuid')
+echo ""
+echo "Submitting GP"
+set -x
+$CURL -X POST -H "Content-Type: application/json" ${AIXCC_API_HOSTNAME}/submission/gp/ -d "{\"cpv_uuid\": \"${CPV_UUID}\", \"data\": \"ZGlmZiAtLWdpdCBhL21vY2tfdnAuYyBiL21vY2tfdnAuYwppbmRleCA1NmNmOGZkLi5hYmI3M2NkIDEwMDY0NAotLS0gYS9tb2NrX3ZwLmMKKysrIGIvbW9ja192cC5jCkBAIC0xMSw3ICsxMSw4IEBAIGludCBtYWluKCkKICAgICAgICAgcHJpbnRmKCJpbnB1dCBpdGVtOiIpOwogICAgICAgICBidWZmID0gJml0ZW1zW2ldWzBdOwogICAgICAgICBpKys7Ci0gICAgICAgIGZnZXRzKGJ1ZmYsIDQwLCBzdGRpbik7CisgICAgICAgIGZnZXRzKGJ1ZmYsIDksIHN0ZGluKTsKKyAgICAgICAgaWYgKGk9PTMpe2J1ZmZbMF09IDA7fQogICAgICAgICBidWZmW3N0cmNzcG4oYnVmZiwgIlxuIildID0gMDsKICAgICB9d2hpbGUoc3RybGVuKGJ1ZmYpIT0wKTsKICAgICBpLS07Cg==\"}" >gp.json
+set +x
+jq <gp.json
+echo ""
+
+GP_UUID=$(jq <gp.json -r '.gp_uuid')
+STATUS=$(jq <gp.json -r '.status')
+
+while [ "$STATUS" == "pending" ]; do
+	sleep 10
+	echo "GP status:"
+	set -x
+	$CURL "${AIXCC_API_HOSTNAME}/submission/gp/${GP_UUID}" >gp.json
+	set +x
+	jq <gp.json
+	echo ""
+	STATUS=$(jq <gp.json -r '.status')
+done
+
+echo "Final GP Status: ${STATUS}"
+echo ""
+echo "Results"
+
+sleep 1
