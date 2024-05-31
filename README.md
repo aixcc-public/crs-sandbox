@@ -22,6 +22,13 @@ Competitors MUST release at least one version of their CRS during Phase 1 to val
 
 Failure to do so will prevent a team's CRS from moving forward to Phase 2.
 
+#### Interpreting Results in GitHub Actions
+
+The job that evaluates the CRS's performance is part of the [CRS Evaluator](https://github.com/aixcc-sc/crs-sandbox/actions/workflows/evaluator.yml) and is called `run-validate-crs-submissions`.  It runs the CRS as defined in the [./compose.yaml](./compose.yaml) and evaluates its submitted vulnerability discoveries and generated patches.  Check the output of the validation steps, CRS submission
+log step, and CRS logs step for introspection into what happened.
+
+![GitHub Actions output showing a CRS submitting a working VD and a failing GP](./.static/crs-logs-example.png)
+
 ### Phase 2 - Automated Execution of your CRS
 
 Date: TBD
@@ -260,4 +267,4 @@ This diagram depicts the CRS Sandbox during the `development` phase with `--prof
 As you can see the iAPI remains as part of the CRS Sanbox but can communicate with the upstream API.
 However, the LiteLLM component moves to a centralized component that does NOT run within the CRS Sandbox at competition.
 
-![arch diagram](./architecture.png)
+![arch diagram](./.static/architecture.png)

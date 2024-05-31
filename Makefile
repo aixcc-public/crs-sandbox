@@ -90,6 +90,9 @@ logs-nofollow: ## Show logs for containers
 logs-crs: ## Show logs for crs container
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) logs --tail=100 -f crs
 
+logs-crs-nofollow: ## Show logs for crs container
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) logs crs
+
 logs-litellm: ## Show logs for litellm container
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) logs --tail=100 -f litellm
 
