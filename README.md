@@ -188,6 +188,8 @@ Most dependencies in this repository can be automatically managed by `mise`, but
 - docker-compose >= 2.26.1
 - GNU make >= 4.3
 
+Additionally, you will need permissions to interact with the Docker daemon.  Typically this means adding your user to the `docker` group.
+
 #### Dependencies managed using mise
 
 This repository defines its dependencies in a [`.tool-versions`](./.tool-versions) file.
