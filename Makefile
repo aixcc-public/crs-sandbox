@@ -142,11 +142,13 @@ k8s: k8s/clean build ## Generates helm chart locally for the development profile
 	@docker pull ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
 	@kind load docker-image ghcr.io/aixcc-sc/iapi:v4.0.3 ghcr.io/berriai/litellm-database:main-v1.35.10 docker:24-dind postgres:16.2-alpine3.19
 	@mkdir $(ROOT_DIR)/charts
-	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_development_overrides.yaml" kompose convert --profile development --chart --out tmp_charts
+	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_development_overrides.yaml" kompose convert --profile development --generate-network-policies --chart --out tmp_charts
 	@mv tmp_charts $(ROOT_DIR)/charts/crs
 	@rm -rf ./tmp_charts
 	@yq eval ".description = \"AIxCC Competitor CRS\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
 	@yq eval ".name = \"crs\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
+	@cp $(ROOT_DIR)/sandbox/kustomize/kustomization.yaml $(ROOT_DIR)/charts
+	@kustomize build sandbox/kustomize/overlays -o $(ROOT_DIR)/charts/crs/templates/crs-sandbox-crs-internal-networkpolicy.yaml
 	@helm install crs $(ROOT_DIR)/charts/crs
 
 k8s/clean:
@@ -155,12 +157,14 @@ k8s/clean:
 	@kind delete cluster
 
 k8s/competition: k8s/clean ## Generates the competition helm chart for use during pregame and the competition
-	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_competition_overrides.yaml" kompose convert --profile competition --chart --out tmp_charts
+	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_competition_overrides.yaml" kompose convert --profile competition --generate-network-policies --chart --out tmp_charts
 	@mkdir $(ROOT_DIR)/charts
 	@mv tmp_charts $(ROOT_DIR)/charts/crs
 	@rm -rf ./tmp_charts
 	@yq eval ".description = \"AIxCC Competitor CRS\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
 	@yq eval ".name = \"crs\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
+	@cp $(ROOT_DIR)/sandbox/kustomize/kustomization.yaml $(ROOT_DIR)/charts
+	@kustomize build sandbox/kustomize/overlays -o $(ROOT_DIR)/charts/crs/templates/crs-sandbox-crs-internal-networkpolicy.yaml
 
 clean-volumes:
 	rm -rf $(HOST_CP_ROOT_DIR) $(HOST_CRS_SCRATCH) $(HOST_DIND_CACHE) $(HOST_CAPI_LOGS)
