@@ -2,7 +2,7 @@
 
 This repository, the `CRS Sandbox` includes a [./compose.yaml](./compose.yaml) file.
 This file is the only resource competitors will have for infrastructure automation at competition time.
-Environment variables and secrets will be injected into []./compose.yaml](./compose.yaml)
+Environment variables and secrets will be injected into [./compose.yaml](./compose.yaml)
 from each competitors private copy of the `CRS Sandbox`.
 
 Competitor SSO accounts to GitHub will be limited to a basic set of actions for making modifications and merging PRs within the GitHub repository.
@@ -12,6 +12,7 @@ Competitor SSO accounts to GitHub will be limited to a basic set of actions for 
 ### Phase 1 - GitHub Actions Passing
 
 Date: 2024-05-30
+
 On the above date, teams will be provided access to their private CRS repositories.
 
 This repository will be generated from the CRS Sandbox reference repository which will be treated as the template repository.
@@ -31,7 +32,7 @@ log step, and CRS logs step for introspection into what happened.
 
 ### Phase 2 - Automated Execution of your CRS
 
-Date: TBD
+Date: 2024-06-19
 
 On the above date, the AIxCC Game Architecture team will automatically execute competitors CRSs against a subset of published challenge problems.
 
@@ -52,6 +53,10 @@ The `main` branch protections will prevent making changes to these files.
 
 The following paths have push protections in place.
 They cannot be modified even within a private branch or pull request.
+
+If you feel like one of these items needs modified, please make a [CRS Sandbox Issue](https://github.com/aixcc-sc/crs-sandbox/issues/new).
+
+The Game Architecture team will review the request and respond accordingly.
 
 ```bash
 .github/actions/trigger-downstream-sync.js
