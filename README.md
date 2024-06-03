@@ -25,8 +25,10 @@ Failure to do so will prevent a team's CRS from moving forward to Phase 2.
 
 #### Interpreting Results in GitHub Actions
 
-The job that evaluates the CRS's performance is part of the [CRS Evaluator](https://github.com/aixcc-sc/crs-sandbox/actions/workflows/evaluator.yml) and is called `run-validate-crs-submissions`.  It runs the CRS as defined in the [./compose.yaml](./compose.yaml) and evaluates its submitted vulnerability discoveries and generated patches.  Check the output of the validation steps, CRS submission
-log step, and CRS logs step for introspection into what happened.
+The job that evaluates the CRS's performance is part of the [CRS Evaluator](https://github.com/aixcc-sc/crs-sandbox/actions/workflows/evaluator.yml) and is called `run-validate-crs-submissions`.
+
+It runs the CRS as defined in the [./compose.yaml](./compose.yaml) and evaluates its submitted vulnerability discoveries and generated patches.
+Check the output of the validation steps, CRS submission log step, and CRS logs step for introspection into what happened.
 
 ![GitHub Actions output showing a CRS submitting a working VD and a failing GP](./.static/crs-logs-example.png)
 
@@ -84,6 +86,12 @@ Competitors MUST push all container images that are contained in [compose.yaml](
 All container images MUST contain a tag.
 
 Docker Compose services which contain a `build` section MUST be added to [package.yaml](./.github/workflows/package.yml).
+
+If your solution is referencing a public container like PostgreSQL or MongoDB, you MUST push this image to your CRS repository.
+
+You MUST push these images with a tag to your CRS OCI repository and reference this image using the `ghcr.io` link.
+
+GitHub has the following [Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) instructions.
 
 Failure to follow these steps will prevent your CRS images from being able to execute at the competition.
 
