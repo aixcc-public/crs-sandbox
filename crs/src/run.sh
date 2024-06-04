@@ -23,13 +23,12 @@ set -x
 $CURL -X POST -H "Content-Type: application/json" ${AIXCC_API_HOSTNAME}/submission/vds/ -d "{\"cp_name\": \"mock-cp\", \"pou\": {\"commit_sha1\": \"451dfb089f10ae0b5afd091a428e8c501c8b9b45\", \"sanitizer\": \"id_1\"}, \"pov\": {\"harness\": \"id_1\", \"data\": \"$(base64 -w 0 cpv1_blob)\"}}" >vds.json
 set +x
 jq <vds.json
+VDS_UUID=$(jq <vds.json -r '.vd_uuid')
 echo ""
 
-VDS_UUID=$(jq <vds.json -r '.vd_uuid')
-STATUS=$(jq <vds.json -r '.status')
-
 echo "The cAPI is now evaluating our Vulnerability Discovery Submission (VDS).  Its status will be pending until the cAPI runs all the tests."
-
+$CURL "${AIXCC_API_HOSTNAME}/submission/vds/${VDS_UUID}" >vds.json
+STATUS=$(jq <vds.json -r '.status')
 while [ "$STATUS" == "pending" ]; do
 	sleep 10
 	echo "Waiting for VDS to finish testing..."
@@ -57,12 +56,12 @@ set -x
 $CURL -X POST -H "Content-Type: application/json" ${AIXCC_API_HOSTNAME}/submission/gp/ -d "{\"cpv_uuid\": \"${CPV_UUID}\", \"data\": \"$(base64 -w 0 cpv1_patch.diff)\"}" >gp.json
 set +x
 jq <gp.json
+GP_UUID=$(jq <gp.json -r '.gp_uuid')
 echo ""
 
-GP_UUID=$(jq <gp.json -r '.gp_uuid')
-STATUS=$(jq <gp.json -r '.status')
-
 echo "Now we're going to let the cAPI evaluate our GP."
+$CURL "${AIXCC_API_HOSTNAME}/submission/gp/${GP_UUID}" >gp.json
+STATUS=$(jq <gp.json -r '.status')
 while [ "$STATUS" == "pending" ]; do
 	sleep 10
 	echo "Waiting for GP to finish testing..."
