@@ -83,6 +83,7 @@ services:
   iapi:
     networks:
       - crs-internal
+      - internet  # Internal networks can't have host port mappings
     expose:
       - "8080"
     profiles:
