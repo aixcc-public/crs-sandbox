@@ -111,7 +111,7 @@ jobs:
   run-validate-crs-submissions:
     env:
       AUDIT_LOG: ./capi_logs/audit.log
-      MAX_SECONDS: 60
+      MAX_SECONDS: 600
       POLL_SECONDS: 5
     runs-on:
       group: large-runners
