@@ -10,8 +10,6 @@ RUN apt-get update && apt-get -y install curl jq && apt-get clean && rm -rf /var
 
 # Copy your source code
 COPY crs/src/run.sh .
-COPY crs/src/cpv1_blob .
-COPY crs/src/cpv1_patch.diff .
 
 # Run the command to start your CRS, this is just a placeholder
 CMD ["./run.sh"]

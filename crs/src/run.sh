@@ -20,7 +20,14 @@ echo "In this example, we're using an example challenge problem vulnerability (C
 echo "A real CRS will be evaluating the problem, with the help of an LLM, at this point."
 echo "We're going to pretend our fake CRS has found a vulnerability in the mock challenge problem (Mock CP).  Let's go ahead and submit it."
 set -x
-$CURL -X POST -H "Content-Type: application/json" ${AIXCC_API_HOSTNAME}/submission/vds/ -d "{\"cp_name\": \"mock-cp\", \"pou\": {\"commit_sha1\": \"451dfb089f10ae0b5afd091a428e8c501c8b9b45\", \"sanitizer\": \"id_1\"}, \"pov\": {\"harness\": \"id_1\", \"data\": \"$(base64 -w 0 cpv1_blob)\"}}" >vds.json
+$CURL -X POST -H "Content-Type: application/json" ${AIXCC_API_HOSTNAME}/submission/vds/ -d "{\"cp_name\": \"mock-cp\", \"pou\": {\"commit_sha1\": \"451dfb089f10ae0b5afd091a428e8c501c8b9b45\", \"sanitizer\": \"id_1\"}, \"pov\": {\"harness\": \"id_1\", \"data\": \"$(
+	base64 -w 0 <<-'EOF'
+		abcdefabcdefabcdefabcdefabcdefabcdef
+		b
+
+		1
+	EOF
+)\"}}" >vds.json
 set +x
 jq <vds.json
 VDS_UUID=$(jq <vds.json -r '.vd_uuid')
@@ -53,7 +60,24 @@ CPV_UUID=$(jq <vds.json -r '.cpv_uuid')
 echo ""
 echo "We're still using the example CPV, so we've got a working generated patch.  We'll submit that now:"
 set -x
-$CURL -X POST -H "Content-Type: application/json" ${AIXCC_API_HOSTNAME}/submission/gp/ -d "{\"cpv_uuid\": \"${CPV_UUID}\", \"data\": \"$(base64 -w 0 cpv1_patch.diff)\"}" >gp.json
+$CURL -X POST -H "Content-Type: application/json" ${AIXCC_API_HOSTNAME}/submission/gp/ -d "{\"cpv_uuid\": \"${CPV_UUID}\", \"data\": \"$(
+	base64 -w 0 <<-'EOF'
+		diff --git a/mock_vp.c b/mock_vp.c
+		index 56cf8fd..abb73cd 100644
+		--- a/mock_vp.c
+		+++ b/mock_vp.c
+		@@ -11,7 +11,8 @@ int main()
+		         printf("input item:");
+		         buff = &items[i][0];
+		         i++;
+		-        fgets(buff, 40, stdin);
+		+        fgets(buff, 9, stdin);
+		+        if (i==3){buff[0]= 0;}
+		         buff[strcspn(buff, "\n")] = 0;
+		     }while(strlen(buff)!=0);
+		     i--;
+	EOF
+)\"}" >gp.json
 set +x
 jq <gp.json
 GP_UUID=$(jq <gp.json -r '.gp_uuid')
