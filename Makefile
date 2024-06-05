@@ -1,7 +1,7 @@
 ROOT_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 DOCKER_COMPOSE_FILE = $(ROOT_DIR)/compose.yaml
-DOCKER_COMPOSE_PORTS_FILE = $(ROOT_DIR)/sandbox/compose_local_overrides.yaml
+DOCKER_COMPOSE_PORTS_FILE = $(ROOT_DIR)/compose_local_overrides.yaml
 DOCKER_COMPOSE_LOCAL_ARGS = -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_PORTS_FILE) --profile development
 DOCKER_COMPOSE_LOCAL_MOCK_CRS_ARGS = -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_PORTS_FILE) --profile mock-crs
 
