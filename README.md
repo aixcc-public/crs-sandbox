@@ -61,7 +61,7 @@ If you feel like one of these items needs modified, please make a [CRS Sandbox I
 The Game Architecture team will review the request and respond accordingly.
 
 ```bash
-.github/actions/trigger-downstream-sync.js
+.github/actions/trigger-downstream-sync.mjs
 .github/workflows/evaluator.yml
 .github/workflows/README.md
 .github/workflows/template-sync.yml
