@@ -20,7 +20,7 @@ echo "In this example, we're using an example challenge problem vulnerability (C
 echo "A real CRS will be evaluating the problem, with the help of an LLM, at this point."
 echo "We're going to pretend our fake CRS has found a vulnerability in the mock challenge problem (Mock CP).  Let's go ahead and submit it."
 set -x
-$CURL -X POST -H "Content-Type: application/json" ${AIXCC_API_HOSTNAME}/submission/vds/ -d "{\"cp_name\": \"mock-cp\", \"pou\": {\"commit_sha1\": \"451dfb089f10ae0b5afd091a428e8c501c8b9b45\", \"sanitizer\": \"id_1\"}, \"pov\": {\"harness\": \"id_1\", \"data\": \"$(
+$CURL -X POST -H "Content-Type: application/json" ${AIXCC_API_HOSTNAME}/submission/vds/ -d "{\"cp_name\": \"Mock CP\", \"pou\": {\"commit_sha1\": \"9d38fc63bb9ffbc65f976cbca45e096bad3b30e1\", \"sanitizer\": \"id_1\"}, \"pov\": {\"harness\": \"id_1\", \"data\": \"$(
 	base64 -w 0 <<-'EOF'
 		abcdefabcdefabcdefabcdefabcdefabcdef
 		b
