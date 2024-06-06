@@ -4,15 +4,15 @@
 
 ---
 services:
-  dind:
-    ports:
-      - "2375:2375"
+  # dind:
+  #   ports:
+  #     - "127.0.0.1:2375:2375"
   iapi:
     ports:
-      - "8080:8080"
+      - '127.0.0.1:8080:8080'
   capi:
-    ports:
-      - "8082:8080"
+    # ports:
+    #   - "127.0.0.1:8082:8080"
     volumes:
       - type: bind
         source: ${PWD}/capi_logs
@@ -24,9 +24,9 @@ services:
         target: /cp_root
         bind:
           propagation: rshared
-  db:
-    ports:
-      - "5432:5432"
+  # db:
+  #   ports:
+  #     - "127.0.0.1:5432:5432"
   litellm:
     ports:
-      - "8081:80"
+      - '127.0.0.1:8081:80'

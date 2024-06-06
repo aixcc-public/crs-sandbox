@@ -1,0 +1,66 @@
+---
+name: Check network port bindings
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-exposed-port-check:
+    runs-on:
+      group: large-runners
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
+          curl https://mise.jdx.dev/install.sh | sh
+          echo "$HOME/.local/share/mise/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
+          mise install
+
+      - name: Check required files
+        run: |
+          if [ ! -f "${{ github.workspace }}/cp_config.yaml" ]; then
+            echo "Required file not found: cp_config.yaml"
+            exit 1
+          fi
+
+      - name: Move sandbox/example.env to sandbox/env
+        run: mv sandbox/example.env sandbox/env
+
+      - name: Add SSH key
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          mkdir -p /home/runner/.ssh
+          ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
+          echo "${{ secrets.CRS_EVALUATOR_EXEMPLAR_CLONE_SSH_KEY }}" > /home/runner/.ssh/github_actions
+          chmod 600 /home/runner/.ssh/github_actions
+          ssh-agent -a "$SSH_AUTH_SOCK" > /dev/null
+          ssh-add /home/runner/.ssh/github_actions
+
+      - name: Docker Registry Login
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: gha
+          password: ${{ github.token }}
+
+      - name: Run Docker Compose
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          make up
+
+      - name: Check for any exposed ports
+        run: |
+          exit "$(sudo netstat -tulpn | awk '{print $4}' | grep -E '(2375|2376|5432|8080|8081|8082)' | grep -v 127.0.0.1 -c)"

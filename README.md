@@ -198,6 +198,22 @@ Most dependencies in this repository can be automatically managed by `mise`, but
 
 Additionally, you will need permissions to interact with the Docker daemon.  Typically this means adding your user to the `docker` group.
 
+### Working with Docker-in-Docker
+
+The `crs-sandbox` contains its own Docker daemon inside of a Docker container.
+By default this is not accessible on the host machine, but you can enable the
+port mapping by editing
+[`./compose_local_overrides.yaml`](./compose_local_overrides.yaml).  Note that
+by doing this, you are exposing the Docker daemon on your host without
+authentication enabled.
+
+Once you've done that, set `DOCKER_HOST=tcp://127.0.0.1:2375`.
+
+```bash
+export DOCKER_HOST=tcp://127.0.0.1:2375
+docker logs <container name>
+```
+
 #### Dependencies managed using mise
 
 This repository defines its dependencies in a [`.tool-versions`](./.tool-versions) file.
