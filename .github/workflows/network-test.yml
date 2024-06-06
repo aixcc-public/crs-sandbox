@@ -65,4 +65,5 @@ jobs:
 
       - name: Check for any exposed ports
         run: |
-          exit "$(sudo netstat -tulpn | awk '{print $4}' | grep -E '(2375|2376|5432|8080|8081|8082)' | grep -v 127.0.0.1 -c)"
+          # 22, 8084, and 68 are bound by the workflow / runner somewhere, so we except them from our check
+          exit "$(sudo netstat -tulpn | tail -n +3 | awk '{print $4}' | grep -v -E '(:22|:8084|:68)' | grep -v -E '(127.0.0|::1)' -c)"
