@@ -23,6 +23,9 @@ Competitors MUST release at least one version of their CRS during Phase 1 to val
 
 Failure to do so will prevent a team's CRS from moving forward to Phase 2.
 
+During Phase 1, teams must use their own secret keys and tokens to access collaborator resources
+(LLM APIs) and authenticate against GitHub.
+
 #### Interpreting Results in GitHub Actions
 
 The job that evaluates the CRS's performance is part of the [CRS Evaluator](https://github.com/aixcc-sc/crs-sandbox/actions/workflows/evaluator.yml) and is called `run-validate-crs-submissions`.
@@ -45,6 +48,9 @@ Competitors must release new versions of their CRS with an updated tag from `mai
 With each new release of a competitors CRS it will be automatically executed.
 
 Only the latest semantic version of a competitors CRS that is properly tagged from `main` will be tested in Phase 2.
+
+During Phase 2, secret keys and tokens for collaborator resources (LLM APIs) and GitHub access will
+be set by the AIxCC infrastructure team.
 
 ## Code Owners
 
@@ -111,12 +117,14 @@ compatible with the competition environment.
 
 ## Environment Variables & GitHub Secrets
 
-Each competitors CRS will come pre-packaged with a list of GitHub secrets and environment variables.
-Teams may change the values of these secrets, however they must not change the name of the pre-existing
-secrets or variables and must ensure their application code uses the core variables related to the iAPI and LiteLLM connections.
+Each competitor CRS repository will come pre-packaged with a list of GitHub secrets and environment
+variables. Teams may change the values of these secrets (e.g. to their own collaborator API keys);
+however, teams must not change the variable names. Also, teams must ensure their services use the
+core variables related to the iAPI and LiteLLM connections.
 
-This is so the AIxCC infrastructure team can override the per-competitor secrets and variables at competition time,
-yet competitors can use these secrets for connecting to their cloud vendor and/or LLM APIs as needed.
+For local development and during Phase 1 of the Evaluation Window, competitors are expected to
+use / provide their own keys and secrets. During subsequent phases of the evaluation window
+and at competition, the AIxCC infrastructure team will override these values with their own.
 
 There are currently 4 LLM Provider environment variables declared but not populated in example.env, which will be populated at competition time:
 
@@ -125,13 +133,15 @@ There are currently 4 LLM Provider environment variables declared but not popula
 - AZURE\_API\_BASE
 - GOOGLE_APPLICATION_CREDENTIAL
 - ANTHROPIC\_API\_KEY
-Note: For local development the [./sandbox/example.env](./sandbox/example.env) file should be renamed to env.
-This file is included in the .gitignore so competitors don't accidentally push it to their repository.
+
+Note: For local development, the [./sandbox/example.env](./sandbox/example.env) file should be
+copied to `./sandbox/env`. This file is included in the `.gitignore` so competitors don't
+accidentally push it to their repository.
 
 *TBD* - These variables and the LiteLLM configuration file are not yet complete. This will be released in a CRS sandbox update.
 We will continue iterating on the CRS sandbox as we grow closer to the competition in order to support newer versions of components.
 
-Please see the competition rules and technical release as the cut off dates for changes will be descibed there.
+Please see the competition rules and technical release as the cut off dates for changes will be described there.
 
 ## LiteLLM Models Supported
 
