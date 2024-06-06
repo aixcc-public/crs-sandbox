@@ -113,7 +113,7 @@ jobs:
       AUDIT_LOG: ./capi_logs/audit.log
       MAX_SECONDS: 600
       POLL_SECONDS: 5
-    if: ${{ github.actor != 'robothing' }}
+    if: ${{ github.actor != 'robothing[bot]' }}
     runs-on:
       group: large-runners
     steps:
