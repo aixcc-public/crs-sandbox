@@ -48,7 +48,8 @@ services:
     volumes:
       #################################################################################
       ### THESE VOLUMES MUST BE INCLUDED WITHOUT MODIFICATION TO ALL CRS CONTAINERS ###
-      # A CRS MUST copy CP repositories from `/cp_root` to a writable location such as `/crs_scratch` for building and testing CPs.
+      # A CRS MUST copy CP repositories from `AIXCC_CP_ROOT` to a writable location such as
+      # `AIXCC_CRS_SCRATCH_SPACE` for building and testing CPs.
       # A CRS MUST not modify settings within this section.
       - type: bind
         source: ${PWD}/crs_scratch

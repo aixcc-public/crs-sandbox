@@ -238,10 +238,17 @@ This is so we can easily swap `--profile development` with `--profile competitio
 
 ### Data Sharing & Volumes
 
-A CRS MUST copy CP repositories from `/cp_root` to a writable location such as `/crs_scratch` for building and testing CPs.
-A CRS MUST NOT modify data within `/cp_root` directly.
-A CRS MUST use `/crs_scratch` as the only shared filesystem between containers.
-No other folders or volumes will be shared between containers for competitor use.
+A CRS will find the CPs under evaluation in the volume indicated by the environment variable
+`${AIXCC_CP_ROOT}`. At competition time and likely during some part of the evaluation
+window, this volume will be configured as read-only. As such, a CRS **MUST** copy a CP
+from `${AIXCC_CP_ROOT}` to a writable location in order to build or test it.
+
+The volume indicated by the environment variable `${AIXCC_CRS_SCRATCH_SPACE}` will be writable
+by the CRS and CPs. Moreover, this volume can be shared among the CRS services as a
+shared file system. It is the responsibility of the CRS developers to ensure that
+use of this shared volume is coordinated between its services to prevent data corruption
+via collisions or race conditions. No other folders or volumes will be shared between
+containers for competitor use during competition.
 
 ### No internet Access
 
@@ -283,7 +290,7 @@ Copy `sandbox/example.env` to `sandbox/env` and replace the variables with your 
 cp sandbox/example.env sandbox/env
 ```
 
-`make cps` - clones the exemplar challenges into `./cp_root` folder
+`make cps` - clones the exemplar challenges into local `./cp_root` folder (the source folder for `${AIXCC_CP_ROOT}`)
 `make up` - brings up the development CRS Sandbox, you can visit <http://127.0.0.1:8080/docs> to see the iAPI OpenAPI spec.
 `make down` - tears down the development CRS Sandbox
 
