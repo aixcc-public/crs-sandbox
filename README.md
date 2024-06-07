@@ -309,6 +309,25 @@ This will also push the Helm chart as an OCI compliant chart to the private GitH
 The `evaluator.yml` action runs `make k8s` in every pull request to `main`.
 This is to ensure all resources can be properly translated into a Helm chart and deployed into Kubernetes.
 
+#### Autoscaling
+
+One of Kubernetes' most useful features is autoscaling.  Kompose exposes horizontal pod autoscaling, among many other
+features, via labels set on services.  This example produces an HPA configuration that will scale from 3 replicas up to
+12, adding and removing replicas to target an average CPU utilization of 80% and memory utilization of 1024 megabytes.
+Please note these are probably not good default values for your application and you should customize them.
+
+```yaml
+services:
+  job-runner:
+    labels:
+      # Thresholds for automatic scale up
+      kompose.hpa.cpu: 80 # percentage
+      kompose.hpa.memory: 1024Mi
+      # High & low limits for number of replicas
+      kompose.hpa.replicas.max: 12
+      kompose.hpa.replicas.min: 3
+```
+
 ### Architecture Diagram
 
 This diagram depicts the CRS Sandbox during the `development` phase with `--profile development` and during the `competition` phase with `--profile competition`.
