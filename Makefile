@@ -6,6 +6,8 @@ DOCKER_COMPOSE_LOCAL_ARGS = -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_PORTS_
 DOCKER_COMPOSE_LOCAL_MOCK_CRS_ARGS = -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_PORTS_FILE) --profile mock-crs
 
 # variables that control the volumes
+export UID=$(shell id -u)
+export GID=$(shell id -g)
 HOST_CRS_SCRATCH = $(ROOT_DIR)/crs_scratch
 HOST_DIND_CACHE = $(ROOT_DIR)/dind_cache
 HOST_CAPI_LOGS = $(ROOT_DIR)/capi_logs
