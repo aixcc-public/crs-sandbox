@@ -113,7 +113,7 @@ services:
       - mock-crs
       - development
       - loadtest
-    image: ghcr.io/aixcc-sc/capi:v2.0.7
+    image: ghcr.io/aixcc-sc/capi:v2.1.0
     restart: always
     env_file: env
     environment:
@@ -126,6 +126,7 @@ services:
       - AIXCC_DATABASE_USERNAME=aixcc
       - AIXCC_TEMPDIR=/crs_scratch
       - DOCKER_HOST=tcp://dind:2375
+      - LOCAL_USER=${UID}:${GID}
     configs:
       - source: capi_config
         target: /etc/capi/config.yaml
