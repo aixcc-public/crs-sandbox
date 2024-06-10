@@ -126,7 +126,7 @@ For local development and during Phase 1 of the Evaluation Window, competitors a
 use / provide their own keys and secrets. During subsequent phases of the evaluation window
 and at competition, the AIxCC infrastructure team will override these values with their own.
 
-There are currently 4 LLM Provider environment variables declared but not populated in example.env, which will be populated at competition time:
+There are currently 5 LLM Provider environment variables declared but not populated in example.env, which will be populated at competition time:
 
 - OPENAI\_API\_KEY
 - AZURE\_API\_KEY
@@ -294,7 +294,9 @@ At competition the AIxCC Game Architecture team will use the latest SemVer tag a
 
 A Makefile has been provided with a number of a commands to make it easy to clone the exemplar repos, stand up the environment, and a variety of other actions.
 
-Copy `sandbox/example.env` to `sandbox/env` and replace the variables with your own for local development
+Copy `sandbox/example.env` to `sandbox/env` and replace the variables with your own for local development.
+
+**If you do not have working GitHub credentials that can pull images from GHCR, `make up` will fail.**
 
 ```bash
 cp sandbox/example.env sandbox/env

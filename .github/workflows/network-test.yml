@@ -39,6 +39,13 @@ jobs:
       - name: Move sandbox/example.env to sandbox/env
         run: mv sandbox/example.env sandbox/env
 
+      - name: Set up GHCR auth tokens
+        run: |
+          sed -i '/GITHUB_TOKEN=*/d' sandbox/env
+          sed -i '/GITHUB_USER=*/d' sandbox/env
+          echo "GITHUB_TOKEN=${{ github.token }}" >> sandbox/env
+          echo "GITHUB_USER=gha" >> sandbox/env
+
       - name: Add SSH key
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock

@@ -7,9 +7,16 @@ services:
   # dind:
   #   ports:
   #     - "127.0.0.1:2375:2375"
+  crs:
+    depends_on:
+      load-cp-images:
+        condition: service_completed_successfully
   iapi:
     ports:
       - '127.0.0.1:8080:8080'
+    depends_on:
+      capi:
+        condition: service_healthy
   capi:
     # ports:
     #   - "127.0.0.1:8082:8080"
