@@ -37,7 +37,7 @@ Check the output of the validation steps, CRS submission log step, and CRS logs 
 
 ### Phase 2 - Automated Execution of your CRS
 
-Date: 2024-06-19
+Date: 2024-06-21
 
 On the above date, the AIxCC Game Architecture team will automatically execute competitors CRSs against a subset of published challenge problems.
 
