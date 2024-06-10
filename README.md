@@ -145,20 +145,20 @@ Please see the competition rules and technical release as the cut off dates for 
 
 ## LiteLLM Models Supported
 
-| Provider  | Model                  | Pinned Version              |
-| --------- | ---------------------- | --------------------------- |
-| OpenAI    | gpt-3.5-turbo          | gpt-3.5-turbo-0125          |
-| OpenAI    | gpt-4                  | gpt-4-0613                  |
-| OpenAI    | gpt-4-turbo            | gpt-4-turbo-2024-04-09      |
-| OpenAI    | gpt-4o                 | gpt-4o-2024-05-13           |
-| OpenAI    | text-embedding-3-large | text-embedding-3-large      |
-| OpenAI    | text-embedding-3-small | text-embedding-3-small      |
-| Anthropic | claude-3-sonnet        | claude-3-sonnet-20240229    |
-| Anthropic | claude-3-opus          | claude-3-opus-20240229      |
-| Anthropic | claude-3-haiku         | claude-3-haiku-20240307     |
-| Google    | gemini-pro             | gemini-1.0-pro-002          |
-| Google    | gemini-1.5-pro         | gemini-1.5-pro-preview-0514 |
-| Google    | textembedding-gecko    | textembedding-gecko@003     |
+| Provider  | Model                  | Pinned Version              | Requests per Minute (RPM) | Tokens per Minute (TPM)  |
+| --------- | ---------------------- | --------------------------- | --------------------------| -------------------------|
+| OpenAI    | gpt-3.5-turbo          | gpt-3.5-turbo-0125          | 800                       | 80,000                   |
+| OpenAI    | gpt-4                  | gpt-4-0613                  | 200                       | 20,000                   |
+| OpenAI    | gpt-4-turbo            | gpt-4-turbo-2024-04-09      | 400                       | 60,000                   |
+| OpenAI    | gpt-4o                 | gpt-4o-2024-05-13           | 400                       | 300,000                  |
+| OpenAI    | text-embedding-3-large | text-embedding-3-large      | 500                       | 200,000                  |
+| OpenAI    | text-embedding-3-small | text-embedding-3-small      | 500                       | 200,000                  |
+| Anthropic | claude-3-sonnet        | claude-3-sonnet-20240229    | 1,000                     | 80,000                   |
+| Anthropic | claude-3-opus          | claude-3-opus-20240229      | 1,000                     | 40,000                   |
+| Anthropic | claude-3-haiku         | claude-3-haiku-20240307     | 1,000                     | 100,000                  |
+| Google    | gemini-pro             | gemini-1.0-pro-002          | 120                       | pending (as of 20240610) |
+| Google    | gemini-1.5-pro         | gemini-1.5-pro-preview-0514 | 120                       | pending (as of 20240610) |
+| Google    | textembedding-gecko*   | textembedding-gecko@003*    | pending (as of 20240610)  | pending (as of 20240610) |
 
 Note: OpenAI Embedding models have not currently been released in more than a single version, thus pinned/name strings are identical.
 
@@ -169,6 +169,16 @@ Note: Embedding models have not currently been released in more than a single ve
 
 These are utilized by hitting the LiteLLM /chat/completions endpoint, specifying model and message using the OpenAI JSON request format.
 Note: Further models will be supported in subsequent iterations.
+
+The Requests per Minute (RPM) and Tokens per Minute (TPM) columns in the table above are
+rate limits that are enforced per CRS for the ASC. The LiteLLM proxy will be responsible for
+implementing these limits. The RPM and TPM limits are enforced per model, not in aggregate across
+models or providers.
+
+Note: the "\*" next to model "textembedding-gecko" indicates this model target is still in flux.
+The AIxCC infrastructure team is still waiting on LiteLLM to finalize support for the model
+"text-embedding-04". If this newer model is not integrated in time to support its use during the
+ASC, then the fallback will likely be "textembedding-gecko@003".
 
 ## Local Development
 
