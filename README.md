@@ -162,10 +162,12 @@ Please see the competition rules and technical release as the cut off dates for 
 
 Note: OpenAI Embedding models have not currently been released in more than a single version, thus pinned/name strings are identical.
 
-All OpenAI models also have an Azure-hosted version that is identical, for load-balancing. Competitors will be able to freely request the
-model they like by the Model name in chart above without having to worry about addressing them directly.
+All OpenAI models will also be matched by an Azure-hosted version. Competitors will be able to freely request the
+model they like by the Model name in chart above, plus a prefix "oai-" or "azure-".
+Ex. "oai-gpt-4o".
+This was done because of performance differences between the models as hosted on OAI vs Azure infrastructure. The models themselves are guaranteed to be identical but no such promises can be made as regards supporting provider infrastrcture.
 
-Note: Embedding models have not currently been released in more than a single version.
+Note: OAI Embedding models have not currently been released in more than a single version.
 
 These are utilized by hitting the LiteLLM /chat/completions endpoint, specifying model and message using the OpenAI JSON request format.
 Note: Further models will be supported in subsequent iterations.
