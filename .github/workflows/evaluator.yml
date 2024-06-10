@@ -301,6 +301,7 @@ jobs:
           make mock-crs/up-attached
 
   run-kubernetes:
+    if: ${{ github.actor != 'robothing[bot]' }}
     runs-on:
       group: large-runners
     steps:
