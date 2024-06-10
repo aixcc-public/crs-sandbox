@@ -160,26 +160,29 @@ loadtest: computed-env ## Run k6 load tests
 loadtest/destroy: ## Stop and remove containers with volumes
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile loadtest down --volumes --remove-orphans $(c)
 
-k8s: github-creds-required k8s/clean build ## Generates helm chart locally for the development profile for kind testing, etc. build is called for local image generation
+k8s: k8s/development build ## Generates helm chart locally for the development profile for kind testing, etc. build is called for local image generation
 	@kind create cluster --wait 1m
-	@docker pull ghcr.io/aixcc-sc/iapi:v4.0.3
+	@docker pull ghcr.io/aixcc-sc/capi:v2.1.0
 	@docker pull ghcr.io/berriai/litellm-database:main-v1.35.10
+	@docker pull nginx:1.25.5
 	@docker pull docker:24-dind
 	@docker pull postgres:16.2-alpine3.19
 	@docker pull ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
-	@kind load docker-image ghcr.io/aixcc-sc/iapi:v4.0.3 ghcr.io/berriai/litellm-database:main-v1.35.10 docker:24-dind postgres:16.2-alpine3.19
-	@mkdir $(ROOT_DIR)/charts
-	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_development_overrides.yaml" kompose convert --profile development --chart --out tmp_charts
-	@mv tmp_charts $(ROOT_DIR)/charts/crs
-	@rm -rf ./tmp_charts
-	@yq eval ".description = \"AIxCC Competitor CRS\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
-	@yq eval ".name = \"crs\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
+	@kind load docker-image ghcr.io/aixcc-sc/capi:v2.1.0 ghcr.io/berriai/litellm-database:main-v1.35.10 docker:24-dind postgres:16.2-alpine3.19 nginx:1.25.5 load-cp-images:v0.0.1
 	@helm install crs $(ROOT_DIR)/charts/crs
 
 k8s/clean:
 	@rm -rf tmp_charts
 	@rm -rf $(ROOT_DIR)/charts
 	@kind delete cluster
+
+k8s/development: github-creds-required k8s/clean
+	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_development_overrides.yaml" kompose convert --profile development --chart --out tmp_charts
+	@mkdir $(ROOT_DIR)/charts
+	@mv tmp_charts $(ROOT_DIR)/charts/crs
+	@rm -rf ./tmp_charts
+	@yq eval ".description = \"AIxCC Competitor CRS\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
+	@yq eval ".name = \"crs\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
 
 k8s/competition: env-file-required k8s/clean ## Generates the competition helm chart for use during pregame and the competition
 	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_competition_overrides.yaml" kompose convert --profile competition --chart --out tmp_charts
