@@ -141,11 +141,87 @@ jobs:
           mise install
 
       - name: Check required files
+        shell: bash
         run: |
           if [ ! -f "${{ github.workspace }}/cp_config.yaml" ]; then
             echo "Required file not found: cp_config.yaml"
             exit 1
           fi
+          if [ ! -f "${{ github.workspace }}/kompose_competition_overrides.yaml" ]; then
+            echo "Required file not found: kompose_competition_overrides.yaml"
+            exit 1
+          fi
+          if [ ! -f "${{ github.workspace }}/kompose_development_overrides.yaml" ]; then
+            echo "Required file not found: kompose_development_overrides.yaml"
+            exit 1
+          fi
+
+          eval_vol_count_dev=$(yq eval '.volumes | length == 3' kompose_development_overrides.yaml)
+          eval_vol_count_comp=$(yq eval '.volumes | length == 3' kompose_competition_overrides.yaml)
+
+          eval_services_dev=$(yq eval '.services | (has("dind") and has("iapi") and has("capi"))' kompose_development_overrides.yaml)
+          eval_services_comp=$(yq eval '.services | has("dind")' kompose_competition_overrides.yaml)
+
+          eval_dind_dev=$(yq eval '(
+            .services | to_entries[] |
+            select(.key == "dind") |
+            select(.value.volumes != null) | .value.volumes | all_c(. == "dind_cache:/var/lib/docker" or . == "crs_scratch:/crs_scratch")
+          ) | [.]' kompose_development_overrides.yaml | yq eval 'all')
+
+          eval_dind_comp=$(yq eval '(
+            .services | to_entries[] |
+            select(.key == "dind") |
+            select(.value.volumes != null) | .value.volumes | all_c(. == "dind_cache:/var/lib/docker" or . == "crs_scratch:/crs_scratch")
+          ) | [.]' kompose_competition_overrides.yaml | yq eval 'all')
+
+          eval_volume_dev=$(yq eval '(
+            .services | to_entries[] |
+            select(.key != "dind") |
+            select(.value.volumes != null) | .value.volumes | all_c(. == "cp_root:/cp_root" or . == "crs_scratch:/crs_scratch")
+          ) | [.]' kompose_development_overrides.yaml | yq eval 'all')
+
+          eval_volume_comp=$(yq eval '(
+            .services | to_entries[] |
+            select(.key != "dind") |
+            select(.value.volumes != null) | .value.volumes | all_c(. == "cp_root:/cp_root" or . == "crs_scratch:/crs_scratch")
+          ) | [.]' kompose_competition_overrides.yaml | yq eval 'all')
+
+          EXIT=0
+          if [ "$eval_vol_count_dev" = "false" ]; then
+            echo "Extra volumes found in kompose_development_overrides.yaml.  Please remove them."
+            EXIT=1
+          fi
+          if [ "$eval_vol_count_comp" = "false" ]; then
+            echo "Extra volumes found in kompose_competition_overrides.yaml.  Please remove them."
+            EXIT=1
+          fi
+          if [ "$eval_dind_dev" = "false" ]; then
+            echo "dind_cache not found for dind in kompose_development_overrides.yaml.  Please add it."
+            EXIT=1
+          fi
+          if [ "$eval_dind_comp" = "false" ]; then
+            echo "dind_cache not found for dind in kompose_competition_overrides.yaml.  Please add it."
+            EXIT=1
+          fi
+          if [ "$eval_services_dev" = "false" ]; then
+            echo "Required services not found in kompose_development_overrides.yaml.  Please add them (dind, capi, iapi)."
+            EXIT=1
+          fi
+          if [ "$eval_services_comp" = "false" ]; then
+            echo "Required services not found in kompose_competition_overrides.yaml.  Please add them (dind)."
+            EXIT=1
+          fi
+          if [ "$eval_volume_dev" = "false" ]; then
+            echo "Other volumes specified in service in kompose_development_overrides.yaml.  Please remove them."
+            EXIT=1
+          fi
+          if [ "$eval_volume_comp" = "false" ]; then
+            echo "Other volumes specified in service in kompose_competition_overrides.yaml.  Please remove them."
+            EXIT=1
+          fi
+
+          exit $EXIT
+
 
       - name: Move sandbox/example.env to sandbox/env
         run: mv sandbox/example.env sandbox/env
