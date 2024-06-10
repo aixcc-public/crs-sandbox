@@ -294,6 +294,13 @@ jobs:
           username: gha
           password: ${{ github.token }}
 
+      - name: Set up GHCR auth tokens
+        run: |
+          sed -i '/GITHUB_TOKEN=*/d' sandbox/env
+          sed -i '/GITHUB_USER=*/d' sandbox/env
+          echo "GITHUB_TOKEN=${{ github.token }}" >> sandbox/env
+          echo "GITHUB_USER=gha" >> sandbox/env
+
       - name: Run Docker Compose
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -352,6 +359,13 @@ jobs:
           registry: ghcr.io
           username: gha
           password: ${{ github.token }}
+
+      - name: Set up GHCR auth tokens
+        run: |
+          sed -i '/GITHUB_TOKEN=*/d' sandbox/env
+          sed -i '/GITHUB_USER=*/d' sandbox/env
+          echo "GITHUB_TOKEN=${{ github.token }}" >> sandbox/env
+          echo "GITHUB_USER=gha" >> sandbox/env
 
       - name: Run Local Helm & Kubernetes Validation
         env:
