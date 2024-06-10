@@ -77,8 +77,6 @@ charts/*
 cp_root/*
 crs_scratch/*
 dind_cache/*
-kompose_competition_overrides.yaml
-kompose_development_overrides.yaml
 LICENSE
 Makefile
 README.md
