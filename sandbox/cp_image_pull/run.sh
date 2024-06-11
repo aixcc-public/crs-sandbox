@@ -9,10 +9,10 @@ until docker version >/dev/null 2>/dev/null; do
 	sleep 5
 done
 
-docker login ghcr.io -u "${GITHUB_USER}" --password "${GITHUB_TOKEN}"
+echo "${GITHUB_TOKEN}" | docker login ghcr.io -u "${GITHUB_USER}" --password-stdin
 
 for cp in "${AIXCC_CP_ROOT}"/*; do
 	echo "Fetching image for CP at ${cp}"
-	cd "$cp" || exit 1
+	cd "$cp"
 	make docker-pull
 done
