@@ -215,6 +215,7 @@ Most dependencies in this repository can be automatically managed by `mise`, but
 - docker >= 24.0.5
 - docker-compose >= 2.26.1
 - GNU make >= 4.3
+- kind >= 0.23.0 (for running local kubernetes clusters in docker)
 
 Additionally, you will need permissions to interact with the Docker daemon.  Typically this means adding your user to the `docker` group.
 
