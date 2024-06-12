@@ -21,12 +21,15 @@ HOST_ENV_FILE = $(ROOT_DIR)/sandbox/env
 
 # Check for required files that will error out elsewhere if not present
 ENV_FILES_PRESENT = $(wildcard $(HOST_ENV_FILE))
-UNSET_GITHUB_ENV_VARS = $(shell grep REPLACE_WITH <$(HOST_ENV_FILE) | grep GITHUB_)
+INVALID_GITHUB_ENV_VARS = $(shell grep -E '^GITHUB_(TOKEN|USER)=(<REPLACE_WITH.*|)$$' <$(HOST_ENV_FILE))
+GITHUB_ENV_VAR_COUNT = $(shell grep -E '^GITHUB_(TOKEN|USER)' -c <$(HOST_ENV_FILE))
 
 ifeq (,$(ENV_FILES_PRESENT))
 $(warning No env file found at $(HOST_ENV_FILE).  Please copy & fill out sandbox/example.env and try again.  See the README and the file's comments for details.)
-else ifneq (,$(UNSET_GITHUB_ENV_VARS))
+else ifneq (,$(INVALID_GITHUB_ENV_VARS))
 $(warning Uninitialized GitHub credentials in $(HOST_ENV_FILE).  In order for make up to work, these need to be set to values that can pull containers and clone repos.)
+else ifneq (2,$(GITHUB_ENV_VAR_COUNT))
+$(warning Not all GitHub credentials are set in $(HOST_ENV_FILE).  In order for make up to work, these need to be set to values that can pull containers and clone repos.  Check sandbox/example.env and README.md for what these are and how to set them.)
 endif
 
 ifeq (,$(wildcard $(CP_CONFIG_FILE)))
@@ -58,7 +61,8 @@ env-file-required:
 	@if [ -z "$(ENV_FILES_PRESENT)" ]; then exit 1; fi
 
 github-creds-required: env-file-required
-	@if [ -n "$(UNSET_GITHUB_ENV_VARS)" ]; then exit 1; fi
+	@if [ -n "$(INVALID_GITHUB_ENV_VARS)" ]; then exit 1; fi
+	@if [ "$(GITHUB_ENV_VAR_COUNT)" -lt 2 ]; then exit 1; fi
 
 build: ## Build the project
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) build $(c)
