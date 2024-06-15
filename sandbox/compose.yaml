@@ -4,7 +4,7 @@
 ---
 services:
   load-cp-images:
-    image: load-cp-images:v0.0.1
+    image: ghcr.io/aixcc-sc/load-cp-images:v0.0.1
     restart: on-failure
     build:
       context: ./cp_image_pull
