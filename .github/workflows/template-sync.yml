@@ -145,7 +145,7 @@ jobs:
             git commit -m "upstream merge"
             merged_template_change_sha=$(git rev-parse HEAD)
             git checkout main -b "${PR_BRANCH}"
-            git cherry-pick --no-commit -X ours "$merged_template_change_sha"
+            git cherry-pick --no-commit -X ours "$merged_template_change_sha" || true
             git branch -D upstream_merge
         env:
           UPSTREAM_MERGED: ${{ steps.get_latest_merged_upstream_pr.outputs.latestMergedUpstream }}
