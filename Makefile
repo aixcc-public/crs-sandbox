@@ -172,7 +172,7 @@ k8s: k8s/development build ## Generates helm chart locally for the development p
 	@docker pull docker:24-dind
 	@docker pull postgres:16.2-alpine3.19
 	@docker pull ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
-	@kind load docker-image ghcr.io/aixcc-sc/capi:v2.1.3 ghcr.io/berriai/litellm-database:main-v1.35.10 docker:24-dind postgres:16.2-alpine3.19 nginx:1.25.5 load-cp-images:v0.0.1
+	@kind load docker-image ghcr.io/aixcc-sc/capi:v2.1.3 ghcr.io/berriai/litellm-database:main-v1.35.10 docker:24-dind postgres:16.2-alpine3.19 nginx:1.25.5 ghcr.io/aixcc-sc/load-cp-images:v0.0.1
 	@helm install crs $(ROOT_DIR)/charts/crs
 
 k8s/clean:
