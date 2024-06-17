@@ -368,3 +368,15 @@ As you can see the iAPI remains as part of the CRS Sanbox but can communicate wi
 However, the LiteLLM component moves to a centralized component that does NOT run within the CRS Sandbox at competition.
 
 ![arch diagram](./.static/architecture.png)
+
+## Competition Details
+
+### Runtime
+
+The ASC will be organized into a series of rounds, and in each round a CRS will analyze a
+single CP (i.e., a single CP folder will be present in `${AIXCC_CP_ROOT}`). Each round will
+last four (4) hours.
+
+At the start of each round, the folders `${AIXCC_CP_ROOT}` and `${AIXCC_CRS_SCRATCH_SPACE}`
+will be reset with only the target CP for that round in `${AIXCC_CP_ROOT}`. The contents of
+`${AIXCC_CRS_SCRATCH_SPACE}` will not persist between rounds.
