@@ -97,7 +97,7 @@ destroy: clear-dind-cache ## Stop and remove containers with volumes
 
 clear-dind-cache: ## Clears out DIND cached artifacts
 	@echo "Deleting the docker-in-docker cache folder, which requires sudo.  You will be prompted for your password."
-	@sudo rm -rf $(ROOT_DIR)/dind_cache/*
+	@sudo rm -rf $(HOST_DIND_CACHE)
 
 stop: ## Stop containers
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) stop $(c)
