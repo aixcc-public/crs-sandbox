@@ -364,6 +364,24 @@ services:
       kompose.hpa.replicas.min: 3
 ```
 
+#### Deployments, Pods, and replica count
+
+Kompose has some limitations on resource creation.  Depending on what attributes you set on your services, you will get different Kubernetes resource
+types.  Here are some typical use cases.
+
+##### Run forever and never exit
+
+This type of service is never expected to exit cleanly.  If it exits, it will be due to an uncaught exception.  This might be a database or cache.
+
+Set `restart: always` on this service.  This produces a Deployment in Kubernetes.  If you want multiple, you can use the `deploy.replicas` key to
+scale horizontally.
+
+##### Run once and exit cleanly
+
+This type of service is intended to run once, typically when initialized, and not restart upon completion.
+
+Set `restart: on-failure` on this service.  This produces a Pod in Kubernetes.  If you want multiple, you will need to declare multiple services.
+
 ### Architecture Diagram
 
 This diagram depicts the CRS Sandbox during the `development` phase with `--profile development` and during the `competition` phase with `--profile competition`.
