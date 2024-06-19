@@ -3,7 +3,9 @@
 **/env
 
 ## Generated Kubernetes Resources
+sandbox/kustomize/base/resources.yaml
 .k8s
+./charts
 
 ## Cloned exemplar repositories
 cp_root/
@@ -16,9 +18,6 @@ dind_cache/
 
 ## CAPI Audit logs
 capi_logs/
-
-## Charts
-charts/*
 
 ## LLM creds
 **/vertex_key.json

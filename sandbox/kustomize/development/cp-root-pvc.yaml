@@ -1,0 +1,9 @@
+---
+# kustomize/overlays/cp-root-pvc-patch.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cp-root
+spec:
+  accessModes:
+    - ReadOnlyMany
