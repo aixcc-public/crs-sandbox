@@ -183,7 +183,8 @@ Note: OpenAI Embedding models have not currently been released in more than a si
 All OpenAI models will also be matched by an Azure-hosted version. Competitors will be able to freely request the
 model they like by the Model name in chart above, plus a prefix "oai-" or "azure-".
 Ex. "oai-gpt-4o".
-This was done because of performance differences between the models as hosted on OAI vs Azure infrastructure. The models themselves are guaranteed to be identical but no such promises can be made as regards supporting provider infrastrcture.
+This was done because of performance differences between the models as hosted on OAI vs Azure infrastructure.
+The models themselves are guaranteed to be identical but no such promises can be made as regards supporting provider infrastrcture.
 
 Note: OAI Embedding models have not currently been released in more than a single version.
 
@@ -333,14 +334,16 @@ See [Makefile](./Makefile) for more commands
 
 ### Kubernetes
 
-The Makefile includes endpoints for `make k8s` and `make k8s/competition` which will generate a helm chart in a `./charts/` folder.
-The `make k8s` command uses Kind to run Kubernetes locally and will also apply the generated Helm chart onto your cluster.
+The Makefile includes endpoints for `make k8s`, `make k8s/development` and `make k8s/competition`
+
+This will generate a resources chart in a `.k8s/` folder.
+The `make k8s` command uses Kind to run Kubernetes locally and will also apply the generated Kubernetes resources onto your cluster.
 This process uses a component called [Kompose](https://kompose.io/conversion/) for translating the Docker Compose file into resources.
 The CRS Sandbox will include a CI/CD action which the private repos must also use.
 This will generate and push the container images to the respective per-competitor private GitHub.
-This will also push the Helm chart as an OCI compliant chart to the private GitHub repos.
+This will also push the generated manifest file as an OCI compliant manifest to the private GitHub repos.
 The `evaluator.yml` action runs `make k8s` in every pull request to `main`.
-This is to ensure all resources can be properly translated into a Helm chart and deployed into Kubernetes.
+This is to ensure all resources can be properly translated into a manifests and deployed into Kubernetes.
 
 #### Autoscaling
 
