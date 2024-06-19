@@ -1,0 +1,7 @@
+---
+resources:
+  - ../base
+
+patches:
+  - path: crs-scratch-pvc.yaml
+  - path: cp-root-pvc.yaml

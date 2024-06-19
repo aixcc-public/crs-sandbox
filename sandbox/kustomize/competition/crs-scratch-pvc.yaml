@@ -1,0 +1,9 @@
+---
+# kustomize/overlays/crs-scratch-pvc-patch.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: crs-scratch
+spec:
+  accessModes:
+    - ReadWriteMany

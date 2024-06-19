@@ -58,6 +58,7 @@ jobs:
           echo "MAIN_COMMIT_SHA=${MAIN_COMMIT_SHA}" >> "$GITHUB_ENV"
 
       - name: Check if tag commit is an ancestor of the main branch
+        if: ${{ !github.event.release.prerelease }} # We only care about ensuring actual release tags come from main
         id: check_ancestor
         run: |
           if git merge-base --is-ancestor "${{ env.TAG_COMMIT_SHA }}" "${{ env.MAIN_COMMIT_SHA }}"; then
@@ -87,8 +88,6 @@ jobs:
   build-and-push-chart:
     runs-on:
       group: large-runners
-    strategy:
-      fail-fast: false
     needs: build-and-push-image
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
@@ -114,6 +113,10 @@ jobs:
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
           sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
+          sudo curl -Lo ./helmify.tgz https://github.com/arttor/helmify/releases/download/v0.4.13/helmify_Linux_x86_64.tar.gz
+          sudo tar -xvf ./helmify.tgz
+          sudo mv helmify /usr/local/bin/
+          sudo chmod +x /usr/local/bin/helmify
           curl https://mise.jdx.dev/install.sh | sh
           echo "$HOME/.local/share/mise/bin" >> "$GITHUB_PATH"
           echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
@@ -136,6 +139,7 @@ jobs:
         run: |
           VERSION_STRING=${{ github.event.release.tag_name }}
           NEW_VERSION="${VERSION_STRING#v}"
+          helmify -f .k8s/resources.yaml charts/crs
           cd ./charts && helm package crs --version "$NEW_VERSION"
           gh release upload "${{github.event.release.tag_name}}" "crs-${NEW_VERSION}.tgz"
         env:
