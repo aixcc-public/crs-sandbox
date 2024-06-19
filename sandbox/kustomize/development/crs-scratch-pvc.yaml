@@ -1,5 +1,5 @@
 ---
-# kustomize/overlays/crs-scratch-pvc-patch.yaml
+# kustomize/development/crs-scratch-pvc.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

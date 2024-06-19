@@ -1,5 +1,5 @@
 ---
-# kustomize/overlays/cp-root-pvc-patch.yaml
+# kustomize/competition/cp-root-pvc.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
