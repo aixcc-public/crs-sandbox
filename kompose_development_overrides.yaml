@@ -7,6 +7,18 @@ services:
     volumes:
       - cp_root:/cp_root
   crs:
+    environment:
+      # These values will be modified automatically at competition time
+      # Competitors MUST map any services which need these environment variables
+      # in the exact same way, or they will not be overridden during competition
+      # By using the double $$ when these values pass from Docker Compose -> Kompose -> Kustomize
+      # they will be available as variables which Kustomize can substitute.
+      - DOCKER_HOST=$${DOCKER_HOST:-tcp://dind:2375}
+      - AIXCC_LITELLM_HOSTNAME=$${AIXCC_LITELLM_HOSTNAME:-http://litellm}
+      - AIXCC_API_HOSTNAME=$${AIXCC_API_HOSTNAME:-http://iapi:8080}
+      - AIXCC_CP_ROOT=$${AIXCC_CP_ROOT:-/cp_root}
+      - AIXCC_CRS_SCRATCH_SPACE=$${AIXCC_CRS_SCRATCH_SPACE:-/crs_scratch}
+      - LITELLM_KEY=$${LITELLM_KEY:-sk-1234}
     volumes:
       - cp_root:/cp_root
       - crs_scratch:/crs_scratch
@@ -18,6 +30,8 @@ services:
       - dind_cache:/var/lib/docker
       - crs_scratch:/crs_scratch
   iapi:
+    environment:
+      - CAPI_UPSTREAM_HOST=$${CAPI_UPSTREAM_HOST:-http://capi:8080}
     depends_on:
       capi:
         condition: service_healthy
