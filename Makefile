@@ -12,6 +12,10 @@ HOST_CRS_SCRATCH = $(ROOT_DIR)/crs_scratch
 HOST_DIND_CACHE = $(ROOT_DIR)/dind_cache
 HOST_CAPI_LOGS = $(ROOT_DIR)/capi_logs
 
+LOCAL_K8S_BASE = $(ROOT_DIR)/sandbox/kustomize/base
+LOCAL_K8S_RESOURCES = $(ROOT_DIR)/.k8s
+
+
 # variables that control the CP repos
 HOST_CP_ROOT_DIR = $(ROOT_DIR)/cp_root
 CP_CONFIG_FILE ?= $(ROOT_DIR)/cp_config.yaml
@@ -164,7 +168,7 @@ loadtest: computed-env ## Run k6 load tests
 loadtest/destroy: ## Stop and remove containers with volumes
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile loadtest down --volumes --remove-orphans $(c)
 
-k8s: k8s/development build ## Generates helm chart locally for the development profile for kind testing, etc. build is called for local image generation
+k8s: k8s/clean k8s/development build ## Generates helm chart locally for the development profile for kind testing, etc. build is called for local image generation
 	@kind create cluster --wait 1m
 	@docker pull ghcr.io/aixcc-sc/capi:v2.1.5
 	@docker pull ghcr.io/berriai/litellm-database:main-v1.35.10
@@ -172,29 +176,33 @@ k8s: k8s/development build ## Generates helm chart locally for the development p
 	@docker pull docker:24-dind
 	@docker pull postgres:16.2-alpine3.19
 	@docker pull ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
-	@kind load docker-image ghcr.io/aixcc-sc/capi:v2.1.5 ghcr.io/berriai/litellm-database:main-v1.35.10 docker:24-dind postgres:16.2-alpine3.19 nginx:1.25.5 ghcr.io/aixcc-sc/load-cp-images:v0.0.1
-	@helm install crs $(ROOT_DIR)/charts/crs
+	@docker pull registry.k8s.io/sig-storage/nfs-provisioner:v4.0.8
+	@kind load docker-image ghcr.io/aixcc-sc/capi:v2.1.5 ghcr.io/berriai/litellm-database:main-v1.35.10 docker:24-dind postgres:16.2-alpine3.19 nginx:1.25.5 ghcr.io/aixcc-sc/load-cp-images:v0.0.1 registry.k8s.io/sig-storage/nfs-provisioner:v4.0.8
+	@mkdir $(ROOT_DIR)/charts
+	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_development_overrides.yaml" kompose convert --profile development --chart --out tmp_charts
+	@mv tmp_charts $(ROOT_DIR)/charts/crs
+	@rm -rf ./tmp_charts
+	@cp -R $(ROOT_DIR)/sandbox/kustomize/* $(ROOT_DIR)/charts/crs
+	@helm repo add nfs-ganesha-server-and-external-provisioner https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/
+	@helm install --set image.tag=v4.0.8 --set storageClass.defaultClass=true nfs-ganesha nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner
+	@kubectl apply -f $(LOCAL_K8S_RESOURCES)
 
 k8s/clean:
-	@rm -rf tmp_charts
-	@rm -rf $(ROOT_DIR)/charts
+	@rm -rf $(LOCAL_K8S_BASE)/resources.yaml
+	@rm -rf $(LOCAL_K8S_RESOURCES)
 	@kind delete cluster
 
 k8s/development: github-creds-required k8s/clean
-	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_development_overrides.yaml" kompose convert --profile development --chart --out tmp_charts
-	@mkdir $(ROOT_DIR)/charts
-	@mv tmp_charts $(ROOT_DIR)/charts/crs
-	@rm -rf ./tmp_charts
-	@yq eval ".description = \"AIxCC Competitor CRS\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
-	@yq eval ".name = \"crs\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
+	@mkdir -p $(LOCAL_K8S_RESOURCES)
+	@mkdir -p $(LOCAL_K8S_BASE)
+	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_development_overrides.yaml" kompose convert --profile development --out $(LOCAL_K8S_BASE)/resources.yaml
+	@kustomize build $(ROOT_DIR)/sandbox/kustomize/development -o $(LOCAL_K8S_RESOURCES)/resources.yaml
 
-k8s/competition: env-file-required k8s/clean ## Generates the competition helm chart for use during pregame and the competition
-	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_competition_overrides.yaml" kompose convert --profile competition --chart --out tmp_charts
-	@mkdir $(ROOT_DIR)/charts
-	@mv tmp_charts $(ROOT_DIR)/charts/crs
-	@rm -rf ./tmp_charts
-	@yq eval ".description = \"AIxCC Competitor CRS\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
-	@yq eval ".name = \"crs\"" -i $(ROOT_DIR)/charts/crs/Chart.yaml
+k8s/competition: env-file-required k8s/clean ## Generates the competition k8s resources for use during the evaluation window and competition
+	@mkdir -p $(LOCAL_K8S_RESOURCES)
+	@mkdir -p $(LOCAL_K8S_BASE)
+	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_competition_overrides.yaml" kompose convert --profile competition --out $(LOCAL_K8S_BASE)/resources.yaml
+	@kustomize build $(ROOT_DIR)/sandbox/kustomize/competition -o $(LOCAL_K8S_RESOURCES)/resources.yaml
 
 clean-volumes:
 	rm -rf $(HOST_CP_ROOT_DIR) $(HOST_CRS_SCRATCH) $(HOST_DIND_CACHE) $(HOST_CAPI_LOGS)
