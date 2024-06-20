@@ -203,8 +203,8 @@ k8s/competition: env-file-required k8s/clean ## Generates the competition k8s re
 k8s/kustomize/competition:
 	@kustomize build $(ROOT_DIR)/sandbox/kustomize/competition -o $(LOCAL_K8S_RESOURCES)/resources.yaml
 
-clean-volumes:
-	rm -rf $(HOST_CP_ROOT_DIR) $(HOST_CRS_SCRATCH) $(HOST_DIND_CACHE) $(HOST_CAPI_LOGS)
+clean-volumes: clear-dind-cache
+	rm -rf $(HOST_CP_ROOT_DIR) $(HOST_CRS_SCRATCH) $(HOST_CAPI_LOGS)
 
 clean: cps/clean k8s/clean down clear-dind-cache
 
