@@ -182,7 +182,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=aixcc
       - POSTGRES_USER=aixcc
-      - POSTGRES_DATABASE=litellm
+      - POSTGRES_DB=litellm
     configs:
       - source: capi_db_setup
         target: /docker-entrypoint-initdb.d/capi-db-setup.sh
@@ -211,7 +211,7 @@ services:
     command: ["--config", "/app/config.yaml", "--port", "80", "--num_workers", "8"]
     env_file: env
     environment:
-      - DATABASE_URL=postgresql://aixcc:aixcc@db
+      - DATABASE_URL=postgresql://aixcc:aixcc@db:5432/litellm
     healthcheck:
       test: ["CMD-SHELL", "python3", "--version"]
       interval: 5s
