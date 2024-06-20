@@ -113,8 +113,8 @@ litellm_settings:
   drop_params: true
   max_budget: 100
   budget_duration: 30d
-  num_retries: 3
-  request_timeout: 10
+  num_retries: 10
+  request_timeout: 700
   max_parallel_requests: 10000
 general_settings:
   master_key: sk-1234  # Leave this default value.
