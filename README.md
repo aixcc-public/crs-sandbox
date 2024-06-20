@@ -126,15 +126,22 @@ and at competition, the AIxCC infrastructure team will override these values wit
 
 There are currently 5 LLM Provider environment variables declared but not populated in example.env, which will be populated at competition time:
 
-- OPENAI\_API\_KEY
-- AZURE\_API\_KEY
-- AZURE\_API\_BASE
-- GOOGLE_APPLICATION_CREDENTIAL
-- ANTHROPIC\_API\_KEY
+- `OPENAI_API_KEY`
+- `AZURE_API_KEY`
+- `AZURE_API_BASE`
+- `GOOGLE_APPLICATION_CREDENTIALS`
+- `ANTHROPIC_API_KEY`
 
 Note: For local development, the [./sandbox/example.env](./sandbox/example.env) file should be
 copied to `./sandbox/env`. This file is included in the `.gitignore` so competitors don't
 accidentally push it to their repository.
+
+Also note: `GOOGLE_APPLICATION_CREDENTIALS` does not directly contain the Google credential. It
+contains a path to `vertex_key.json`, which contains the actual credentials.  To get the content of
+`vertex_key.json`, use the [instructions to create a GCP Service
+Account](https://docs.litellm.ai/docs/providers/vertex#using-gcp-service-account) in combination
+with [this document about creating the credential file
+itself](https://cloud.google.com/docs/authentication/application-default-credentials#personal).
 
 *TBD* - These variables and the LiteLLM configuration file are not yet complete. This will be released in a CRS sandbox update.
 We will continue iterating on the CRS sandbox as we grow closer to the competition in order to support newer versions of components.
@@ -157,7 +164,8 @@ secrets on your repository and `gh secrets list` to show which ones exist and wh
 recently set.
 
 The [GitHub CRS Validation workflow](./.github/workflows/evaluator.yml) expects the repo-level
-secrets to have the same names as in `sandbox/env` (`OPENAI_API_KEY`, etc).
+secrets to have the same names as in `sandbox/env` (`OPENAI_API_KEY`, etc). The only exception to
+this is Google's LLM credential, which should be stored in `VERTEX_KEY_JSON`.
 
 ![gh secret set and list demonstration](./.static/gh-secret-list-set-demo.png)
 

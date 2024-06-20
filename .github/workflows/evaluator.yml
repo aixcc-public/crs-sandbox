@@ -233,10 +233,14 @@ jobs:
           .github/scripts/set-env.sh ANTHROPIC_API_KEY "${{ secrets.ANTHROPIC_API_KEY }}"
           .github/scripts/set-env.sh AZURE_API_BASE "${{ secrets.AZURE_API_BASE }}"
           .github/scripts/set-env.sh AZURE_API_KEY "${{ secrets.AZURE_API_KEY }}"
-          .github/scripts/set-env.sh GEMINI_API_KEY "${{ secrets.GEMINI_API_KEY }}"
           .github/scripts/set-env.sh GITHUB_TOKEN "${{ github.token }}"
           .github/scripts/set-env.sh GITHUB_USER gha
           .github/scripts/set-env.sh OPENAI_API_KEY "${{ secrets.OPENAI_API_KEY }}"
+
+      - name: Create vertex-key for real run
+        run: |
+          printf "%s" "${{ secrets.VERTEX_KEY_JSON }}" > sandbox/litellm/vertex_key.json
+          .github/scripts/set-env.sh GOOGLE_APPLICATION_CREDENTIALS "\/vertex_key.json"
 
       - name: Add SSH key
         env:
