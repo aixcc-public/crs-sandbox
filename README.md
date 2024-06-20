@@ -264,6 +264,28 @@ export DOCKER_HOST=tcp://127.0.0.1:2375
 docker logs <container name>
 ```
 
+### Working with Kubernetes API
+
+Several teams inquired about the ability of their CRS to work directly with the Kubernetes API in a few tickets.
+
+- [#197](https://github.com/aixcc-sc/crs-sandbox/issues/197)
+- [#203](https://github.com/aixcc-sc/crs-sandbox/issues/203)
+
+This functionality has now been added to the CRS Sandbox.
+
+This is approach is purely optional and should be considered an `unsupported expert mode` so teams can perform dynamic orchestraion of their CRS.
+
+Unsupported means that issues in GitHub related to the Kubernetes API access will receive a lower priorty.
+
+Teams using the Kubernetes API MUST manage their own dynamic resources, and their CRS approach MUST have the ability to recover from memory exhaustion, etc.
+
+To enable this feature the `compose.yaml` file must contain the following for each service that needs Kubernetes access.
+
+```yaml
+labels:
+  kompose.service.accountname: "crs"
+```
+
 #### Dependencies managed using mise
 
 This repository defines its dependencies in a [`.tool-versions`](./.tool-versions) file.
