@@ -14,7 +14,7 @@ if [ "$LOAD_CPS" = "true" ]; then
 	while read -r clone_cp; do
 		$clone_cp
 	done < <(yq -r '.cp_targets | to_entries | .[] | "git clone \(.value.url) /cp_root/\(.key)"' "${CP_CONFIG_FILE}")
-	find /cp_root -maxdepth 1 -type d -exec bash -c "echo 'prepping $1' && cd '$1' && make cpsrc-prepare" shell {} \;
+	find /cp_root -maxdepth 1 -type d ! -name "lost+found" -exec bash -c "echo 'prepping $1' && cd '$1' && make cpsrc-prepare" shell {} \;
 	echo "CP loading complete"
 fi
 
@@ -34,6 +34,10 @@ if [ "$LOAD_CP_IMAGES" = "true" ]; then
 		if [ "$cp" = "${AIXCC_CP_ROOT}"/'*' ]; then
 			echo "CP root folder was empty."
 			exit 1
+		fi
+
+		if [ "$cp" = "${AIXCC_CP_ROOT}"/lost+found ]; then
+			continue
 		fi
 
 		if [ ! -d "$cp" ]; then

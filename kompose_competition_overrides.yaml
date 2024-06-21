@@ -6,6 +6,7 @@
 services:
   load-cp-images:
     environment:
+      - DOCKER_HOST=$${DOCKER_HOST:-tcp://dind:2375}
       - "ENABLE_HEALTH_ENDPOINT=true"
       - "LOAD_CPS=true"
     volumes:
