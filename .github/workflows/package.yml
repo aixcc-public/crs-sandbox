@@ -145,7 +145,7 @@ jobs:
         run: |
           VERSION_STRING=${{ github.event.release.tag_name }}
           NEW_VERSION="${VERSION_STRING#v}"
-          oras push --artifact-type application/vnd.kubernetes.kustomization "ghcr.io/${{ github.repository }}:${NEW_VERSION}" kustomize.tar.gz
+          oras push --artifact-type application/vnd.kubernetes.kustomization "ghcr.io/${{ github.repository }}/crs-manifest:${NEW_VERSION}" kustomize.tar.gz
 
         env:
           GITHUB_TOKEN: ${{ github.token }}
