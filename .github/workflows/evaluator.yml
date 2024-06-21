@@ -155,23 +155,11 @@ jobs:
             exit 1
           fi
 
-          eval_vol_count_dev=$(yq eval '.volumes | length == 3' kompose_development_overrides.yaml)
-          eval_vol_count_comp=$(yq eval '.volumes | length == 3' kompose_competition_overrides.yaml)
+          eval_vol_count_dev=$(yq eval '.volumes | length == 2' kompose_development_overrides.yaml)
+          eval_vol_count_comp=$(yq eval '.volumes | length == 2' kompose_competition_overrides.yaml)
 
           eval_services_dev=$(yq eval '.services | (has("dind") and has("iapi") and has("capi"))' kompose_development_overrides.yaml)
           eval_services_comp=$(yq eval '.services | has("dind")' kompose_competition_overrides.yaml)
-
-          eval_dind_dev=$(yq eval '(
-            .services | to_entries[] |
-            select(.key == "dind") |
-            select(.value.volumes != null) | .value.volumes | all_c(. == "dind_cache:/var/lib/docker" or . == "crs_scratch:/crs_scratch")
-          ) | [.]' kompose_development_overrides.yaml | yq eval 'all')
-
-          eval_dind_comp=$(yq eval '(
-            .services | to_entries[] |
-            select(.key == "dind") |
-            select(.value.volumes != null) | .value.volumes | all_c(. == "dind_cache:/var/lib/docker" or . == "crs_scratch:/crs_scratch")
-          ) | [.]' kompose_competition_overrides.yaml | yq eval 'all')
 
           eval_volume_dev=$(yq eval '(
             .services | to_entries[] |
@@ -192,14 +180,6 @@ jobs:
           fi
           if [ "$eval_vol_count_comp" = "false" ]; then
             echo "Extra volumes found in kompose_competition_overrides.yaml.  Please remove them."
-            EXIT=1
-          fi
-          if [ "$eval_dind_dev" = "false" ]; then
-            echo "dind_cache not found for dind in kompose_development_overrides.yaml.  Please add it."
-            EXIT=1
-          fi
-          if [ "$eval_dind_comp" = "false" ]; then
-            echo "dind_cache not found for dind in kompose_competition_overrides.yaml.  Please add it."
             EXIT=1
           fi
           if [ "$eval_services_dev" = "false" ]; then
