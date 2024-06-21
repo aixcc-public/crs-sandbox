@@ -1,9 +1,9 @@
 ROOT_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 DOCKER_COMPOSE_FILE = $(ROOT_DIR)/compose.yaml
-DOCKER_COMPOSE_PORTS_FILE = $(ROOT_DIR)/compose_local_overrides.yaml
-DOCKER_COMPOSE_LOCAL_ARGS = -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_PORTS_FILE) --profile development
-DOCKER_COMPOSE_LOCAL_MOCK_CRS_ARGS = -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_PORTS_FILE) --profile mock-crs
+DOCKER_COMPOSE_LOCAL_OVERRIDES = $(ROOT_DIR)/compose_local_overrides.yaml
+DOCKER_COMPOSE_LOCAL_ARGS = -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_LOCAL_OVERRIDES) --profile development
+DOCKER_COMPOSE_LOCAL_MOCK_CRS_ARGS = -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_LOCAL_OVERRIDES) --profile mock-crs
 
 # variables that control the volumes
 export UID=$(shell id -u)
@@ -166,10 +166,10 @@ cps: local-volumes $(CP_MAKE_TARGETS) ## Clone CP repos
 cps/clean: ## Clean up the cloned CP repos
 	@rm -rf $(HOST_CP_ROOT_DIR)
 
-loadtest: computed-env ## Run k6 load tests
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile loadtest up --exit-code-from test --build $(c)
+loadtest: local-volumes computed-env ## Run k6 load tests
+	@docker compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_LOCAL_OVERRIDES) --profile loadtest up --exit-code-from test --build $(c)
 loadtest/destroy: ## Stop and remove containers with volumes
-	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile loadtest down --volumes --remove-orphans $(c)
+	@docker compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_LOCAL_OVERRIDES) --profile loadtest down --volumes --remove-orphans $(c)
 
 k8s: k8s/clean k8s/development k8s/kustomize/development build ## Generates helm chart locally for the development profile for kind testing, etc. build is called for local image generation
 	@docker pull ghcr.io/aixcc-sc/capi:v2.1.8
@@ -179,7 +179,7 @@ k8s: k8s/clean k8s/development k8s/kustomize/development build ## Generates helm
 	@docker pull postgres:16.2-alpine3.19
 	@docker pull ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
 	@docker pull curlimages/curl:8.8.0
-	@docker pull ghcr.io/aixcc-sc/load-cp-images:v0.0.3
+	@docker pull ghcr.io/aixcc-sc/load-cp-images:v0.0.4
 	@helm repo add longhorn https://charts.longhorn.io
 	@helm repo update
 	@helm install --kube-context crs longhorn longhorn/longhorn --namespace longhorn-system --create-namespace --set defaultSetting.defaultStorageClass=true

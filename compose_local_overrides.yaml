@@ -17,6 +17,9 @@ services:
   iapi:
     ports:
       - '127.0.0.1:8080:8080'
+    configs:
+      - source: nginx_local_config
+        target: /etc/nginx/templates/default.conf.template
     depends_on:
       capi:
         condition: service_healthy
