@@ -7,7 +7,7 @@ services:
     image: ghcr.io/aixcc-sc/load-cp-images:v0.0.2
     expose:
       - "8080"
-    restart: no
+    restart: "no"
     build:
       context: ./load_cp_images
     profiles:
@@ -90,9 +90,9 @@ services:
     image: docker:24-dind
     command: ["dockerd", "-H", "tcp://0.0.0.0:2375", "--tls=false", "--storage-driver=overlay2"]
     restart: always
-    privileged: true # This must run with privlege to support nested virtualization within the public Linux CP for `virtme-ng`
+    privileged: true  # This must run with privlege to support nested virtualization within the public Linux CP for `virtme-ng`
     environment:
-      - DOCKER_TLS_CERTDIR # intentionally blank to optimize runtime
+      - DOCKER_TLS_CERTDIR  # intentionally blank to optimize runtime
     volumes:
       - type: bind
         source: ${PWD}/crs_scratch
@@ -107,7 +107,7 @@ services:
   iapi:
     networks:
       - crs-internal
-      - internet # Internal networks can"t have host port mappings
+      - internet  # Internal networks can"t have host port mappings
     expose:
       - "8080"
     profiles:
@@ -132,7 +132,7 @@ services:
   capi:
     networks:
       - crs-internal
-      - internet # This needs internet to pull CP container images but not for competition
+      - internet  # This needs internet to pull CP container images but not for competition
     expose:
       - "8080"
     profiles:
