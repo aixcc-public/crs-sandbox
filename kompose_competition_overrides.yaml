@@ -21,7 +21,7 @@ services:
       kompose.init.containers.name: wait-for-cp-load
       kompose.volume.type: persistentVolumeClaim
       kompose.volume.size: 1Ti
-      kompose.volume.storage-class-name: azureblob-nfs-premium
+      kompose.volume.storage-class-name: azurefile-csi-premium
     volumes:
       - cp_root:/cp_root
       - crs_scratch:/crs_scratch
@@ -41,7 +41,7 @@ services:
     labels:
       kompose.volume.type: persistentVolumeClaim
       kompose.volume.size: 1Ti
-      kompose.volume.storage-class-name: azureblob-nfs-premium
+      kompose.volume.storage-class-name: azurefile-csi-premium
     volumes:
       - dind_cache:/var/lib/docker
       - crs_scratch:/crs_scratch
