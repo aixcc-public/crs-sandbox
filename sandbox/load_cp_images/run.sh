@@ -20,7 +20,8 @@ if [ "$LOAD_CPS" = "true" ]; then
 	while read -r clone_cp; do
 		$clone_cp
 	done < <(yq -r '.cp_targets | to_entries | .[] | "git clone \(.value.url) /cp_root/\(.key)"' "${CP_CONFIG_FILE}")
-	find /cp_root -maxdepth 1 -type d ! -name "lost+found" -exec bash -c "echo 'prepping $1' && cd '$1' && make cpsrc-prepare" shell {} \;
+	# shellcheck disable=SC2156
+	find /cp_root -maxdepth 1 -type d ! -name "lost+found" -exec bash -c "echo 'prepping {}' && cd '{}' && make cpsrc-prepare" \;
 	echo "CP loading complete"
 fi
 
