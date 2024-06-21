@@ -9,7 +9,6 @@ resources:
 patches:
   - path: crs-scratch-pvc.yaml
   - path: cp-root-pvc.yaml
-  - path: dind-cache-pvc.yaml
   - target:
       kind: Deployment
       name: capi

@@ -4,7 +4,7 @@
 ---
 services:
   load-cp-images:
-    image: ghcr.io/aixcc-sc/load-cp-images:v0.0.2
+    image: ghcr.io/aixcc-sc/load-cp-images:v0.0.3
     expose:
       - "8080"
     restart: "no"
