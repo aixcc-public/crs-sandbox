@@ -41,16 +41,31 @@ Date: 2024-06-21
 
 On the above date, the AIxCC Game Architecture team will automatically execute competitors CRSs against a subset of published challenge problems.
 
-The CRS MUST be released via [GitHub Release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) and all GitHub actions must pass.
+The CRS MUST be released via [GitHub Release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)
+and you MUST merge at least one pull request with a passing Evaluator workflow.
 
-Competitors must release new versions of their CRS with an updated tag from `main` after the start of Phase 2.
+Competitors must release new versions of their CRS with an updated tag from `main` after the start of Phase 2 in order to trigger provisioning of their cluster.
 
-With each new release of a competitors CRS it will be automatically executed.
+Teams MUST merge the automated upstream pull requests in their repos OR rebase for CRS Sandbox version >= `v2.5.0`.
+
+With each new release of a competitors CRS it will be automatically provisioned.
 
 Only the latest semantic version of a competitors CRS that is properly tagged from `main` will be tested in Phase 2.
 
 During Phase 2, secret keys and tokens for collaborator resources (LLM APIs) and GitHub access will
 be set by the AIxCC infrastructure team.
+
+Competitors will recieve access to a live vCluster environment at the start of Phase 2.
+
+Competitors will be able to evaluate their CRS in this environment each time they make a new release of their CRS.
+
+The vCluster environment will use the same SSO from the [AIxCC Dashboard](https://dashboard.aicyberchallenge.com).
+
+We plan to add another button to the Dashboard for this environment soon.
+
+However, once we announce Phase 2 is live, teams will be able to log into their CRS at
+
+[https://vcluster-platform.aixcc.tech/login](https://vcluster-platform.aixcc.tech/login)
 
 ## Code Owners
 
@@ -108,10 +123,8 @@ patched using the provided Docker container.
 One CP (the public Linux kernel CP) includes `virtme-ng` in its CP-specific
 Docker container for the purposes of testing the built kernel.
 
-This is the only form of nested virtualization or nested containerization that
-will be supported by the competition environment. A CRS **MUST NOT** assume that
-nested containers or another virtualization/hypervisor technology will be
-compatible with the competition environment.
+This is the only supported form of nested virtualization for the competition environment.
+A CRS **MUST NOT** assume that nested virtualization accelerations such as KVM via `/dev/kvm` are supported for their containers.
 
 ## Environment Variables & GitHub Secrets
 
