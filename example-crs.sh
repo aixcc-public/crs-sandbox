@@ -2,7 +2,7 @@
 
 printf "The following is a demonstration of a fake CRS interacting with the competition API (cAPI).  First, we'll make sure the cAPI is available.\n"
 
-CURL="curl --location --silent --user 00000000-0000-0000-0000-000000000000:secret"
+CURL="curl --location --silent"
 
 until $CURL "${AIXCC_API_HOSTNAME}/health/" >/dev/null; do
 	printf "Waiting for the cAPI to be available...\n"
