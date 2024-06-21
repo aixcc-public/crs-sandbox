@@ -5,11 +5,14 @@
 services:
   load-cp-images:
     image: ghcr.io/aixcc-sc/load-cp-images:v0.0.1
-    restart: on-failure
+    expose:
+      - "8080"
+    restart: no
     build:
-      context: ./cp_image_pull
+      context: ./load_cp_images
     profiles:
       - development
+      - competition
     networks:
       - crs-internal
       - internet
@@ -17,6 +20,8 @@ services:
     environment:
       - DOCKER_HOST=tcp://dind:2375
       - AIXCC_CP_ROOT=/cp_root
+      - "LOAD_CPS=false"
+      - "LOAD_CP_IMAGES=true"
     volumes:
       - type: bind
         source: ${PWD}/cp_root
@@ -134,7 +139,7 @@ services:
       - mock-crs
       - development
       - loadtest
-    image: ghcr.io/aixcc-sc/capi:v2.1.6
+    image: ghcr.io/aixcc-sc/capi:v2.1.8
     restart: always
     env_file: env
     environment:

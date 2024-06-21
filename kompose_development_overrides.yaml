@@ -4,9 +4,16 @@
 # Changes the bind mount of ./cp_root to specify Persistent Volume that will be populated at competition time
 services:
   load-cp-images:
+    environment:
+      - "ENABLE_HEALTH_ENDPOINT=true"
+      - "LOAD_CPS=true"
     volumes:
       - cp_root:/cp_root
   crs:
+    labels:
+      kompose.init.containers.command: '["sh", "-c", "until curl http://load-cp-images:8080; do echo \"Waiting for CP image load to complete\"; sleep 5; done"]'
+      kompose.init.containers.image: curlimages/curl:8.8.0
+      kompose.init.containers.name: wait-for-cp-load
     environment:
       # These values will be modified automatically at competition time
       # Competitors MUST map any services which need these environment variables
@@ -35,6 +42,10 @@ services:
       capi:
         condition: service_healthy
   capi:
+    labels:
+      kompose.init.containers.command: '["sh", "-c", "until curl http://load-cp-images:8080; do echo \"Waiting for CP image load to complete\"; sleep 5; done"]'
+      kompose.init.containers.image: curlimages/curl:8.8.0
+      kompose.init.containers.name: wait-for-cp-load
     volumes:
       - cp_root:/cp_root
       - crs_scratch:/crs_scratch
