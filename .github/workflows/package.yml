@@ -118,11 +118,6 @@ jobs:
           tar -zxf oras_${ORAS_VERSION}_*.tar.gz -C oras-install/
           sudo mv oras-install/oras /usr/local/bin/
           rm -rf oras_${ORAS_VERSION}_*.tar.gz oras-install/
-          sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
-          sudo curl -Lo ./helmify.tgz https://github.com/arttor/helmify/releases/download/v0.4.13/helmify_Linux_x86_64.tar.gz
-          sudo tar -xvf ./helmify.tgz
-          sudo mv helmify /usr/local/bin/
-          sudo chmod +x /usr/local/bin/helmify
           curl https://mise.jdx.dev/install.sh | sh
           echo "$HOME/.local/share/mise/bin" >> "$GITHUB_PATH"
           echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"

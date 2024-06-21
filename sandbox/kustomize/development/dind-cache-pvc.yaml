@@ -1,9 +1,9 @@
 ---
-# kustomize/development/cp-root-pvc.yaml
+# kustomize/development/dind-cache-pvc.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: cp-root
+  name: dind-cache
 spec:
   storageClassName: "longhorn"
   accessModes:
