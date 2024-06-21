@@ -5,5 +5,6 @@ kind: PersistentVolumeClaim
 metadata:
   name: crs-scratch
 spec:
+  storageClassName: "longhorn"
   accessModes:
     - ReadWriteMany

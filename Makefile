@@ -56,7 +56,7 @@ endif
 CP_TARGETS_DIRS = $(shell yq -r '.cp_targets | keys | .[]' $(CP_CONFIG_FILE))
 CP_MAKE_TARGETS = $(addprefix $(HOST_CP_ROOT_DIR)/.pulled_, $(subst :,_colon_, $(subst /,_slash_, $(CP_TARGETS_DIRS))))
 
-.PHONY: help build up start down destroy stop restart logs logs-crs logs-litellm logs-iapi ps crs-shell litellm-shell cps/clean cps computed-env clear-dind-cache env-file-required github-creds-required
+.PHONY: help build up start down destroy stop restart logs logs-crs logs-litellm logs-iapi ps crs-shell litellm-shell cps/clean cps computed-env clear-dind-cache env-file-required github-creds-required k8s k8s/clean k8s/kustomize/development k8s/kustomize/competition install k8s/development k8s/competition
 
 help: ## Display available targets and their help strings
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_/-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(THIS_FILE) | sort
@@ -86,6 +86,9 @@ up: github-creds-required local-volumes cps computed-env ## Start containers
 
 up-attached: github-creds-required cps computed-env ## Start containers
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) up --build --abort-on-container-exit $(c)
+
+show-config:
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) config $(c)
 
 mock-crs/up-attached: github-creds-required cps computed-env ## Start containers
 	@docker compose $(DOCKER_COMPOSE_LOCAL_MOCK_CRS_ARGS) up --build --abort-on-container-exit $(c)
@@ -169,25 +172,67 @@ loadtest/destroy: ## Stop and remove containers with volumes
 	@docker compose -f $(DOCKER_COMPOSE_FILE) --profile loadtest down --volumes --remove-orphans $(c)
 
 k8s: k8s/clean k8s/development k8s/kustomize/development build ## Generates helm chart locally for the development profile for kind testing, etc. build is called for local image generation
-	@kind create cluster --config=sandbox/kind_config.yaml --wait 1m
 	@docker pull ghcr.io/aixcc-sc/capi:v2.1.8
 	@docker pull ghcr.io/berriai/litellm-database:main-v1.35.10
 	@docker pull nginx:1.25.5
 	@docker pull docker:24-dind
 	@docker pull postgres:16.2-alpine3.19
 	@docker pull ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
-	@docker pull registry.k8s.io/sig-storage/nfs-provisioner:v4.0.8
 	@docker pull curlimages/curl:8.8.0
 	@docker pull ghcr.io/aixcc-sc/load-cp-images:v0.0.2
-	@kind load docker-image ghcr.io/aixcc-sc/capi:v2.1.8 ghcr.io/berriai/litellm-database:main-v1.35.10 docker:24-dind postgres:16.2-alpine3.19 nginx:1.25.5 ghcr.io/aixcc-sc/load-cp-images:v0.0.2 registry.k8s.io/sig-storage/nfs-provisioner:v4.0.8 curlimages/curl:8.8.0
-	@helm repo add nfs-ganesha-server-and-external-provisioner https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/
-	@helm install --set image.tag=v4.0.8 --set storageClass.defaultClass=true nfs-ganesha nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner
-	@kubectl apply -f $(LOCAL_K8S_RESOURCES)
+	@helm repo add longhorn https://charts.longhorn.io
+	@helm repo update
+	@helm install --kube-context crs longhorn longhorn/longhorn --namespace longhorn-system --create-namespace --set defaultSetting.defaultStorageClass=true
+	@kubectl create --context=crs secret docker-registry regcred --docker-server=https://ghcr.io --docker-username=oauth2 --docker-password=$(GITHUB_TOKEN)
+	@kubectl apply --context=crs -f $(LOCAL_K8S_RESOURCES)
 
 k8s/clean:
 	@rm -rf $(LOCAL_K8S_BASE)/resources.yaml
 	@rm -rf $(LOCAL_K8S_RESOURCES)
-	@kind delete cluster
+
+install:
+	@echo "Updating package list"
+	sudo apt-get update
+
+	@echo "Installing Docker Compose"
+	sudo curl -L "https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-$$(uname -s)-$$(uname -m)" -o /usr/local/bin/docker-compose
+	sudo chmod +x /usr/local/bin/docker-compose
+
+	@echo "Setting file limits"
+	echo -e "* soft nofile 65536\n* hard nofile 65536" | sudo tee -a /etc/security/limits.conf
+	echo "fs.file-max = 65536" | sudo tee -a /etc/sysctl.conf
+	sudo sysctl -p
+	echo "DefaultLimitNOFILE=65536" | sudo tee -a /etc/systemd/system.conf
+	echo "DefaultLimitNOFILE=65536" | sudo tee -a /etc/systemd/user.conf
+	sudo systemctl daemon-reload
+
+	@echo "Installing required packages"
+	sudo apt-get install -y open-iscsi nfs-common
+
+	@echo "Installing K3s with custom configuration"
+	curl -sfL https://get.k3s.io | sh -
+
+	@echo "Setting up kubeconfig"
+	mkdir -p ~/.kube
+	sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+	sudo chown "$${USER}" ~/.kube/config
+	@echo "Configuring custom Kubernetes context 'crs'"
+	kubectl config rename-context default crs
+
+	@echo "Getting Kubernetes nodes"
+	kubectl get nodes --context=crs
+
+	@echo "Installing mise"
+	curl https://mise.jdx.dev/install.sh | sh
+	mise install
+	echo "eval \"$$(mise activate bash)\"" >> "$${HOME}/.bashrc"
+
+k8s/k3s/clean:
+	@if [ -f /usr/local/bin/k3s-uninstall.sh ]; then \
+		sudo /usr/local/bin/k3s-uninstall.sh \
+	else \
+		echo "K3S Uninstall file does not exist...skipping"; \
+	fi
 
 k8s/development: github-creds-required k8s/clean
 	@mkdir -p $(LOCAL_K8S_RESOURCES)

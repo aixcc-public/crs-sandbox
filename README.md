@@ -257,9 +257,18 @@ Most dependencies in this repository can be automatically managed by `mise`, but
 - docker >= 24.0.5
 - docker-compose >= 2.26.1
 - GNU make >= 4.3
-- kind >= 0.23.0 (for running local kubernetes clusters in docker)
 
-Additionally, you will need permissions to interact with the Docker daemon.  Typically this means adding your user to the `docker` group.
+(optional for local kubernetes testing)
+
+- k3s >= v1.29.5
+- nfs-common >= 1:2.6.3ubuntu1
+- open-iscsi >= 2.1.8-1ubuntu2
+
+We've added a Makefile target `make install` which will setup the required dependencies.
+This is the exact same target used by the GitHub workflow evaluator.
+
+Additionally, you will need permissions to interact with the Docker daemon.
+Typically this means adding your user to the `docker` group.
 
 ### Working with Docker-in-Docker
 
@@ -276,6 +285,37 @@ Once you've done that, set `DOCKER_HOST=tcp://127.0.0.1:2375`.
 export DOCKER_HOST=tcp://127.0.0.1:2375
 docker logs <container name>
 ```
+
+### Working with K3S Kubernetes
+
+We now use [K3S](https://docs.k3s.io/) for our local Kubernetes w/ the [Longhorn](https://longhorn.io/docs/1.6.2/) storage driver.
+We use a Kubernetes context named `crs` for all `kubectl` targets in the Makefile to prevent modification to other Kubernetes environments.
+
+You MUST set your GitHub [PAT](#setting-github-secrets-with-competitor-repository-permissions) in the `env` file so that Kubernetes can use this to pull images.
+
+#### Install dependencies
+
+`make install`
+
+#### Merge the k3s kubeconfig into your main kubeconfig
+
+```bash
+sudo cp /etc/rancher/k3s/k3s.yaml /tmp/k3s.yaml
+sudo chown $USER /tmp/k3s.yaml
+KUBECONFIG=/tmp/k3s.yaml:~/.kube/config kubectl config view --flatten > ~/.kube/config
+```
+
+#### Rename k3s context
+
+`kubectl config rename-context default k3s`
+
+#### Set the current context to k3s
+
+`kubectl config use-context k3s`
+
+#### Remove k3s
+
+`make k8s/k3s/clean`
 
 ### Working with Kubernetes API
 
