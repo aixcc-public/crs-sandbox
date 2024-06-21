@@ -43,11 +43,9 @@ services:
       kompose.volume.size: 1Ti
       kompose.volume.storage-class-name: azurefile-csi-premium
     volumes:
-      - dind_cache:/var/lib/docker
       - crs_scratch:/crs_scratch
     command: ["dockerd", "-H", "tcp://0.0.0.0:2375", "--tls=false"]
 
 volumes:
   cp_root:
   crs_scratch:
-  dind_cache:

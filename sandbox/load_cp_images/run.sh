@@ -9,7 +9,13 @@ LOAD_CPS=${LOAD_CPS:-false}
 LOAD_CP_IMAGES=${LOAD_CP_IMAGES:-true}
 CP_CONFIG_FILE=${CP_CONFIG_FILE:-/cp_config.yaml}
 
+if [ -f "${AIXCC_CP_ROOT}/.cp_pull_complete" ]; then
+	echo "CP repo loading already completed"
+	exit 0
+fi
+
 if [ "$LOAD_CPS" = "true" ]; then
+
 	echo "Starting CP loader"
 	while read -r clone_cp; do
 		$clone_cp
@@ -57,7 +63,7 @@ if [ "$ENABLE_HEALTH_ENDPOINT" = "true" ]; then
 	while true; do
 		printf "HTTP/1.1 200 OK\n\n %s" "$(date)" | nc -l -p "${HEALTH_ENDPOINT_PORT}"
 	done
-else
-	echo "Creating flag file"
-	touch "${AIXCC_CP_ROOT}/.cp_pull_complete"
 fi
+
+echo "Creating flag file"
+touch "${AIXCC_CP_ROOT}/.cp_pull_complete"
