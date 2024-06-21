@@ -53,7 +53,6 @@ jobs:
           sudo apt-get update
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
-          sudo curl -Lo ./kind "https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64"
           curl "https://mise.jdx.dev/install.sh" | sh
           echo "$HOME/.local/share/mise/bin" >> "$GITHUB_PATH"
           echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
@@ -114,7 +113,7 @@ jobs:
 
   run-validate-crs-submissions:
     env:
-      AUDIT_LOG: ./capi_logs/audit.log
+      AUDIT_LOG: "${{ github.workspace }}/capi_logs/audit.log"
       MAX_SECONDS: 600
       POLL_SECONDS: 5
     if: ${{ github.actor != 'robothing[bot]' }}
@@ -135,7 +134,6 @@ jobs:
           sudo apt-get install jq
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
-          sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
           curl https://mise.jdx.dev/install.sh | sh
           echo "$HOME/.local/share/mise/bin" >> "$GITHUB_PATH"
           echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
@@ -339,7 +337,6 @@ jobs:
           sudo apt-get update
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
-          sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
           curl https://mise.jdx.dev/install.sh | sh
           echo "$HOME/.local/share/mise/bin" >> "$GITHUB_PATH"
           echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
@@ -389,6 +386,9 @@ jobs:
 
   run-kubernetes:
     if: ${{ github.actor != 'robothing[bot]' }}
+    permissions:
+      packages: read
+      contents: read
     runs-on:
       group: large-runners
     steps:
@@ -399,17 +399,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          sudo curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
-          curl https://mise.jdx.dev/install.sh | sh
-          echo "$HOME/.local/share/mise/bin" >> "$GITHUB_PATH"
-          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
-          mise install
 
       - name: Check required files
         run: |
@@ -447,12 +436,20 @@ jobs:
           echo "GITHUB_TOKEN=${{ github.token }}" >> sandbox/env
           echo "GITHUB_USER=gha" >> sandbox/env
 
+      - name: Install dependencies
+        run: |
+          make install
+          echo "$HOME/.local/share/mise/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
+
       - name: Run Local Helm & Kubernetes Validation
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           make k8s
           make k8s/clean
+          make k8s/k3s/clean
           make k8s/development
           make k8s/kustomize/development
 

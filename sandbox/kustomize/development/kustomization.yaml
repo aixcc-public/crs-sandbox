@@ -9,3 +9,28 @@ resources:
 patches:
   - path: crs-scratch-pvc.yaml
   - path: cp-root-pvc.yaml
+  - path: dind-cache-pvc.yaml
+  - target:
+      kind: Deployment
+      name: capi
+    patch: |-
+      - op: add
+        path: /spec/template/spec/imagePullSecrets
+        value:
+          - name: regcred
+  - target:
+      kind: Pod
+      name: crs
+    patch: |-
+      - op: add
+        path: /spec/imagePullSecrets
+        value:
+          - name: regcred
+  - target:
+      kind: Pod
+      name: load-cp-images
+    patch: |-
+      - op: add
+        path: /spec/imagePullSecrets
+        value:
+          - name: regcred
