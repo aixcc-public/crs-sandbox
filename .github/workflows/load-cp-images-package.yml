@@ -44,7 +44,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
-          context: ./sandbox/cp_image_pull
-          file: ./sandbox/cp_image_pull/Dockerfile
+          context: ./sandbox/load_cp_images
+          file: ./sandbox/load_cp_images/Dockerfile
           push: true
-          tags: ghcr.io/aixcc-sc/load-cp-images:v0.0.1
+          tags: ghcr.io/aixcc-sc/load-cp-images:v0.0.2
