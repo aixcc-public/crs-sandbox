@@ -6,4 +6,4 @@ metadata:
   name: cp-root
 spec:
   accessModes:
-    - ReadOnlyMany
+    - ReadWriteMany
