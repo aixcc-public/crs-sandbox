@@ -63,6 +63,15 @@ The vCluster environment will use the same SSO from the [AIxCC Dashboard](https:
 
 We plan to add another button to the Dashboard for this environment soon.
 
+Competitors MUST modify their PAT to add `repo` and `read:packages` level access to their classic PAT.
+
+![PAT permissions](./.static/gh-pat-permissions.png)
+
+Competitors MUST add their PAT with the GitHub CLI with the name `GHCR_PULL_TOKEN`.
+They may do this by running `gh variable set GHCR_PULL_TOKEN` and adding the PAT from above.
+
+The process for creating the PAT is outlined under [GitHub Personal Access Token](#github-personal-access-token).
+
 However, once we announce Phase 2 is live, teams will be able to log into their CRS at
 
 [https://vcluster-platform.aixcc.tech/login](https://vcluster-platform.aixcc.tech/login)
@@ -161,7 +170,7 @@ We will continue iterating on the CRS sandbox as we grow closer to the competiti
 
 Please see the competition rules and technical release as the cut off dates for changes will be described there.
 
-### Setting GitHub secrets with competitor repository permissions
+### Setting GitHub secrets and variables with competitor repository permissions
 
 Using the [GitHub CLI](https://cli.github.com/), you are able to set repository-level secrets
 despite not being able to view or edit them in the web UI.
@@ -175,6 +184,8 @@ secret list`.  You might get a 403 error requiring SSO sign-in:
 Open the link and complete the SSO flow.  Then you should be able to use `gh secret set` to set
 secrets on your repository and `gh secrets list` to show which ones exist and when they were most
 recently set.
+
+You can now also set variables with `gh variable set MY_EXAMPLE_VARIABLE` and list with `gh variable list`
 
 The [GitHub CRS Validation workflow](./.github/workflows/evaluator.yml) expects the repo-level
 secrets to have the same names as in `sandbox/env` (`OPENAI_API_KEY`, etc). The only exception to
@@ -227,14 +238,16 @@ ASC, then the fallback will likely be "textembedding-gecko@003".
 
 We recommend using Ubuntu 22.04 LTS for CRS Sandbox development and will be unable to investigate issues with other base operating systems.
 
-### GitHub Personal Access Token (PAT)
+### GitHub Personal Access Token
 
 In order to work with the CRS Sandbox you must setup your GitHub personal access token or PAT following these steps.
 
-1. Configure a personal access token (PAT) with `read:packages` permission by following this [guide](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic)
+1. Configure a personal access token (PAT) with `repo` (all checks) and `read:packages` permission by following this [guide](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic)
 2. Authorize the generated PAT for the `aixcc-sc` organization by this [guide](https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on)
-3. Run `echo "example-token-1234" | docker login ghcr.io -u USERNAME --password-stdin` replacing example-token-1234 with your generated PAT
+3. Run `echo "example-token-1234" | docker login ghcr.io -u USERNAME --password-stdin` replacing example-token-1234 with your generated PAT.
 4. Confirm that you see `> Login Succeeded` in your output from step #3.
+5. Competitors MUST add this key as a repository variable called `GHCR_PULL_TOKEN`.
+This MUST be a variable and NOT a secret. The Game Architecture team will use this variable to pull your repository images at competition time.
 
 ### GitHub SSH Key
 
@@ -292,7 +305,7 @@ docker logs <container name>
 We now use [K3S](https://docs.k3s.io/) for our local Kubernetes w/ the [Longhorn](https://longhorn.io/docs/1.6.2/) storage driver.
 We use a Kubernetes context named `crs` for all `kubectl` targets in the Makefile to prevent modification to other Kubernetes environments.
 
-You MUST set your GitHub [PAT](#setting-github-secrets-with-competitor-repository-permissions) in the `env` file so that Kubernetes can use this to pull images.
+You MUST set your GitHub [PAT](#setting-github-secrets-and-variables-with-competitor-repository-permissions) in the `env` file so that Kubernetes can use this to pull images.
 
 #### Install dependencies
 
