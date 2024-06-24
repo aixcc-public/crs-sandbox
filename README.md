@@ -185,7 +185,7 @@ this is Google's LLM credential, which should be stored in `VERTEX_KEY_JSON`.
 ## LiteLLM Models Supported
 
 | Provider  | Model                  | Pinned Version              | Requests per Minute (RPM) | Tokens per Minute (TPM)  |
-| --------- | ---------------------- | --------------------------- | --------------------------| -------------------------|
+| --------- | ---------------------- | --------------------------- | ------------------------- | ------------------------ |
 | OpenAI    | gpt-3.5-turbo          | gpt-3.5-turbo-0125          | 800                       | 80,000                   |
 | OpenAI    | gpt-4                  | gpt-4-0613                  | 200                       | 20,000                   |
 | OpenAI    | gpt-4-turbo            | gpt-4-turbo-2024-04-09      | 400                       | 60,000                   |
@@ -193,6 +193,7 @@ this is Google's LLM credential, which should be stored in `VERTEX_KEY_JSON`.
 | OpenAI    | text-embedding-3-large | text-embedding-3-large      | 500                       | 200,000                  |
 | OpenAI    | text-embedding-3-small | text-embedding-3-small      | 500                       | 200,000                  |
 | Anthropic | claude-3-sonnet        | claude-3-sonnet-20240229    | 1,000                     | 80,000                   |
+| Anthropic | claude-3.5-sonnet      | claude-3-5-sonnet-20240620  | 1,000                     | 80,000                   |
 | Anthropic | claude-3-opus          | claude-3-opus-20240229      | 1,000                     | 40,000                   |
 | Anthropic | claude-3-haiku         | claude-3-haiku-20240307     | 1,000                     | 100,000                  |
 | Google    | gemini-pro             | gemini-1.0-pro-002          | 120                       | pending (as of 20240610) |
