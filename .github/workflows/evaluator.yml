@@ -214,6 +214,8 @@ jobs:
           .github/scripts/set-env.sh GITHUB_TOKEN "${{ github.token }}"
           .github/scripts/set-env.sh GITHUB_USER gha
           .github/scripts/set-env.sh OPENAI_API_KEY "${{ secrets.OPENAI_API_KEY }}"
+          .github/scripts/set-env.sh VERTEX_PROJECT "${{ vars.VERTEX_PROJECT }}"
+          .github/scripts/set-env.sh VERTEX_REGION "${{ vars.VERTEX_REGION }}"
 
       - name: Create vertex-key for real run
         run: |
