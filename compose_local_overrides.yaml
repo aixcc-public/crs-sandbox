@@ -24,6 +24,14 @@ services:
       capi:
         condition: service_healthy
   dind:
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '8'
+    #       memory: 8GB
+    #     reservations:
+    #       cpus: '1'
+    #       memory: 256M
     volumes:
       - type: bind
         source: ${PWD}/dind_cache
