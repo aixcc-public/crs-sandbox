@@ -76,6 +76,11 @@ However, once we announce Phase 2 is live, teams will be able to log into their 
 
 [https://vcluster-platform.aixcc.tech/login](https://vcluster-platform.aixcc.tech/login)
 
+During competition, CRSs may only submit a single working vulnerability discovery on any single
+commit, and must use that issued CPV UUID for any generated patches.  Any further VDSs will be
+rejected as duplicates.  During phase 2, however, **duplicate submissions will not be rejected** in
+order to facilitate rapid CRS testing.  We may turn rejection back on towards the end of phase 2.
+
 ## Code Owners
 
 Please review the [.github/CODEOWNERS](.github/CODEOWNERS) file.
