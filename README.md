@@ -7,6 +7,19 @@ from each competitors private copy of the `CRS Sandbox`.
 
 Competitor SSO accounts to GitHub will be limited to a basic set of actions for making modifications and merging PRs within the GitHub repository.
 
+## Reporting Bugs & Issues
+
+Competitors should use GitHub issues to report bugs on the respective repositories.
+
+Competitors are also welcome to comment in tickets assisting others.
+
+We encourae all competitors to read through issues (open & closed) within the following repos.
+
+- [CRS Sandbox](https://github.com/aixcc-sc/crs-sandbox/issues)
+- [CP Sandbox](https://github.com/aixcc-sc/cp-sandbox/issues)
+- [Mock CP](https://github.com/aixcc-sc/mock-cp/issues)
+- [Competition API (cAPI)](https://github.com/aixcc-sc/cAPI/issues)
+
 ## Evaluation Window
 
 ### Phase 1 - GitHub Actions Passing
@@ -483,7 +496,11 @@ We recommend that teams review [Docker Compose Deploy Specification](https://doc
 
 Kompose V3 will automatically convert these requests and limits into requests and limits within Kubernetes.
 
-Teams may use the [./compose.yaml](./compose.yaml) to add requests and limits onto any containers within a CRS.
+Teams may use the following files to add requests and limits onto any containers within a CRS.
+
+- [./compose_local_overrides.yaml](./compose_local_overrides.yaml)
+- [./kompose_development_overrides.yaml](./kompose_development_overrides.yaml)
+- [./kompose_competition_overrides.yaml](./kompose_competition_overrides.yaml)
 
 #### Deployments, Pods, and replica count
 
