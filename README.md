@@ -137,8 +137,13 @@ patched using the provided Docker container.
 One CP (the public Linux kernel CP) includes `virtme-ng` in its CP-specific
 Docker container for the purposes of testing the built kernel.
 
-This is the only supported form of nested virtualization for the competition environment.
-A CRS **MUST NOT** assume that nested virtualization accelerations such as KVM via `/dev/kvm` are supported for their containers.
+The `virtme-ng` program will automatically use `/dev/kvm` for acceleration if it is present and the CRS is running as root [See Linux CP #10](https://github.com/aixcc-sc/challenge-001-linux-cp/issues/10#issuecomment-2186565915).
+
+Competitors are permitted to add `privileged: true` to any container under [./compose.yaml](./compose.yaml).
+
+The Game Architecture team has confirmed the CRS execution environment supports nested virtualization for KVM.
+
+There is no need or support for competitors to map devices directly, they must add the `privleged: true` to containers which need it.
 
 ## Environment Variables & GitHub Secrets
 
@@ -289,9 +294,10 @@ This is the exact same target used by the GitHub workflow evaluator.
 Additionally, you will need permissions to interact with the Docker daemon.
 Typically this means adding your user to the `docker` group.
 
-### Working with Docker-in-Docker
+### Working with Docker
 
-The `crs-sandbox` contains its own Docker daemon inside of a Docker container.
+The `crs-sandbox` contains its own Docker daemon inside of a container. With `make up` this runs docker-in-docker.
+However with Kubernetes via `make k8s` and at competition this runs the `dockerD daemon container within Kubernetes.
 By default this is not accessible on the host machine, but you can enable the
 port mapping by editing
 [`./compose_local_overrides.yaml`](./compose_local_overrides.yaml).  Note that
@@ -465,6 +471,16 @@ services:
       kompose.hpa.replicas.max: 12
       kompose.hpa.replicas.min: 3
 ```
+
+#### Resource Requests & Limits
+
+Docker Compose and Kubernetes both support the concepts of requests and limits.
+
+We recommend that teams review [Docker Compose Deploy Specification](https://docs.docker.com/compose/compose-file/deploy/#resources).
+
+Kompose V3 will automatically convert these requests and limits into requests and limits within Kubernetes.
+
+Teams may use the [./compose.yaml](./compose.yaml) to add requests and limits onto any containers within a CRS.
 
 #### Deployments, Pods, and replica count
 
