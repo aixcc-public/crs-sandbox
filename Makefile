@@ -18,7 +18,7 @@ LOCAL_K8S_RESOURCES = $(ROOT_DIR)/.k8s
 
 # variables that control the CP repos
 HOST_CP_ROOT_DIR = $(ROOT_DIR)/cp_root
-CP_CONFIG_FILE ?= $(ROOT_DIR)/cp_config.yaml
+CP_CONFIG_FILE ?= $(ROOT_DIR)/cp_config/cp_config.yaml
 
 # location of local env file
 HOST_ENV_FILE = $(ROOT_DIR)/sandbox/env
