@@ -131,7 +131,7 @@ services:
       - mock-crs
       - development
       - loadtest
-    image: ghcr.io/aixcc-sc/capi:v2.1.8
+    image: ghcr.io/aixcc-sc/capi:v2.1.9
     restart: always
     env_file: env
     environment:

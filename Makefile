@@ -172,7 +172,7 @@ loadtest/destroy: ## Stop and remove containers with volumes
 	@docker compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_LOCAL_OVERRIDES) --profile loadtest down --volumes --remove-orphans $(c)
 
 k8s: k8s/clean k8s/development k8s/kustomize/development build ## Generates helm chart locally for the development profile for kind testing, etc. build is called for local image generation
-	@docker pull ghcr.io/aixcc-sc/capi:v2.1.8
+	@docker pull ghcr.io/aixcc-sc/capi:v2.1.9
 	@docker pull ghcr.io/berriai/litellm-database:main-v1.35.10
 	@docker pull nginx:1.25.5
 	@docker pull docker:24-dind
