@@ -247,6 +247,13 @@ k8s/competition: env-file-required k8s/clean ## Generates the competition k8s re
 	@mkdir -p $(LOCAL_K8S_BASE)
 	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_competition_overrides.yaml" kompose convert --profile competition --out $(LOCAL_K8S_BASE)/resources.yaml
 
+	@if grep -qr "$(RELEASE_TAG)" $(LOCAL_K8S_BASE); then \
+		echo "RELEASE_TAG $(RELEASE_TAG) was found in $(LOCAL_K8S_BASE)"; \
+	else \
+		echo "var RELEASE_TAG $(RELEASE_TAG) not found in the K8S folder $(LOCAL_K8S_BASE)"; \
+		exit 1; \
+	fi
+
 k8s/kustomize/competition:
 	@kustomize build $(ROOT_DIR)/sandbox/kustomize/competition -o $(LOCAL_K8S_RESOURCES)/resources.yaml
 
