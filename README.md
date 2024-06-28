@@ -81,6 +81,9 @@ commit, and must use that issued CPV UUID for any generated patches.  Any furthe
 rejected as duplicates.  During phase 2, however, **duplicate submissions will not be rejected** in
 order to facilitate rapid CRS testing.  We may turn rejection back on towards the end of phase 2.
 
+By modifying [cp_config/cp_config.yaml](./cp_config/cp_config.yaml), competitors can change the CPs
+presented to their CRS during phase 2.
+
 ## Code Owners
 
 Please review the [.github/CODEOWNERS](.github/CODEOWNERS) file.
