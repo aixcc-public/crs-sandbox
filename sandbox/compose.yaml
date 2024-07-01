@@ -7,7 +7,6 @@ services:
     image: ghcr.io/aixcc-sc/load-cp-images:v0.0.5
     expose:
       - "8080"
-    restart: "no"
     build:
       context: ./load_cp_images
     profiles:
