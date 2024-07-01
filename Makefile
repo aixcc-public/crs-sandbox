@@ -251,8 +251,8 @@ k8s/competition: env-file-required k8s/clean ## Generates the competition k8s re
 	@if grep -qr "$(RELEASE_TAG)" $(LOCAL_K8S_BASE); then \
 		echo "RELEASE_TAG $(RELEASE_TAG) was found in $(LOCAL_K8S_BASE)"; \
 	else \
-		echo "var RELEASE_TAG $(RELEASE_TAG) not found in the K8S folder $(LOCAL_K8S_BASE)"; \
-		exit 1; \
+		echo "[+] WARNING: var RELEASE_TAG $(RELEASE_TAG) not found. Specify this tag in compose.yaml  for each of your service container images to be tagged with your release version"; \
+		echo "[+] 	Please make sure to add :\${RELEASE_TAG-v1.0.0} where v1.0.0 is the fallback default to your CRS containers so they automatically update on release"; \
 	fi
 
 k8s/kustomize/competition:
