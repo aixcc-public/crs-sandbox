@@ -69,7 +69,7 @@ github-creds-required: env-file-required
 	@if [ "$(GITHUB_ENV_VAR_COUNT)" -lt 2 ]; then exit 1; fi
 
 build: ## Build the project
-	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) build $(c)
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) build --pull $(c)
 
 computed-env: env-file-required
 	@sed -i '/CAPI_AUTH_HEADER=*/d' sandbox/env
