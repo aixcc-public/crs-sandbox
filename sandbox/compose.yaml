@@ -183,7 +183,7 @@ services:
       - source: capi_db_setup
         target: /docker-entrypoint-initdb.d/capi-db-setup.sh
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-d", "capi"]
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       interval: 10s
       timeout: 3s
       retries: 15
