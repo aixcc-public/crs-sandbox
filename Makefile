@@ -179,7 +179,7 @@ k8s: k8s/clean k8s/development k8s/kustomize/development build ## Generates helm
 	@docker pull postgres:16.2-alpine3.19
 	@docker pull ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
 	@docker pull curlimages/curl:8.8.0
-	@docker pull ghcr.io/aixcc-sc/load-cp-images:v0.0.4
+	@docker pull ghcr.io/aixcc-sc/load-cp-images:v0.0.5
 	@helm repo add longhorn https://charts.longhorn.io
 	@helm repo update
 	@helm install --kube-context crs longhorn longhorn/longhorn --namespace longhorn-system --create-namespace --set defaultSetting.defaultStorageClass=true
