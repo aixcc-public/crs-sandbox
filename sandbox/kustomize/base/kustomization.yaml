@@ -5,10 +5,6 @@ metadata:
   name: crs
 resources:
   - resources.yaml
-  - service-account.yaml
-  - service-role.yaml
-  - service-role-binding.yaml
-
 patches:
   - path: load-cp-images-config.json
     target:
