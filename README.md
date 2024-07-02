@@ -39,6 +39,7 @@ Failure to do so will prevent a team's CRS from moving forward to Phase 2.
 During Phase 1, teams must use their own secret keys and tokens to access collaborator resources
 (LLM APIs) and authenticate against GitHub.
 
+
 #### Interpreting Results in GitHub Actions
 
 The job that evaluates the CRS's performance is part of the [CRS Evaluator](https://github.com/aixcc-sc/crs-sandbox/actions/workflows/evaluator.yml) and is called `run-validate-crs-submissions`.
@@ -47,6 +48,10 @@ It runs the CRS as defined in the [./compose.yaml](./compose.yaml) and evaluates
 Check the output of the validation steps, CRS submission log step, and CRS logs step for introspection into what happened.
 
 ![GitHub Actions output showing a CRS submitting a working VD and a failing GP](./.static/crs-logs-example.png)
+
+
+<https://github.com/aixcc-sc/crs-sandbox/assets/165228747/f758d4cf-c597-41f3-b2c8-986250e954e3>
+
 
 ### Phase 2 - Automated Execution of your CRS
 
@@ -96,6 +101,10 @@ order to facilitate rapid CRS testing.  We may turn rejection back on towards th
 
 By modifying [cp_config/cp_config.yaml](./cp_config/cp_config.yaml), competitors can change the CPs
 presented to their CRS during phase 2.
+
+
+<https://github.com/aixcc-sc/crs-sandbox/assets/165228747/771850a7-7019-4199-aa3f-c705bcffe37d>
+
 
 ## Code Owners
 
