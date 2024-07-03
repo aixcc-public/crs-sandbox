@@ -13,7 +13,7 @@ if [ "$LOAD_CPS" = "true" ]; then
 	echo "Starting CP loader"
 	while read -r clone_cp; do
 		bash -c "$clone_cp"
-	done < <(yq -r '.cp_targets | to_entries | .[] | "rm -rf /cp_root/\(.key) && git clone \(.value.url) /cp_root/\(.key)"' "${CP_CONFIG_FILE}")
+	done < <(yq -r '.cp_targets | to_entries | .[] | "rm -rf /cp_root/\(.key) && git clone \(.value.url) /cp_root/\(.key) && cd /cp_root/\(.key) && git checkout \(.value.ref)"' "${CP_CONFIG_FILE}")
 	# shellcheck disable=SC2156
 	find /cp_root -maxdepth 1 -type d ! -name "lost+found" -exec bash -c "echo 'prepping {}' && cd '{}' && make cpsrc-prepare" \;
 	echo "CP loading complete"
