@@ -387,11 +387,11 @@ Unsupported means that issues in GitHub related to the Kubernetes API access wil
 
 Teams using the Kubernetes API MUST manage their own dynamic resources, and their CRS approach MUST have the ability to recover from memory exhaustion, etc.
 
-To enable this feature the `compose.yaml` file must contain the following for each service that needs Kubernetes access.
+To enable this feature the `compose.yaml` file must contain the following for each service that needs Kubernetes API access.
 
 ```yaml
 labels:
-  kompose.service.accountname: "crs"
+  kompose.serviceaccount-name: crs
 ```
 
 #### Dependencies managed using mise
