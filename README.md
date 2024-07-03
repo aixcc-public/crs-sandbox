@@ -253,16 +253,23 @@ this is Google's LLM credential, which should be stored in `VERTEX_KEY_JSON`.
 
 Note: OpenAI Embedding models have not currently been released in more than a single version, thus pinned/name strings are identical.
 
-All OpenAI models will also be matched by an Azure-hosted version. Competitors will be able to freely request the
-model they like by the Model name in chart above, plus a prefix "oai-" or "azure-".
+Some OpenAI models will also be matched by an Azure-hosted version:
+| Provider | Model                  | Pinned Version         | Requests per Minute (RPM) | Tokens per Minute (TPM) |
+| -------- | ---------------------- | ---------------------- | ------------------------- | ----------------------- |
+| Azure    | gpt-3.5-turbo          | gpt-3.5-turbo-0613     | 100                       | 80,000                  |
+| Azure    | gpt-4o                 | gpt-4o-2024-05-13      | 100                       | 300,000                 |
+| Azure    | text-embedding-3-large | text-embedding-3-large | 100                       | 120,000                 |
+| Azure    | text-embedding-3-small | text-embedding-3-small | 100                       | 120,000                 |
+
+Competitors will be able to freely request the model they like by the Model name in chart above, plus a prefix "oai-" or "azure-".
 Ex. "oai-gpt-4o".
 This was done because of performance differences between the models as hosted on OAI vs Azure infrastructure.
 The models themselves are guaranteed to be identical but no such promises can be made as regards supporting provider infrastrcture.
 
 Note: OAI Embedding models have not currently been released in more than a single version.
 
-These are utilized by hitting the LiteLLM /chat/completions endpoint, specifying model and message using the OpenAI JSON request format.
-Note: Further models will be supported in subsequent iterations.
+These models are all utilized by hitting the LiteLLM /chat/completions endpoint, specifying model and message using the OpenAI JSON request format.
+This is the tentative complete list of models.
 
 The Requests per Minute (RPM) and Tokens per Minute (TPM) columns in the table above are
 rate limits that are enforced per CRS for the ASC. The LiteLLM proxy will be responsible for
@@ -271,7 +278,7 @@ models or providers.
 
 Note: the "\*" next to model "textembedding-gecko" indicates this model target is still in flux.
 The AIxCC infrastructure team is still waiting on LiteLLM to finalize support for the model
-"text-embedding-04". If this newer model is not integrated in time to support its use during the
+"text-embedding-004". If this newer model is not integrated in time to support its use during the
 ASC, then the fallback will likely be "textembedding-gecko@003".
 
 ## Local Development
