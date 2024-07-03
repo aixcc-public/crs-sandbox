@@ -6,7 +6,7 @@ FROM ubuntu:22.04
 
 WORKDIR /app
 
-RUN apt-get update && apt-get -y install curl jq git wget rsync && apt-get clean && rm -rf /var/lib/{apt,dpkg,cache,log}
+RUN apt-get update && apt-get -y install curl jq git git-lfs wget rsync && apt-get clean && rm -rf /var/lib/{apt,dpkg,cache,log}
 
 ARG YQ_VERSION=4.43.1
 ARG YQ_BINARY=yq_linux_amd64
@@ -28,7 +28,8 @@ RUN set -eux; \
         docker-ce-cli \
         docker-buildx-plugin; \
     apt-get autoremove -y; \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/*; \
+    git lfs install
 
 
 # Copy your source code
