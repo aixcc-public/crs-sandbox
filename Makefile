@@ -237,7 +237,7 @@ k8s/k3s/clean:
 k8s/development: github-creds-required k8s/clean
 	@mkdir -p $(LOCAL_K8S_RESOURCES)
 	@mkdir -p $(LOCAL_K8S_BASE)
-	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_development_overrides.yaml" kompose convert --profile development --out $(LOCAL_K8S_BASE)/resources.yaml
+	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_development_overrides.yaml" kompose convert --service-group-mode=label --profile development --out $(LOCAL_K8S_BASE)/resources.yaml
 	@cp cp_config/cp_config.yaml $(LOCAL_K8S_BASE)/cp_config.yaml
 
 k8s/kustomize/development:
@@ -246,7 +246,7 @@ k8s/kustomize/development:
 k8s/competition: env-file-required k8s/clean ## Generates the competition k8s resources for use during the evaluation window and competition
 	@mkdir -p $(LOCAL_K8S_RESOURCES)
 	@mkdir -p $(LOCAL_K8S_BASE)
-	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_competition_overrides.yaml" kompose convert --profile competition --out $(LOCAL_K8S_BASE)/resources.yaml
+	@COMPOSE_FILE="$(ROOT_DIR)/compose.yaml $(ROOT_DIR)/kompose_competition_overrides.yaml" kompose convert --service-group-mode=label --profile competition --out $(LOCAL_K8S_BASE)/resources.yaml
 	@cp cp_config/cp_config.yaml $(LOCAL_K8S_BASE)/cp_config.yaml
 	@if grep -qr "$(RELEASE_TAG)" $(LOCAL_K8S_BASE); then \
 		echo "RELEASE_TAG $(RELEASE_TAG) was found in $(LOCAL_K8S_BASE)"; \
