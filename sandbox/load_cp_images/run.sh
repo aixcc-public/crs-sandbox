@@ -9,11 +9,11 @@ LOAD_CPS=${LOAD_CPS:-false}
 LOAD_CP_IMAGES=${LOAD_CP_IMAGES:-true}
 CP_CONFIG_FILE=${CP_CONFIG_FILE:-/cp_config.yaml}
 
-# Always reset CP Root to empty
-echo "Resetting ${AIXCC_CP_ROOT}"
-rm -rf "${AIXCC_CP_ROOT:?}"/*
-
 if [ "$LOAD_CPS" = "true" ]; then
+	# Only CP Root to empty if we're responsible for filling it
+	echo "Resetting ${AIXCC_CP_ROOT}"
+	rm -rf "${AIXCC_CP_ROOT:?}"/*
+
 	echo "Starting CP loader"
 	while read -r clone_cp; do
 		bash -c "$clone_cp"
