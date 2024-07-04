@@ -353,7 +353,7 @@ docker logs <container name>
 We now use [K3S](https://docs.k3s.io/) for our local Kubernetes w/ the [Longhorn](https://longhorn.io/docs/1.6.2/) storage driver.
 We use a Kubernetes context named `crs` for all `kubectl` targets in the Makefile to prevent modification to other Kubernetes environments.
 
-You MUST set your GitHub [PAT](#setting-github-secrets-and-variables-with-competitor-repository-permissions) in the `env` file so that Kubernetes can use this to pull images.
+You MUST set your GitHub [PAT](#github-personal-access-token) in the `env` file so that Kubernetes can use this to pull images.
 
 #### Install dependencies
 
