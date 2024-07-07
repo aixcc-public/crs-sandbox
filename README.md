@@ -168,7 +168,7 @@ Competitors are permitted to add `privileged: true` to any container under [./co
 
 The Game Architecture team has confirmed the CRS execution environment supports nested virtualization for KVM.
 
-There is no need or support for competitors to map devices directly, they must add the `privleged: true` to containers which need it.
+There is no need or support for competitors to map devices directly, they must add the `privileged: true` to containers which need it.
 
 ## Environment Variables & GitHub Secrets
 
@@ -511,6 +511,15 @@ Docker Compose and Kubernetes both support the concepts of requests and limits.
 We recommend that teams review [Docker Compose Deploy Specification](https://docs.docker.com/compose/compose-file/deploy/#resources).
 
 Kompose V3 will automatically convert these requests and limits into requests and limits within Kubernetes.
+
+Nodes will be labeled with node=node1, node=node2, node=node3 at competition time. Therefore in your kompose_competition_overrides.yaml, you will be able to do the following for a service to constrain its placement:
+
+```yaml
+deploy:
+  placement:
+    constraints:
+      - node.labels.node == node1
+```
 
 Teams may use the following files to add requests and limits onto any containers within a CRS.
 
