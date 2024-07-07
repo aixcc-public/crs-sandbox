@@ -68,7 +68,10 @@ github-creds-required: env-file-required
 	@if [ -n "$(INVALID_GITHUB_ENV_VARS)" ]; then exit 1; fi
 	@if [ "$(GITHUB_ENV_VAR_COUNT)" -lt 2 ]; then exit 1; fi
 
-build: ## Build the project
+build-no-cache: ## Build the project without pulling images
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) build $(c)
+
+build: ## Build the project, pull images if available
 	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) build --pull $(c)
 
 computed-env: env-file-required
