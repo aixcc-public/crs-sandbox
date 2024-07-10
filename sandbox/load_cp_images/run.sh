@@ -10,7 +10,7 @@ LOAD_CP_IMAGES=${LOAD_CP_IMAGES:-true}
 CP_CONFIG_FILE=${CP_CONFIG_FILE:-/cp_config.yaml}
 
 if [ "$LOAD_CPS" = "true" ]; then
-	# Only CP Root to empty if we're responsible for filling it
+	# Only set CP Root to empty if we're responsible for filling it
 	echo "Resetting ${AIXCC_CP_ROOT}"
 	rm -rf "${AIXCC_CP_ROOT:?}"/*
 
@@ -31,28 +31,44 @@ if [ "$LOAD_CP_IMAGES" = "true" ]; then
 		sleep 5
 	done
 
-	echo "Logging in to GHCR"
-	echo "${GITHUB_TOKEN}" | docker login ghcr.io -u "${GITHUB_USER}" --password-stdin
+	# Check if any docker image files were provided in cp_root. If so, use those instead of pulling from GHCR
+	IMAGE_FILES=$(find "${AIXCC_CP_ROOT}" -type f -name "img-*.tar.gz")
 
-	echo "Fetching CP Docker images"
-	for cp in "${AIXCC_CP_ROOT}"/*; do
-		if [ "$cp" = "${AIXCC_CP_ROOT}"/'*' ]; then
-			echo "CP root folder was empty."
+	if [ -z "$IMAGE_FILES" ]; then
+		if [ -z "$GITHUB_TOKEN" ]; then
+			echo "GITHUB_TOKEN not found, unable to pull Docker images from GHCR"
 			exit 1
 		fi
+		echo "Logging in to GHCR"
+		echo "${GITHUB_TOKEN}" | docker login ghcr.io -u "${GITHUB_USER}" --password-stdin
 
-		if [ "$cp" = "${AIXCC_CP_ROOT}"/lost+found ]; then
-			continue
-		fi
+		echo "Fetching CP Docker images"
+		for cp in "${AIXCC_CP_ROOT}"/*; do
+			if [ "$cp" = "${AIXCC_CP_ROOT}"/'*' ]; then
+				echo "CP root folder was empty."
+				exit 1
+			fi
 
-		if [ ! -d "$cp" ]; then
-			continue
-		fi
+			if [ "$cp" = "${AIXCC_CP_ROOT}"/lost+found ]; then
+				continue
+			fi
 
-		echo "Fetching image for CP at ${cp}"
-		cd "$cp"
-		make docker-pull
-	done
+			if [ ! -d "$cp" ]; then
+				continue
+			fi
+
+			echo "Fetching image for CP at ${cp}"
+			cd "$cp"
+			make docker-pull
+		done
+	else
+		echo "Loading CP images from local files"
+		for IMAGE_FILE in $IMAGE_FILES; do
+			echo "Loading CP container: $IMAGE_FILE"
+			docker load -i "$IMAGE_FILE"
+		done
+	fi
+
 	echo "CP image loading complete"
 fi
 
