@@ -52,7 +52,7 @@ Check the output of the validation steps, CRS submission log step, and CRS logs 
 
 ### Phase 2 - Automated Execution of your CRS
 
-Date: 2024-06-21
+Date: 2024-06-21 - 2024-07-15 11:59pm UTC
 
 On the above date, the AIxCC Game Architecture team will automatically execute competitors CRSs against a subset of published challenge problems.
 
@@ -100,6 +100,19 @@ By modifying [cp_config/cp_config.yaml](./cp_config/cp_config.yaml), competitors
 presented to their CRS during phase 2.
 
 <https://github.com/aixcc-sc/crs-sandbox/assets/165228747/771850a7-7019-4199-aa3f-c705bcffe37d>
+
+
+## Final Submission
+The submission window closes July 15, 2024 at 11:59pm UTC [FAQ page 5](https://aicyberchallenge.com/faqs/)
+At that time, your CRS repository will become read-only and vCluster access will be removed. The latest tagged release in your repository for images and the crs-manifest will be used for competition.
+
+### Checklist
+- Add a [GHCR_PULL_TOKEN](#github-personal-access-token) set to expire **no earlier** than September 1st 2024.  
+- Merge at least one pull request into `main` with your CRS code.  
+- Merge at least v2.6.6 of the CRS Sandbox into their CRS. (Teams are encouraged to merge newer releases as they may fix bugs while remaining interface compatible.)  
+- Cut a [release](#release-process) with the a tag >= `v1.0.0` from `main`.  
+- Verify that the container images and `crs-manifest` generated during the release have the tags expected by your crs.  
+- You did it! Thank you for getting this far, see you at DEFCON 🎉  
 
 ## Code Owners
 
@@ -200,7 +213,6 @@ Account](https://docs.litellm.ai/docs/providers/vertex#using-gcp-service-account
 with [this document about creating the credential file
 itself](https://cloud.google.com/docs/authentication/application-default-credentials#personal).
 
-*TBD* - These variables and the LiteLLM configuration file are not yet complete. This will be released in a CRS sandbox update.
 We will continue iterating on the CRS sandbox as we grow closer to the competition in order to support newer versions of components.
 
 Please see the competition rules and technical release as the cut off dates for changes will be described there.
@@ -433,9 +445,6 @@ All images needed to execute a CRS MUST be included under `.github/workflows/pac
 The Game Architecture team will migrate these images to the competition environment prior to starting your CRS.
 
 ### Release Process
-
-We've modified our original guidance on the tagging process.
-
 All teams should be using [SemVer 2.0.0](https://semver.org/) to tag releases.
 
 A team MUST have a tag of `v1.0.0` OR greater within their private CRS repository at competition.
