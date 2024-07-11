@@ -70,13 +70,9 @@ Only the latest semantic version of a competitors CRS that is properly tagged fr
 During Phase 2, secret keys and tokens for collaborator resources (LLM APIs) and GitHub access will
 be set by the AIxCC infrastructure team.
 
-Competitors will recieve access to a live vCluster environment at the start of Phase 2.
-
 Competitors will be able to evaluate their CRS in this environment each time they make a new release of their CRS.
 
 The vCluster environment will use the same SSO from the [AIxCC Dashboard](https://dashboard.aicyberchallenge.com).
-
-We plan to add another button to the Dashboard for this environment soon.
 
 Competitors MUST modify their PAT to add `repo` and `read:packages` level access to their classic PAT.
 
@@ -87,9 +83,7 @@ They may do this by running `gh variable set GHCR_PULL_TOKEN` and adding the PAT
 
 The process for creating the PAT is outlined under [GitHub Personal Access Token](#github-personal-access-token).
 
-However, once we announce Phase 2 is live, teams will be able to log into their CRS at
-
-[https://vcluster-platform.aixcc.tech/login](https://vcluster-platform.aixcc.tech/login)
+Teams will be able to log into their vcluster at [https://vcluster-platform.aixcc.tech/login](https://vcluster-platform.aixcc.tech/login)
 
 During competition, CRSs may only submit a single working vulnerability discovery on any single
 commit, and must use that issued CPV UUID for any generated patches.  Any further VDSs will be
@@ -101,18 +95,47 @@ presented to their CRS during phase 2.
 
 <https://github.com/aixcc-sc/crs-sandbox/assets/165228747/771850a7-7019-4199-aa3f-c705bcffe37d>
 
+### VCluster CRS Guide
+
+All of your CRS code is deployed in the `crs` namespace. Deleting the `crs` namespace will cause your CRS deployment to be completely wiped. This requires [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) and [flux](https://fluxcd.io/flux/installation/#install-the-flux-cli]). Get the connection details from the vCluster UI (Connect button in the top right corner).
+
+Make sure that you see results when you run each of these commands before proceeding.
+
+```bash
+kubectl get pods -A
+flux get kustomizations
+```
+
+If you want to clean up your CRS deployment, you can delete the `crs` namespace. This will remove all resources in the namespace, including the namespace itself and automatically get re-created within the sync window (currently 3 minutes). If you would like to stop your CRS and not have it be re-created, run the following commands:
+
+```bash
+flux suspend ks crs -n flux-system
+flux suspend ks crs-injections -n flux-system
+kubectl delete namespace crs
+```
+
+When you would like to start your CRS deployment again, run the following commands:
+
+```bash
+flux resume ks crs-injections -n flux-system
+flux resume ks crs -n flux-system
+```
+
+CRS Deployments to vCluster have certain environment values overriden. You must use be sure to make any services you are using are configured properly in the `kompose_competition_overrides.yaml` file.
+
+Please feel free to open an issue in the [CRS Sandbox] if you run into issues with your vCluster in particular.
 
 ## Final Submission
 The submission window closes July 15, 2024 at 11:59pm UTC [FAQ page 5](https://aicyberchallenge.com/faqs/)
 At that time, your CRS repository will become read-only and vCluster access will be removed. The latest tagged release in your repository for images and the crs-manifest will be used for competition.
 
 ### Checklist
-- Add a [GHCR_PULL_TOKEN](#github-personal-access-token) set to expire **no earlier** than September 1st 2024.  
-- Merge at least one pull request into `main` with your CRS code.  
-- Merge at least v2.6.6 of the CRS Sandbox into their CRS. (Teams are encouraged to merge newer releases as they may fix bugs while remaining interface compatible.)  
-- Cut a [release](#release-process) with the a tag >= `v1.0.0` from `main`.  
-- Verify that the container images and `crs-manifest` generated during the release have the tags expected by your crs.  
-- You did it! Thank you for getting this far, see you at DEFCON 🎉  
+- Add a [GHCR_PULL_TOKEN](#github-personal-access-token) set to expire **no earlier** than September 1st 2024.
+- Merge at least one pull request into `main` with your CRS code.
+- Merge at least v2.6.6 of the CRS Sandbox into their CRS. (Teams are encouraged to merge newer releases as they may fix bugs while remaining interface compatible.)
+- Cut a [release](#release-process) with the a tag >= `v1.0.0` from `main`.
+- Verify that the container images and `crs-manifest` generated during the release have the tags expected by your crs.
+- You did it! Thank you for getting this far, see you at DEFCON 🎉
 
 ## Code Owners
 
