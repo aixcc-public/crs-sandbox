@@ -7,6 +7,21 @@ from each competitors private copy of the `CRS Sandbox`.
 
 Competitor SSO accounts to GitHub will be limited to a basic set of actions for making modifications and merging PRs within the GitHub repository.
 
+## Final Submission
+The submission window closes July 15, 2024 at 11:59pm UTC [FAQ page 5](https://aicyberchallenge.com/faqs/)
+At that time, your CRS repository will become read-only and vCluster access will be removed. The latest tagged release in your repository for images and the crs-manifest will be used for competition.
+
+### Checklist
+- Set your [GHCR_PULL_TOKEN](#github-personal-access-token) variable with a token set to expire **no earlier** than September 1st 2024.
+- Merge at least one pull request into `main` with your CRS code.
+- Merge at least v2.6.6 of the CRS Sandbox into their CRS. (Teams are encouraged to merge newer releases as they may fix bugs while remaining interface compatible.)
+- Cut a [release](#release-process) with the a tag >= `v1.0.0` from `main`.
+- Verify that the container images and `crs-manifest` generated during the release have the tags expected by your crs.
+- You did it! Thank you for getting this far, see you at DEFCON 🎉
+
+*If you change this token, you must submit an issue to crs-sandbox to notify us that your token has changed so that we can set it correctly in your vcluster environment.*
+
+
 ## Reporting Bugs & Issues
 
 Competitors should use GitHub issues to report bugs on the respective repositories.
@@ -125,17 +140,30 @@ CRS Deployments to vCluster have certain environment values overriden. You must 
 
 Please feel free to open an issue in the [CRS Sandbox] if you run into issues with your vCluster in particular.
 
-## Final Submission
-The submission window closes July 15, 2024 at 11:59pm UTC [FAQ page 5](https://aicyberchallenge.com/faqs/)
-At that time, your CRS repository will become read-only and vCluster access will be removed. The latest tagged release in your repository for images and the crs-manifest will be used for competition.
+## GitHub Personal Access Token
 
-### Checklist
-- Add a [GHCR_PULL_TOKEN](#github-personal-access-token) set to expire **no earlier** than September 1st 2024.
-- Merge at least one pull request into `main` with your CRS code.
-- Merge at least v2.6.6 of the CRS Sandbox into their CRS. (Teams are encouraged to merge newer releases as they may fix bugs while remaining interface compatible.)
-- Cut a [release](#release-process) with the a tag >= `v1.0.0` from `main`.
-- Verify that the container images and `crs-manifest` generated during the release have the tags expected by your crs.
-- You did it! Thank you for getting this far, see you at DEFCON 🎉
+To work with the CRS Sandbox and VCluster you must set up your GitHub Personal Access Token (PAT) by following these steps.
+
+1. Create a Personal Access Token (PAT) set to expire **no earlier** than September 1st 2024.*** with the scopes `read:packages` and `repo` set. You MUST ensure it is authorized for SSO by clicking `Configure SSO` and `Authorize` for aixcc-sc.
+See the following references for more information: [Authenticating with a personal access token](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic) and
+ [Authorize for SSO](https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on).
+
+2. Confirm the following commands work (*replacing ghp_<\CHANGE_ME\> with your generated PAT*)
+
+    ```bash
+    echo "ghp_<CHANGE_ME>" | docker login ghcr.io -u USERNAME --password-stdin
+    docker manifest inspect ghcr.io/aixcc-sc/load-cp-images
+    git ls-remote https://oauth2:ghp_<CHANGE_ME>@github.com/aixcc-sc/crs-injections.git
+    ```
+
+3. Competitors *MUST* set the value of their PAT as a variable using the [*GitHub CLI*](https://github.com/cli/cli#installation) with the name `GHCR_PULL_TOKEN`. They may do this by running this command and pasting their PAT variable from above:
+
+    ```bash
+    gh variable set GHCR_PULL_TOKEN
+    ? Paste your variable
+    ```
+
+The Game Architecture team will use this variable to pull your repository images at competition time. *If you change this token, you must submit an issue to crs-sandbox to notify us that your token has changed so that we can set it correctly in your vcluster environment.*
 
 ## Code Owners
 
@@ -206,63 +234,6 @@ The Game Architecture team has confirmed the CRS execution environment supports 
 
 There is no need or support for competitors to map devices directly, they must add the `privileged: true` to containers which need it.
 
-## Environment Variables & GitHub Secrets
-
-Each competitor CRS repository will come pre-packaged with a list of GitHub secrets and environment
-variables. Teams may change the values of these secrets (e.g. to their own collaborator API keys);
-however, teams must not change the variable names. Also, teams must ensure their services use the
-core variables related to the iAPI and LiteLLM connections.
-
-For local development and during Phase 1 of the Evaluation Window, competitors are expected to
-use / provide their own keys and secrets. During subsequent phases of the evaluation window
-and at competition, the AIxCC infrastructure team will override these values with their own.
-
-There are currently 5 LLM Provider environment variables declared but not populated in example.env, which will be populated at competition time:
-
-- `OPENAI_API_KEY`
-- `AZURE_API_KEY`
-- `AZURE_API_BASE`
-- `GOOGLE_APPLICATION_CREDENTIALS`
-- `ANTHROPIC_API_KEY`
-
-Note: For local development, the [./sandbox/example.env](./sandbox/example.env) file should be
-copied to `./sandbox/env`. This file is included in the `.gitignore` so competitors don't
-accidentally push it to their repository.
-
-Also note: `GOOGLE_APPLICATION_CREDENTIALS` does not directly contain the Google credential. It
-contains a path to `vertex_key.json`, which contains the actual credentials.  To get the content of
-`vertex_key.json`, use the [instructions to create a GCP Service
-Account](https://docs.litellm.ai/docs/providers/vertex#using-gcp-service-account) in combination
-with [this document about creating the credential file
-itself](https://cloud.google.com/docs/authentication/application-default-credentials#personal).
-
-We will continue iterating on the CRS sandbox as we grow closer to the competition in order to support newer versions of components.
-
-Please see the competition rules and technical release as the cut off dates for changes will be described there.
-
-### Setting GitHub secrets and variables with competitor repository permissions
-
-Using the [GitHub CLI](https://cli.github.com/), you are able to set repository-level secrets
-despite not being able to view or edit them in the web UI.
-
-Your GitHub Classic PAT will need the `Full control of private repositories` permission, and you
-will need it set in the `GITHUB_TOKEN` environment variable.  Once you have that configured, try `gh
-secret list`.  You might get a 403 error requiring SSO sign-in:
-
-![gh secret list SSO sign-in error](./.static/gh-secret-list-sso-sign-in.png)
-
-Open the link and complete the SSO flow.  Then you should be able to use `gh secret set` to set
-secrets on your repository and `gh secrets list` to show which ones exist and when they were most
-recently set.
-
-You can now also set variables with `gh variable set MY_EXAMPLE_VARIABLE` and list with `gh variable list`
-
-The [GitHub CRS Validation workflow](./.github/workflows/evaluator.yml) expects the repo-level
-secrets to have the same names as in `sandbox/env` (`OPENAI_API_KEY`, etc). The only exception to
-this is Google's LLM credential, which should be stored in `VERTEX_KEY_JSON`.
-
-![gh secret set and list demonstration](./.static/gh-secret-list-set-demo.png)
-
 ## LiteLLM Models Supported
 
 | Provider  | Model                  | Pinned Version              | Requests per Minute (RPM) | Tokens per Minute (TPM)  |
@@ -315,17 +286,6 @@ ASC, then the fallback will likely be "textembedding-gecko@003".
 
 We recommend using Ubuntu 22.04 LTS for CRS Sandbox development and will be unable to investigate issues with other base operating systems.
 
-### GitHub Personal Access Token
-
-In order to work with the CRS Sandbox you must setup your GitHub personal access token or PAT following these steps.
-
-1. Configure a personal access token (PAT) with `repo` (all checks) and `read:packages` permission by following this [guide](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic)
-2. Authorize the generated PAT for the `aixcc-sc` organization by this [guide](https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on)
-3. Run `echo "example-token-1234" | docker login ghcr.io -u USERNAME --password-stdin` replacing example-token-1234 with your generated PAT.
-4. Confirm that you see `> Login Succeeded` in your output from step #3.
-5. Competitors MUST add this key as a repository variable called `GHCR_PULL_TOKEN`.
-This MUST be a variable and NOT a secret. The Game Architecture team will use this variable to pull your repository images at competition time.
-
 ### GitHub SSH Key
 
 1. Generate an SSH key by following this [guide](https://docs.github.com/en/enterprise-cloud@latest/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
@@ -360,6 +320,63 @@ This is the exact same target used by the GitHub workflow evaluator.
 
 Additionally, you will need permissions to interact with the Docker daemon.
 Typically this means adding your user to the `docker` group.
+
+### Environment Variables & GitHub Secrets
+
+Each competitor CRS repository will come pre-packaged with a list of GitHub secrets and environment
+variables. Teams may change the values of these secrets (e.g. to their own collaborator API keys);
+however, teams must not change the variable names. Also, teams must ensure their services use the
+core variables related to the iAPI and LiteLLM connections.
+
+For local development and during Phase 1 of the Evaluation Window, competitors are expected to
+use / provide their own keys and secrets. During subsequent phases of the evaluation window
+and at competition, the AIxCC infrastructure team will override these values with their own.
+
+There are currently 5 LLM Provider environment variables declared but not populated in example.env, which will be populated at competition time:
+
+- `OPENAI_API_KEY`
+- `AZURE_API_KEY`
+- `AZURE_API_BASE`
+- `GOOGLE_APPLICATION_CREDENTIALS`
+- `ANTHROPIC_API_KEY`
+
+Note: For local development, the [./sandbox/example.env](./sandbox/example.env) file should be
+copied to `./sandbox/env`. This file is included in the `.gitignore` so competitors don't
+accidentally push it to their repository.
+
+Also note: `GOOGLE_APPLICATION_CREDENTIALS` does not directly contain the Google credential. It
+contains a path to `vertex-key.json`, which contains the actual credentials.  To get the content of
+`vertex-key.json`, use the [instructions to create a GCP Service
+Account](https://docs.litellm.ai/docs/providers/vertex#using-gcp-service-account) in combination
+with [this document about creating the credential file
+itself](https://cloud.google.com/docs/authentication/application-default-credentials#personal).
+
+We will continue iterating on the CRS sandbox as we grow closer to the competition in order to support newer versions of components.
+
+Please see the competition rules and technical release as the cut off dates for changes will be described there.
+
+### Setting GitHub secrets and variables with competitor repository permissions
+
+Using the [GitHub CLI](https://cli.github.com/), you are able to set repository-level secrets
+despite not being able to view or edit them in the web UI.
+
+Your GitHub Classic PAT will need the `Full control of private repositories` permission, and you
+will need it set in the `GITHUB_TOKEN` environment variable.  Once you have that configured, try `gh
+secret list`.  You might get a 403 error requiring SSO sign-in:
+
+![gh secret list SSO sign-in error](./.static/gh-secret-list-sso-sign-in.png)
+
+Open the link and complete the SSO flow.  Then you should be able to use `gh secret set` to set
+secrets on your repository and `gh secrets list` to show which ones exist and when they were most
+recently set.
+
+You can now also set variables with `gh variable set MY_EXAMPLE_VARIABLE` and list with `gh variable list`
+
+The [GitHub CRS Validation workflow](./.github/workflows/evaluator.yml) expects the repo-level
+secrets to have the same names as in `sandbox/env` (`OPENAI_API_KEY`, etc). The only exception to
+this is Google's LLM credential, which should be stored in `VERTEX_KEY_JSON`.
+
+![gh secret set and list demonstration](./.static/gh-secret-list-set-demo.png)
 
 ### Working with Docker
 
@@ -491,6 +508,7 @@ A Makefile has been provided with a number of a commands to make it easy to clon
 Copy `sandbox/example.env` to `sandbox/env` and replace the variables with your own for local development.
 
 **If you do not have working GitHub credentials that can pull images from GHCR, `make up` will fail.**
+You MUST perform `docker login` with your [GitHub PAT](#github-personal-access-token)
 
 ```bash
 cp sandbox/example.env sandbox/env
