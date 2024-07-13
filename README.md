@@ -19,7 +19,7 @@ At that time, your CRS repository will become read-only and vCluster access will
 - Verify that the container images and `crs-manifest` generated during the release have the tags expected by your crs.
 - You did it! Thank you for getting this far, see you at DEFCON 🎉
 
-*If you change this token, you must submit an issue to crs-sandbox to notify us that your token has changed so that we can set it correctly in your vcluster environment.*
+*If you change this token, you must submit an issue to crs-sandbox to notify us that your token has changed so that we can set it correctly in your vCluster environment.*
 
 
 ## Reporting Bugs & Issues
@@ -98,7 +98,7 @@ They may do this by running `gh variable set GHCR_PULL_TOKEN` and adding the PAT
 
 The process for creating the PAT is outlined under [GitHub Personal Access Token](#github-personal-access-token).
 
-Teams will be able to log into their vcluster at [https://vcluster-platform.aixcc.tech/login](https://vcluster-platform.aixcc.tech/login)
+Teams will be able to log into their vCluster at [https://vcluster-platform.aixcc.tech/login](https://vcluster-platform.aixcc.tech/login)
 
 During competition, CRSs may only submit a single working vulnerability discovery on any single
 commit, and must use that issued CPV UUID for any generated patches.  Any further VDSs will be
@@ -110,7 +110,7 @@ presented to their CRS during phase 2.
 
 <https://github.com/aixcc-sc/crs-sandbox/assets/165228747/771850a7-7019-4199-aa3f-c705bcffe37d>
 
-### VCluster CRS Guide
+### vCluster CRS Guide
 
 All of your CRS code is deployed in the `crs` namespace. Deleting the `crs` namespace will cause your CRS deployment to be completely wiped. This requires [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) and [flux](https://fluxcd.io/flux/installation/#install-the-flux-cli]). Get the connection details from the vCluster UI (Connect button in the top right corner).
 
@@ -142,13 +142,13 @@ Please feel free to open an issue in the [CRS Sandbox] if you run into issues wi
 
 ## GitHub Personal Access Token
 
-To work with the CRS Sandbox and VCluster you must set up your GitHub Personal Access Token (PAT) by following these steps.
+To work with the CRS Sandbox and vCluster you must set up your GitHub Personal Access Token (PAT) by following these steps.
 
 1. Create a Personal Access Token (PAT) set to expire **no earlier** than September 1st 2024.*** with the scopes `read:packages` and `repo` set. You MUST ensure it is authorized for SSO by clicking `Configure SSO` and `Authorize` for aixcc-sc.
 See the following references for more information: [Authenticating with a personal access token](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-with-a-personal-access-token-classic) and
  [Authorize for SSO](https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on).
 
-2. Confirm the following commands work (*replacing ghp_<\CHANGE_ME\> with your generated PAT*)
+2. Confirm the following commands work (*replacing ghp_\<CHANGE_ME\> with your generated PAT*)
 
     ```bash
     echo "ghp_<CHANGE_ME>" | docker login ghcr.io -u USERNAME --password-stdin
@@ -163,7 +163,7 @@ See the following references for more information: [Authenticating with a person
     ? Paste your variable
     ```
 
-The Game Architecture team will use this variable to pull your repository images at competition time. *If you change this token, you must submit an issue to crs-sandbox to notify us that your token has changed so that we can set it correctly in your vcluster environment.*
+The Game Architecture team will use this variable to pull your repository images at competition time. *If you change this token, you must submit an issue to crs-sandbox to notify us that your token has changed so that we can set it correctly in your vCluster environment.*
 
 ## Code Owners
 
@@ -293,15 +293,92 @@ We recommend using Ubuntu 22.04 LTS for CRS Sandbox development and will be unab
 3. Follow this [guide](https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-an-ssh-key-for-use-with-saml-single-sign-on)
 to authorize the SSH key for the `aixcc-sc` organization
 
-### Precommit
+### Quick Start Guide
 
-This repository has a [.pre-commit-config.yaml](.pre-commit-config.yaml) file for assisting with local development.
+This is a step-by-step example of everything you need to perform on a code level to go from crs-sandbox to working, compliant, submittable CRS.
 
-While competitors are not required to use this, they may find it easier to pass the mandatory evaluation checks.
+1. Pull your crs repository and checkout a new branch. `git switch -c prepare_crs_example`
 
-You can install the command-line tool by going [here](https://pre-commit.com/#install)
+2. Open `compose.yaml` (relevant parts shown)
 
-### Dependencies
+    ```yaml
+      ### Additional services are welcomed, just make sure to use the supplied variables and profile names
+      services:
+        crs:
+          labels:
+            kompose.serviceaccount-name: "crs"  # make sure to use this label if you want your CRS to have K8S API access
+          networks:
+            - crs-internal  # Competitors: You MUST use this network only for any containers you add to your CRS.
+          profiles:
+            - development
+            - competition
+          # Competitors: You MUST change crs-sandbox to your repository name, change replace-me-crs to your image name, and be versioned pinned to the release intended for competition.
+          # The example show uses RELEASE_TAG variable if it is set.
+          # The `-` before `v1.0.0` is used with interpolation to specify that v1.0.0 should be used if RELEASE_TAG is not set.
+          # The .github/workflows/package.yaml script will set the RELEASE_TAG environment variable so it is used correctly on release.
+          image: ghcr.io/aixcc-sc/crs-sandbox/replace-me-crs:${RELEASE_TAG-v1.0.0}
+          # Competitors: All services that are expected to have a clean exit must have restart: on-failure
+          restart: on-failure
+    ```
+
+3. Update the image name, setting `asc-crs-<COMPETITOR_NAME>` with your repository. (the image will not exist yet, and gets created during a Release)
+
+    ```yaml
+    image: ghcr.io/aixcc-sc/asc-crs-<COMPETITOR_NAME>/my-crs-service:${RELEASE_TAG-v1.0.0}
+    ```
+
+4. Open `.github/workflows/package.yml`
+
+    ```yaml
+      build-and-push-image:
+        runs-on:
+          group: large-runners
+        strategy:
+          fail-fast: false
+          matrix:
+            # COMPETITORS: Update this list of docker files to include all images needed for your CRS
+            # These images will be copied into your CRS execution environment at competition time
+            # REMINDER: A CRS WILL NOT have internet access beyond iAPI and LiteLLM, so all containers images MUST be able to run without internet access.
+            # You MUST include your specific private CRS repository prefix so replace `ghcr.io/aixcc-sc/crs-sandbox` with `ghcr.io/aixcc-sc/crs-XXXXXXXX` or whatever
+            # your private CRS repository is called but only for containers you are adding or those container images.
+
+            # DO NOT add version labels here. That should be managed using the GitHub release process in your CRS repo.
+            # Please see: https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository
+
+
+            include:
+              - dockerfile: ./crs/src/Dockerfile
+                context: .
+                image: ghcr.io/aixcc-sc/${{ github.event.repository.name }}/replace-me-crs
+        # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
+        permissions:
+          contents: write # to push chart release and create a release (helm/chart-releaser-action)
+          packages: write # needed for ghcr access
+          id-token: write # needed for keyless signing
+    ```
+
+5. Modify the `image` field to match the image name you specified in `compose.yaml`
+
+    ```yaml
+    image: ghcr.io/aixcc-sc/${{ github.event.repository.name }}/my-crs-service
+    ```
+
+6. Iterate on your CRS. See [crs/src/Dockerfile](./crs/src/Dockerfile) and
+ [crs/src/run.sh](./example-crs.sh) as a working example.
+
+7. Commit your changes and push to your branch.
+
+8. Create a Pull Request (PR) in GitHub. Your branch ought to pass the evaluator steps in the CI pipeline. Merge the branch into `main` once it is successful/complete.
+
+9. Create a release in GitHub. Choose a tag v1.0.0 or later (you can create one in the GitHub UI) that targets the `main` branch.
+
+10. If you have set your `GHCR_PULL_TOKEN` variable and your vCluster has been provisioned, it will automatically deploy your CRS to your vCluster within 3-5 minutes.
+
+11. Continue to create branches/PRs and iterate on your CRS. Make new releases when you want to test. Update cp_config/cp_config.yaml to choose which target exemplar CP you want your CRS to run against. If you change this and want to test it in vCluster, you will need to create a new release.
+
+12. See the rest of this section for local dev environment setup and more advanced usage of services, replicas, and other features you can adjust using Kompose labels in `kompose_competition_overrides.yaml`.
+
+### Dependencies for Local Development
 
 Most dependencies in this repository can be automatically managed by `mise`, but you'll have to install the following yourself:
 
@@ -318,8 +395,24 @@ Most dependencies in this repository can be automatically managed by `mise`, but
 We've added a Makefile target `make install` which will setup the required dependencies.
 This is the exact same target used by the GitHub workflow evaluator.
 
+#### Using mise to auto install dependencies
+
+This repository defines its dependencies in a [`.tool-versions`](./.tool-versions) file.
+[`mise`](https://mise.jdx.dev/getting-started.html#quickstart) can read this file and automatically install the tools at the required versions.
+Install `mise`, set it up in your shell, and then run `mise install`.
+`mise` will then manage your `PATH` variable to make the tools available whenever you `cd` into this repository.
+
 Additionally, you will need permissions to interact with the Docker daemon.
 Typically this means adding your user to the `docker` group.
+
+#### Precommit
+
+This repository has a [.pre-commit-config.yaml](.pre-commit-config.yaml) file for assisting with local development.
+
+While competitors are not required to use this, they may find it easier to pass the mandatory evaluation checks.
+
+You can install the command-line tool by going [here](https://pre-commit.com/#install)
+
 
 ### Environment Variables & GitHub Secrets
 
@@ -378,6 +471,75 @@ this is Google's LLM credential, which should be stored in `VERTEX_KEY_JSON`.
 
 ![gh secret set and list demonstration](./.static/gh-secret-list-set-demo.png)
 
+### Using Make
+
+A Makefile has been provided with a number of a commands to make it easy to clone the exemplar repos, stand up the environment, and a variety of other actions.
+
+As outlined above, copy `sandbox/example.env` to `sandbox/env` and replace the variables with your own for local development.
+
+**If you do not have working GitHub credentials that can pull images from GHCR, `make up` will fail.**
+You MUST perform `docker login` with your [GitHub PAT](#github-personal-access-token)
+
+```bash
+cp sandbox/example.env sandbox/env
+```
+
+`make cps` - clones the exemplar challenges into local `./cp_root` folder (the source folder for `${AIXCC_CP_ROOT}`)
+`make up` - brings up the development CRS Sandbox, you can visit <http://127.0.0.1:8080/docs> to see the iAPI OpenAPI spec.
+`make down` - tears down the development CRS Sandbox
+
+See [Makefile](./Makefile) for more commands
+
+`make force-reset` - performs a full Docker system prune of all local docker containers, images, networks, and volumes. This can be useful if you accidentally orphaned some docker process or other resources.
+
+We've included a Makefile with helpful targets to make working with the CRS Sandbox easier.
+However, you can copy any commands and run them on your own.
+Please note the use of `--profile` with all `docker compose` commands.
+This is so we can easily swap `--profile development` with `--profile competition` at competition time, but competitors can use the `--profile development` to run the local copy of emulated resources.
+
+
+### Release Process
+
+All teams should be using [SemVer 2.0.0](https://semver.org/) to tag releases.
+
+A team MUST have a tag of `v1.0.0` OR greater within their private CRS repository at competition.
+
+Teams MUST use a `v` prefix in their tags.
+
+All releases MUST be from the `main` branch ONLY. Failure to create release tags from `main` will lead to a failed release.
+
+Teams can create these tags by following the GitHub Release process with <https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository>
+
+This will automatically tag any Docker images you've specified under `.github/workflows/package.yml` outlined above.
+
+This will also tag the Kubernetes crs-manifests package of your CRS automatically.
+
+At competition the AIxCC Game Architecture team will use the latest SemVer tag available on your repository that was present at the end of the submission window.
+
+#### Note: No internet access, push all artifacts
+
+As stated previously, a CRS will NOT have internet access except for via the LiteLLM proxy to the configured LLM providers.
+
+Because of this competitors MUST provide all artifacts within their Docker container images.
+
+All images needed to execute a CRS MUST be included under `.github/workflows/package.yml` under the `jobs.build-and-push-image.strategy.matrix.include` section.
+
+The Game Architecture team will migrate these images to the competition environment prior to starting your CRS.
+
+### Data Sharing & Volumes
+
+A CRS will find the CPs under evaluation in the volume indicated by the environment variable
+`${AIXCC_CP_ROOT}`. At competition time and likely during some part of the evaluation
+window, this volume will be configured as read-only. As such, a CRS **MUST** copy a CP
+from `${AIXCC_CP_ROOT}` to a writable location in order to build or test it.
+
+The volume indicated by the environment variable `${AIXCC_CRS_SCRATCH_SPACE}` will be writable
+by the CRS and CPs. Moreover, this volume can be shared among the CRS services as a
+shared file system. It is the responsibility of the CRS developers to ensure that
+use of this shared volume is coordinated between its services to prevent data corruption
+via collisions or race conditions. No other folders or volumes will be shared between
+containers for competitor use during competition.
+
 ### Working with Docker
 
 The `crs-sandbox` contains its own Docker daemon inside of a container. With `make up` this runs docker-in-docker.
@@ -394,133 +556,6 @@ Once you've done that, set `DOCKER_HOST=tcp://127.0.0.1:2375`.
 export DOCKER_HOST=tcp://127.0.0.1:2375
 docker logs <container name>
 ```
-
-### Working with K3S Kubernetes
-
-We now use [K3S](https://docs.k3s.io/) for our local Kubernetes w/ the [Longhorn](https://longhorn.io/docs/1.6.2/) storage driver.
-We use a Kubernetes context named `crs` for all `kubectl` targets in the Makefile to prevent modification to other Kubernetes environments.
-
-You MUST set your GitHub [PAT](#github-personal-access-token) in the `env` file so that Kubernetes can use this to pull images.
-
-#### Install dependencies
-
-`make install`
-
-#### Merge the k3s kubeconfig into your main kubeconfig
-
-```bash
-sudo cp /etc/rancher/k3s/k3s.yaml /tmp/k3s.yaml
-sudo chown $USER /tmp/k3s.yaml
-KUBECONFIG=/tmp/k3s.yaml:~/.kube/config kubectl config view --flatten > ~/.kube/config
-```
-
-#### Rename k3s context
-
-`kubectl config rename-context default k3s`
-
-#### Set the current context to k3s
-
-`kubectl config use-context k3s`
-
-#### Remove k3s
-
-`make k8s/k3s/clean`
-
-### Working with Kubernetes API
-
-Several teams inquired about the ability of their CRS to work directly with the Kubernetes API in a few tickets.
-
-- [#197](https://github.com/aixcc-sc/crs-sandbox/issues/197)
-- [#203](https://github.com/aixcc-sc/crs-sandbox/issues/203)
-
-This functionality has now been added to the CRS Sandbox.
-
-This is approach is purely optional and should be considered an `unsupported expert mode` so teams can perform dynamic orchestraion of their CRS.
-
-Unsupported means that issues in GitHub related to the Kubernetes API access will receive a lower priorty.
-
-Teams using the Kubernetes API MUST manage their own dynamic resources, and their CRS approach MUST have the ability to recover from memory exhaustion, etc.
-
-To enable this feature the `compose.yaml` file must contain the following for each service that needs Kubernetes API access.
-
-```yaml
-labels:
-  kompose.serviceaccount-name: crs
-```
-
-#### Dependencies managed using mise
-
-This repository defines its dependencies in a [`.tool-versions`](./.tool-versions) file.
-[`mise`](https://mise.jdx.dev/getting-started.html#quickstart) can read this file and automatically install the tools at the required versions.
-Install `mise`, set it up in your shell, and then run `mise install`.
-`mise` will then manage your `PATH` variable to make the tools available whenever you `cd` into this repository.
-
-We've included a Makefile with helpful targets to make working with the CRS Sandbox easier.
-However, you can copy any commands and run them on your own.
-Please note the use of `--profile` with all `docker compose` commands.
-This is so we can easily swap `--profile development` with `--profile competition` at competition time, but competitors can use the `--profile development` to run the local copy of emulated resources.
-
-### Data Sharing & Volumes
-
-A CRS will find the CPs under evaluation in the volume indicated by the environment variable
-`${AIXCC_CP_ROOT}`. At competition time and likely during some part of the evaluation
-window, this volume will be configured as read-only. As such, a CRS **MUST** copy a CP
-from `${AIXCC_CP_ROOT}` to a writable location in order to build or test it.
-
-The volume indicated by the environment variable `${AIXCC_CRS_SCRATCH_SPACE}` will be writable
-by the CRS and CPs. Moreover, this volume can be shared among the CRS services as a
-shared file system. It is the responsibility of the CRS developers to ensure that
-use of this shared volume is coordinated between its services to prevent data corruption
-via collisions or race conditions. No other folders or volumes will be shared between
-containers for competitor use during competition.
-
-### No internet Access
-
-As stated previously, a CRS will NOT have internet access except for via the LiteLLM proxy to the configured LLM providers.
-
-Because of this competitors MUST provide all artifacts within their Docker container images.
-
-All images needed to execute a CRS MUST be included under `.github/workflows/package.yml` under the `jobs.build-and-push-image.strategy.matrix.include` section.
-
-The Game Architecture team will migrate these images to the competition environment prior to starting your CRS.
-
-### Release Process
-All teams should be using [SemVer 2.0.0](https://semver.org/) to tag releases.
-
-A team MUST have a tag of `v1.0.0` OR greater within their private CRS repository at competition.
-
-Teams MUST use a `v` prefix in their tags.
-
-All releases MUST be from the `main` branch ONLY. Failure to create release tags from `main` will lead to a failed release.
-
-Teams can create these tags by following the GitHub Release process with <https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository>
-
-This will automatically tag any Docker images you've specified under `.github/workflows/package.yml` outlined above.
-
-This will also tag the Helm chart of your CRS automatically.
-
-At competition the AIxCC Game Architecture team will use the latest SemVer tag available on your repository that was present at the end of the submission window.
-
-### Using Make
-
-A Makefile has been provided with a number of a commands to make it easy to clone the exemplar repos, stand up the environment, and a variety of other actions.
-
-Copy `sandbox/example.env` to `sandbox/env` and replace the variables with your own for local development.
-
-**If you do not have working GitHub credentials that can pull images from GHCR, `make up` will fail.**
-You MUST perform `docker login` with your [GitHub PAT](#github-personal-access-token)
-
-```bash
-cp sandbox/example.env sandbox/env
-```
-
-`make cps` - clones the exemplar challenges into local `./cp_root` folder (the source folder for `${AIXCC_CP_ROOT}`)
-`make up` - brings up the development CRS Sandbox, you can visit <http://127.0.0.1:8080/docs> to see the iAPI OpenAPI spec.
-`make down` - tears down the development CRS Sandbox
-
-See [Makefile](./Makefile) for more commands
-
-`make force-reset` - performs a full Docker system prune of all local docker containers, images, networks, and volumes. This can be useful if you accidentally orphaned some docker process or other resources.
 
 ### Kubernetes
 
@@ -594,6 +629,59 @@ scale horizontally.
 This type of service is intended to run once, typically when initialized, and not restart upon completion.
 
 Set `restart: on-failure` on this service.  This produces a Pod in Kubernetes.  If you want multiple, you will need to declare multiple services.
+
+### Working with K3S Kubernetes
+
+We now use [K3S](https://docs.k3s.io/) for our local Kubernetes w/ the [Longhorn](https://longhorn.io/docs/1.6.2/) storage driver.
+We use a Kubernetes context named `crs` for all `kubectl` targets in the Makefile to prevent modification to other Kubernetes environments.
+
+You MUST set your GitHub [PAT](#github-personal-access-token) in the `env` file so that Kubernetes can use this to pull images.
+
+#### Install dependencies
+
+`make install`
+
+#### Merge the k3s kubeconfig into your main kubeconfig
+
+```bash
+sudo cp /etc/rancher/k3s/k3s.yaml /tmp/k3s.yaml
+sudo chown $USER /tmp/k3s.yaml
+KUBECONFIG=/tmp/k3s.yaml:~/.kube/config kubectl config view --flatten > ~/.kube/config
+```
+
+#### Rename k3s context
+
+`kubectl config rename-context default k3s`
+
+#### Set the current context to k3s
+
+`kubectl config use-context k3s`
+
+#### Remove k3s
+
+`make k8s/k3s/clean`
+
+### Working with Kubernetes API
+
+Several teams inquired about the ability of their CRS to work directly with the Kubernetes API in a few tickets.
+
+- [#197](https://github.com/aixcc-sc/crs-sandbox/issues/197)
+- [#203](https://github.com/aixcc-sc/crs-sandbox/issues/203)
+
+This functionality has now been added to the CRS Sandbox.
+
+This is approach is purely optional and should be considered an `unsupported expert mode` so teams can perform dynamic orchestraion of their CRS.
+
+Unsupported means that issues in GitHub related to the Kubernetes API access will receive a lower priorty.
+
+Teams using the Kubernetes API MUST manage their own dynamic resources, and their CRS approach MUST have the ability to recover from memory exhaustion, etc.
+
+To enable this feature the `compose.yaml` file must contain the following for each service that needs Kubernetes API access.
+
+```yaml
+labels:
+  kompose.serviceaccount-name: crs
+```
 
 ### Architecture Diagram
 
