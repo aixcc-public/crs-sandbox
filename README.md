@@ -12,9 +12,10 @@ The submission window closes July 15, 2024 at 11:59pm UTC [FAQ page 5](https://a
 At that time, your CRS repository will become read-only and vCluster access will be removed. The latest tagged release in your repository for images and the crs-manifest will be used for competition.
 
 ### Checklist
-- Set your [GHCR_PULL_TOKEN](#github-personal-access-token) variable with a token set to expire **no earlier** than September 1st 2024.
+- Set your [GHCR_PULL_TOKEN](#github-personal-access-token) **variable** with a token set to expire **no earlier** than September 1st 2024.
 - Merge at least one pull request into `main` with your CRS code.
-- Merge at least v2.6.6 of the CRS Sandbox into their CRS. (Teams are encouraged to merge newer releases as they may fix bugs while remaining interface compatible.)
+- Merge at least v2.6.6 (b873c19) of the CRS Sandbox into your CRS repository. (Teams are encouraged to [merge newer releases](#getting-upstream-crs-sandbox-updates-in-your-repository-template-syncing) as they may fix bugs while remaining interface compatible.)
+(You MUST merge the PR titled "upstream merge template repository" if it exists in your competitor CRS repository. If you have not merged the one with the contents `Merge git@github.com:aixcc-sc/crs-sandbox b873c19` then you may not have the 2.6.6 version of crs-sandbox).
 - Cut a [release](#release-process) with the a tag >= `v1.0.0` from `main`.
 - Verify that the container images and `crs-manifest` generated during the release have the tags expected by your crs.
 - You did it! Thank you for getting this far, see you at DEFCON 🎉
@@ -70,15 +71,17 @@ Check the output of the validation steps, CRS submission log step, and CRS logs 
 Date: 2024-06-21 - 2024-07-15 11:59pm UTC
 
 On the above date, the AIxCC Game Architecture team will automatically execute competitors CRSs against a subset of published challenge problems.
+By modifying [cp_config/cp_config.yaml](./cp_config/cp_config.yaml), competitors can change the CPs
+presented to their CRS during phase 2.
 
 The CRS MUST be released via [GitHub Release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)
 and you MUST merge at least one pull request with a passing Evaluator workflow.
 
 Competitors must release new versions of their CRS with an updated tag from `main` after the start of Phase 2 in order to trigger provisioning of their cluster.
 
-Teams MUST merge the automated upstream pull requests in their repos OR rebase for CRS Sandbox version >= `v2.5.0`.
+Teams MUST merge the automated upstream pull requests in their repos OR rebase for CRS Sandbox version >= `v2.6.6`.
 
-With each new release of a competitors CRS it will be automatically provisioned.
+With each new release of a competitors CRS it will be automatically deployed.
 
 Only the latest semantic version of a competitors CRS that is properly tagged from `main` will be tested in Phase 2.
 
@@ -105,8 +108,6 @@ commit, and must use that issued CPV UUID for any generated patches.  Any furthe
 rejected as duplicates.  During phase 2, however, **duplicate submissions will not be rejected** in
 order to facilitate rapid CRS testing.  We may turn rejection back on towards the end of phase 2.
 
-By modifying [cp_config/cp_config.yaml](./cp_config/cp_config.yaml), competitors can change the CPs
-presented to their CRS during phase 2.
 
 <https://github.com/aixcc-sc/crs-sandbox/assets/165228747/771850a7-7019-4199-aa3f-c705bcffe37d>
 
@@ -281,6 +282,13 @@ Note: the "\*" next to model "textembedding-gecko" indicates this model target i
 The AIxCC infrastructure team is still waiting on LiteLLM to finalize support for the model
 "text-embedding-004". If this newer model is not integrated in time to support its use during the
 ASC, then the fallback will likely be "textembedding-gecko@003".
+
+## Getting upstream CRS-Sandbox updates in your repository (template syncing)
+
+The CRS Sandbox repository will be updated with new features and bugfixes over time. It is important to keep your repository up to date with these changes. On each release of crs-sandbox, a Pull Request is created in each competitor repository named "upstream merge template repository". You should merge this into your `main` branch as soon as possible.
+It is critical to *NOT* revert this PR once you have merged it in. If it causes issues, open a new issue in the crs-sandbox repository. It is currently set to always take competitor code in case of conflict.
+
+You can also manually trigger an update from crs-sandbox `main` by going to Actions -> Create PR to merge from upstream Template and clicking `Run workflow`.
 
 ## Local Development
 
