@@ -67,6 +67,7 @@ if [ "$LOAD_CP_IMAGES" = "true" ]; then
 			echo "Loading CP container: $IMAGE_FILE"
 			docker load -i "$IMAGE_FILE"
 		done
+		find "${AIXCC_CP_ROOT}" -maxdepth 1 -type f -name "img-*.tar.gz*" -exec rm {} \;
 	fi
 
 	echo "CP image loading complete"
