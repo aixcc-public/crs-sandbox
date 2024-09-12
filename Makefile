@@ -15,6 +15,14 @@ HOST_CAPI_LOGS = $(ROOT_DIR)/capi_logs
 LOCAL_K8S_BASE = $(ROOT_DIR)/sandbox/kustomize/base
 LOCAL_K8S_RESOURCES = $(ROOT_DIR)/.k8s
 
+# make mise work from first call
+PATH := ${PATH}:${HOME}/.local/bin
+export  PATH
+
+# variables that control the deploy target
+export KUBECONFIG=${HOME}/.kube/config
+KUBE_CONTEXT = crs
+KUBE_DEPLOY_LONGHORN = true
 
 # variables that control the CP repos
 HOST_CP_ROOT_DIR = $(ROOT_DIR)/cp_root
@@ -49,14 +57,14 @@ __UNUSED_EVAL_EXES := $(foreach exe,$(__UNUSED_REQUIRED_EXE), \
 __UNUSED_YQ_REQUIRED_MAJOR_VERSION ?= 4
 __UNUSED_YQ_ACTUAL_MAJOR_VERSION = $(shell yq --version | grep -o "version v.*" | grep -Eo '[0-9]+(\.[0-9]+)+' | cut -f1 -d'.')
 ifneq ($(__UNUSED_YQ_REQUIRED_MAJOR_VERSION),$(__UNUSED_YQ_ACTUAL_MAJOR_VERSION))
-$(error Unexpected major version of 'yq'. Expected: $(__UNUSED_YQ_REQUIRED_MAJOR_VERSION), Actual: $(__UNUSED_YQ_ACTUAL_MAJOR_VERSION)))
+$(warning Unexpected major version of 'yq'. Expected: $(__UNUSED_YQ_REQUIRED_MAJOR_VERSION), Actual: $(__UNUSED_YQ_ACTUAL_MAJOR_VERSION))
 endif
 
 # Determine CP repo targets
 CP_TARGETS_DIRS = $(shell yq -r '.cp_targets | keys | .[]' $(CP_CONFIG_FILE))
 CP_MAKE_TARGETS = $(addprefix $(HOST_CP_ROOT_DIR)/.pulled_, $(subst :,_colon_, $(subst /,_slash_, $(CP_TARGETS_DIRS))))
 
-.PHONY: help build up start down destroy stop restart logs logs-crs logs-litellm logs-iapi ps crs-shell litellm-shell cps/clean cps computed-env clear-dind-cache env-file-required github-creds-required k8s k8s/clean k8s/kustomize/development k8s/kustomize/competition install k8s/development k8s/competition
+.PHONY: help build up start down destroy stop restart logs logs-crs logs-litellm logs-iapi ps crs-shell litellm-shell cps/clean cps computed-env clear-dind-cache env-file-required github-creds-required k8s k8s/clean k8s/kustomize/development k8s/kustomize/competition install k8s/development k8s/competition k8s/longhorn
 
 help: ## Display available targets and their help strings
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_/-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(THIS_FILE) | sort
@@ -174,20 +182,26 @@ loadtest: local-volumes computed-env ## Run k6 load tests
 loadtest/destroy: ## Stop and remove containers with volumes
 	@docker compose -f $(DOCKER_COMPOSE_FILE) -f $(DOCKER_COMPOSE_LOCAL_OVERRIDES) --profile loadtest down --volumes --remove-orphans $(c)
 
-k8s: k8s/clean k8s/development k8s/kustomize/development build ## Generates helm chart locally for the development profile for kind testing, etc. build is called for local image generation
-	@docker pull ghcr.io/aixcc-sc/capi:v2.1.9
+k8s/longhorn:
+	@if [ "${KUBE_DEPLOY_LONGHORN}" = "true" ]; then \
+		helm repo add longhorn https://charts.longhorn.io ;\
+		helm repo update ;\
+		helm install --kube-context $(KUBE_CONTEXT) longhorn longhorn/longhorn --namespace longhorn-system --create-namespace --set defaultSetting.defaultStorageClass=true ;\
+	else \
+		echo "Skip Longhorn deployment" ;\
+	fi
+
+k8s: k8s/clean k8s/longhorn computed-env k8s/development k8s/kustomize/development build ## Generates helm chart locally for the development profile for kind testing, etc. build is called for local image generation
+	@docker pull ghcr.io/aixcc-sc/capi:v2.1.30
 	@docker pull ghcr.io/berriai/litellm-database:main-v1.35.10
 	@docker pull nginx:1.25.5
 	@docker pull docker:24-dind
 	@docker pull postgres:16.2-alpine3.19
 	@docker pull ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
 	@docker pull curlimages/curl:8.8.0
-	@docker pull ghcr.io/aixcc-sc/load-cp-images:v0.0.11
-	@helm repo add longhorn https://charts.longhorn.io
-	@helm repo update
-	@helm install --kube-context crs longhorn longhorn/longhorn --namespace longhorn-system --create-namespace --set defaultSetting.defaultStorageClass=true
-	@kubectl create --context=crs secret docker-registry regcred --docker-server=https://ghcr.io --docker-username=oauth2 --docker-password=$(GITHUB_TOKEN)
-	@kubectl apply --context=crs -f $(LOCAL_K8S_RESOURCES)
+	@docker pull ghcr.io/aixcc-sc/load-cp-images:latest
+	@kubectl create --context=$(KUBE_CONTEXT) secret docker-registry regcred --docker-server=https://ghcr.io --docker-username=oauth2 --docker-password=$(shell grep GITHUB_TOKEN sandbox/env | sed 's/.*=//g')
+	@kubectl apply --context=$(KUBE_CONTEXT) -f $(LOCAL_K8S_RESOURCES)
 
 k8s/clean:
 	@rm -rf $(LOCAL_K8S_BASE)/resources.yaml
@@ -197,9 +211,17 @@ install:
 	@echo "Updating package list"
 	sudo apt-get update
 
-	@echo "Installing Docker Compose"
-	sudo curl -L "https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-$$(uname -s)-$$(uname -m)" -o /usr/local/bin/docker-compose
-	sudo chmod +x /usr/local/bin/docker-compose
+	@echo "Adding Docker's repository signing key"
+	sudo apt-get install ca-certificates curl
+	sudo install -m 0755 -d /etc/apt/keyrings
+	sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+	sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+	@echo "Adding the Docker repository"
+	echo \
+	  "deb [arch=$$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+	  $$(. /etc/os-release && echo "$$VERSION_CODENAME") stable" | \
+	  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 	@echo "Setting file limits"
 	echo -e "* soft nofile 65536\n* hard nofile 65536" | sudo tee -a /etc/security/limits.conf
@@ -209,8 +231,21 @@ install:
 	echo "DefaultLimitNOFILE=65536" | sudo tee -a /etc/systemd/user.conf
 	sudo systemctl daemon-reload
 
+	@echo "Updating package list"
+	sudo apt-get update
+
 	@echo "Installing required packages"
-	sudo apt-get install -y open-iscsi nfs-common
+	sudo apt-get install -y open-iscsi nfs-common docker-ce docker-ce-cli containerd.io docker-buildx-plugin
+
+	@echo "Assigning $$USER to docker group"
+	sudo usermod -a -G docker $$USER
+
+	@echo "Logging into GHCR with the provided token"
+	bash -c 'export $$(grep -v '^\#' sandbox/env | xargs) && echo "$$GITHUB_TOKEN" | docker login ghcr.io --username "$$GITHUB_USER" --password-stdin'
+
+	@echo "Installing Docker Compose"
+	sudo curl -L "https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-$$(uname -s)-$$(uname -m)" -o /usr/local/bin/docker-compose
+	sudo chmod +x /usr/local/bin/docker-compose
 
 	@echo "Installing K3s with custom configuration"
 	curl -sfL https://get.k3s.io | sh -
@@ -219,6 +254,8 @@ install:
 	mkdir -p ~/.kube
 	sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 	sudo chown "$${USER}" ~/.kube/config
+	@# work around https://github.com/k3s-io/k3s/issues/1541#issuecomment-1029452328
+	echo "export KUBECONFIG=~/.kube/config" >> "$${HOME}/.bashrc"
 	@echo "Configuring custom Kubernetes context 'crs'"
 	kubectl config rename-context default crs
 
@@ -227,8 +264,9 @@ install:
 
 	@echo "Installing mise"
 	curl https://mise.jdx.dev/install.sh | sh
-	mise install
-	echo "eval \"$$(mise activate bash)\"" >> "$${HOME}/.bashrc"
+	echo 'export PATH=$${PATH}:~/.local/bin' >> "$${HOME}/.bashrc"
+	echo 'eval "$$(mise activate bash)"' >> "$${HOME}/.bashrc"
+	mise install -y
 
 k8s/k3s/clean:
 	@if [ -f /usr/local/bin/k3s-uninstall.sh ]; then \
@@ -261,10 +299,14 @@ k8s/competition: env-file-required k8s/clean ## Generates the competition k8s re
 k8s/kustomize/competition:
 	@kustomize build $(ROOT_DIR)/sandbox/kustomize/competition -o $(LOCAL_K8S_RESOURCES)/resources.yaml
 
+down-volumes:
+	@docker compose $(DOCKER_COMPOSE_LOCAL_ARGS) down --remove-orphans -v $(c)
+
+
 clean-volumes: clear-dind-cache
 	rm -rf $(HOST_CP_ROOT_DIR) $(HOST_CRS_SCRATCH) $(HOST_CAPI_LOGS)
 
-clean: cps/clean k8s/clean down clear-dind-cache
+clean: cps/clean k8s/clean down-volumes clear-dind-cache
 
 force-reset: ## Remove all local docker containers, networks, volumes, and images
 	@docker system prune --all

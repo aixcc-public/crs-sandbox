@@ -7,6 +7,10 @@ from each competitors private copy of the `CRS Sandbox`.
 
 Competitor SSO accounts to GitHub will be limited to a basic set of actions for making modifications and merging PRs within the GitHub repository.
 
+## CRS Testing
+
+To test a CRS in a semifinals-like environment, see [this document.](./LOCAL_CRS_TESTING.md)
+
 ## Final Submission
 The submission window closes July 15, 2024 at 11:59pm UTC [FAQ page 5](https://aicyberchallenge.com/faqs/)
 At that time, your CRS repository will become read-only and vCluster access will be removed. The latest tagged release in your repository for images and the crs-manifest will be used for competition.

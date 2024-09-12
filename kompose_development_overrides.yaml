@@ -58,9 +58,20 @@ services:
       kompose.init.containers.command: '["sh", "-c", "until curl http://load-cp-images:8080; do echo \"Waiting for CP image load to complete\"; sleep 5; done"]'
       kompose.init.containers.image: curlimages/curl:8.8.0
       kompose.init.containers.name: wait-for-cp-load
+    environment:
+      - LOCAL_USER=0:0
     volumes:
       - cp_root:/cp_root
       - crs_scratch:/crs_scratch
+  capi-worker:
+    environment:
+      - LOCAL_USER=0:0
+    volumes:
+      - cp_root:/cp_root
+      - crs_scratch:/crs_scratch
+  capi-background:
+    environment:
+      - LOCAL_USER=0:0
 volumes:
   cp_root:
   crs_scratch:

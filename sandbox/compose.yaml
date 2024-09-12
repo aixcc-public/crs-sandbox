@@ -89,9 +89,9 @@ services:
     image: docker:24-dind
     command: ["dockerd", "-H", "tcp://0.0.0.0:2375", "--tls=false", "--storage-driver=overlay2"]
     restart: always
-    privileged: true  # This must run with privlege to support nested virtualization within the public Linux CP for `virtme-ng`
+    privileged: true # This must run with privilege to support nested virtualization within the public Linux CP for `virtme-ng`
     environment:
-      - DOCKER_TLS_CERTDIR  # intentionally blank to optimize runtime
+      - DOCKER_TLS_CERTDIR # intentionally blank to optimize runtime
     volumes:
       - type: bind
         source: ${PWD}/crs_scratch
@@ -101,7 +101,7 @@ services:
   iapi:
     networks:
       - crs-internal
-      - internet  # Internal networks can"t have host port mappings
+      - internet # Internal networks can"t have host port mappings
     expose:
       - "8080"
     profiles:
@@ -120,33 +120,66 @@ services:
       retries: 15
       start_period: 3s
       timeout: 5s
+  redis:
+    profiles:
+      - mock-crs
+      - development
+      - loadtest
+    networks:
+      - crs-internal
+    image: redis:6
+    expose:
+      - "6379"
+    healthcheck:
+      test: redis-cli ping
+      interval: 1s
+      retries: 30
+  azureblob:
+    profiles:
+      - mock-crs
+      - development
+      - loadtest
+    networks:
+      - crs-internal
+    image: mcr.microsoft.com/azure-storage/azurite
+    command: ["azurite", "--blobHost", "0.0.0.0"]
+    expose:
+      - "10000"
+    healthcheck:
+      test: nc 127.0.0.1 10000 -z
+      interval: 1s
+      retries: 30
   capi:
     networks:
       - crs-internal
-      - internet  # This needs internet to pull CP container images but not for competition
+      - internet # This needs internet to pull CP container images but not for competition
     expose:
       - "8080"
     profiles:
       - mock-crs
       - development
       - loadtest
-    image: ghcr.io/aixcc-sc/capi:v2.1.9
+    image: ghcr.io/aixcc-sc/capi:v2.1.30
     restart: always
     env_file: env
     environment:
       - AIXCC_AUDIT_FILE=/var/log/capi/audit.log
+      - AIXCC_AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azureblob:10000/devstoreaccount1;
       - AIXCC_CP_ROOT=/cp_root
       - AIXCC_DATABASE_HOST=db
       - AIXCC_DATABASE_NAME=capi
       - AIXCC_DATABASE_PASSWORD=aixcc
       - AIXCC_DATABASE_PORT=5432
       - AIXCC_DATABASE_USERNAME=aixcc
+      - AIXCC_REDIS_HOST=redis
       - AIXCC_TEMPDIR=/crs_scratch
       - DOCKER_HOST=tcp://dind:2375
       - LOCAL_USER=${UID}:${GID}
     configs:
       - source: capi_config
         target: /etc/capi/config.yaml
+      - source: capi_worker_env
+        target: /etc/capi/workers/00000000-0000-0000-0000-000000000000.env
     volumes:
       - type: bind
         source: ${PWD}/crs_scratch
@@ -163,6 +196,67 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      azureblob:
+        condition: service_healthy
+  capi-worker:
+    networks:
+      - crs-internal
+      - internet # This needs internet to pull CP container images but not for competition
+    expose:
+      - "8080"
+    profiles:
+      - mock-crs
+      - development
+      - loadtest
+    image: ghcr.io/aixcc-sc/capi:v2.1.30
+    restart: always
+    env_file:
+      - env
+      - capi/worker.env
+    environment:
+      - AIXCC_CP_ROOT=/cp_root
+      - AIXCC_FLATFILE_DIR=/crs_scratch
+      - AIXCC_TEMPDIR=/crs_scratch
+      - AIXCC_REDIS_HOST=redis
+      - AIXCC_WORKER_ID=00000000-0000-0000-0000-000000000000
+      - DOCKER_HOST=tcp://dind:2375
+      - MODE=worker
+    configs:
+      - source: capi_config
+        target: /etc/capi/config.yaml
+    volumes:
+      - type: bind
+        source: ${PWD}/crs_scratch
+        target: /crs_scratch
+        bind:
+          propagation: rshared
+  capi-background:
+    networks:
+      - crs-internal
+      - internet # This needs internet to pull CP container images but not for competition
+    expose:
+      - "8080"
+    profiles:
+      - mock-crs
+      - development
+      - loadtest
+    image: ghcr.io/aixcc-sc/capi:v2.1.30
+    restart: always
+    environment:
+      - MODE=background
+      - AIXCC_AUDIT_FILE=/var/log/capi/audit.log
+      - AIXCC_AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azureblob:10000/devstoreaccount1;
+      - AIXCC_CP_ROOT=/cp_root
+      - AIXCC_DATABASE_HOST=db
+      - AIXCC_DATABASE_NAME=capi
+      - AIXCC_DATABASE_PASSWORD=aixcc
+      - AIXCC_DATABASE_PORT=5432
+      - AIXCC_DATABASE_USERNAME=aixcc
+      - AIXCC_REDIS_HOST=redis
+      - LOCAL_USER=${UID}:${GID}
+    configs:
+      - source: capi_config
+        target: /etc/capi/config.yaml
   db:
     networks:
       - crs-internal
@@ -230,6 +324,8 @@ configs:
     file: ./nginx/kube.conf.template
   capi_db_setup:
     file: ./capi/db_setup.sh
+  capi_worker_env:
+    file: ./capi/worker.env
 networks:
   internet: {}
   crs-internal:

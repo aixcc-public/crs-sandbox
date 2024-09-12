@@ -18,7 +18,7 @@ services:
         condition: service_completed_successfully
   iapi:
     ports:
-      - '127.0.0.1:8080:8080'
+      - "127.0.0.1:8080:8080"
     configs:
       - source: nginx_local_config
         target: /etc/nginx/templates/default.conf.template
@@ -54,9 +54,23 @@ services:
         target: /cp_root
         bind:
           propagation: rshared
+  capi-worker:
+    volumes:
+      - type: bind
+        source: ${PWD}/cp_root
+        target: /cp_root
+        bind:
+          propagation: rshared
+  capi-background:
+    volumes:
+      - type: bind
+        source: ${PWD}/capi_logs
+        target: /var/log/capi
+        bind:
+          propagation: rshared
   # db:
   #   ports:
   #     - "127.0.0.1:5432:5432"
   litellm:
     ports:
-      - '127.0.0.1:8081:80'
+      - "127.0.0.1:8081:80"

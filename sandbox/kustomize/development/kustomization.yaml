@@ -31,10 +31,10 @@ patches:
         value:
           - name: regcred
   - target:
-      kind: Pod
+      kind: Deployment
       name: load-cp-images
     patch: |-
       - op: add
-        path: /spec/imagePullSecrets
+        path: /spec/template/spec/imagePullSecrets
         value:
           - name: regcred
