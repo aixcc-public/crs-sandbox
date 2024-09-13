@@ -30,6 +30,14 @@ make k8s
 
 This will set up [k3s](https://k3s.io/) and [Longhorn](https://longhorn.io/) on your machine.  It will deploy your CRS and the cAPI onto the cluster, at which point your CRS will start working on the challenge problem you configured earlier.
 
+#### Rerunning `make k8s`
+
+If you ever have to rerun `make k8s` without resetting `k3s`, you will need to skip deploying Longhorn.  Set the Make variable `KUBE_DEPLOY_LONGHORN` to `false` to do this.
+
+```bash
+make k8s KUBE_DEPLOY_LONGHORN=false
+```
+
 ### Running on my own cluster
 
 `crs-sandbox` provides hooks for you to provide your own cluster instead if you prefer.  This route is unsupported; you are on your own if it does not work.
