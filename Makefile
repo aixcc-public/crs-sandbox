@@ -192,14 +192,14 @@ k8s/longhorn:
 	fi
 
 k8s: k8s/clean k8s/longhorn computed-env k8s/development k8s/kustomize/development build ## Generates helm chart locally for the development profile for kind testing, etc. build is called for local image generation
-	@docker pull ghcr.io/aixcc-sc/capi:v2.1.30
+	@docker pull ghcr.io/aixcc-public/capi:v2.1.30
 	@docker pull ghcr.io/berriai/litellm-database:main-v1.35.10
 	@docker pull nginx:1.25.5
 	@docker pull docker:24-dind
 	@docker pull postgres:16.2-alpine3.19
-	@docker pull ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
+	@docker pull ghcr.io/aixcc-public/crs-sandbox/mock-crs:v2.0.0
 	@docker pull curlimages/curl:8.8.0
-	@docker pull ghcr.io/aixcc-sc/load-cp-images:latest
+	@docker pull ghcr.io/aixcc-public/load-cp-images:latest
 	@kubectl create --context=$(KUBE_CONTEXT) secret docker-registry regcred --docker-server=https://ghcr.io --docker-username=oauth2 --docker-password=$(shell grep GITHUB_TOKEN sandbox/env | sed 's/.*=//g')
 	@kubectl apply --context=$(KUBE_CONTEXT) -f $(LOCAL_K8S_RESOURCES)
 
