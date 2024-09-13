@@ -9,7 +9,7 @@
 
 cp_targets:
   mock-cp:
-    url: git@github.com:aixcc-sc/mock-cp.git
+    url: git@github.com:aixcc-public/mock-cp.git
     ref: v3.0.2
 #  linux-cp:
 #    url: git@github.com:aixcc-sc/challenge-001-linux-cp.git

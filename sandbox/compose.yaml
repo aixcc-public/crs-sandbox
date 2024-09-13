@@ -4,7 +4,7 @@
 ---
 services:
   load-cp-images:
-    image: ghcr.io/aixcc-sc/load-cp-images:latest
+    image: ghcr.io/aixcc-public/load-cp-images:latest
     expose:
       - "8080"
     build:
@@ -32,7 +32,7 @@ services:
       - crs-internal
     profiles:
       - mock-crs
-    image: ghcr.io/aixcc-sc/crs-sandbox/mock-crs:v2.0.0
+    image: ghcr.io/aixcc-public/crs-sandbox/mock-crs:v2.0.0
     build:
       context: ../
       dockerfile: mock_crs/src/Dockerfile
@@ -159,7 +159,7 @@ services:
       - mock-crs
       - development
       - loadtest
-    image: ghcr.io/aixcc-sc/capi:v2.1.30
+    image: ghcr.io/aixcc-public/capi:v2.1.30
     restart: always
     env_file: env
     environment:
@@ -208,7 +208,7 @@ services:
       - mock-crs
       - development
       - loadtest
-    image: ghcr.io/aixcc-sc/capi:v2.1.30
+    image: ghcr.io/aixcc-public/capi:v2.1.30
     restart: always
     env_file:
       - env
@@ -240,7 +240,7 @@ services:
       - mock-crs
       - development
       - loadtest
-    image: ghcr.io/aixcc-sc/capi:v2.1.30
+    image: ghcr.io/aixcc-public/capi:v2.1.30
     restart: always
     environment:
       - MODE=background
