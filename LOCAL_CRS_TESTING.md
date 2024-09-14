@@ -23,7 +23,7 @@ Before you start:
 Run the following.
 
 ```bash
-make install
+make install # ignore errors printed the first time this runs; it will install the missing tools
 exec sudo su -l $USER # and cd to the repo again, or just restart your shell
 make k8s
 ```
