@@ -1,3 +1,15 @@
+![AIxCC logo](./logo.png)
+
+This repo was used as part of the semifinals competition for DARPA + ARPA-H's [AI Cyber Challenge](https://aicyberchallenge.com/).
+
+The CRS Sandbox was the basis on which competitors built their Cyber Reasoning Systems (CRS).  They copied and customized this repository to add code and Docker containers.  The CRS Sandbox provided them a framework to test their CRSs locally via docker-compose while still retaining the ability to deploy to Kubernetes (using [Kompose](https://kompose.io/)), which was the environment that CRSs ran in for semifinals.  The Makefile in this repository was the main interface for competitors.
+ 
+During semifinals, this base repository was updated regularly and pull requests were generated to provide competitors with bugfixes.
+
+Everything in this repo assumes a base Ubuntu 22.04 installation as its development environment.
+
+The rest of this README is unaltered from its state at the end of semifinals, with the exception of an additional section linking some new documentation on using this repo to run a CRS now that semifinals have concluded.
+
 # CRS Sandbox
 
 This repository, the `CRS Sandbox` includes a [./compose.yaml](./compose.yaml) file.
