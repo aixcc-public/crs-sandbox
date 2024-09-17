@@ -45,7 +45,7 @@ Competitors should use GitHub issues to report bugs on the respective repositori
 
 Competitors are also welcome to comment in tickets assisting others.
 
-We encourae all competitors to read through issues (open & closed) within the following repos.
+We encourage all competitors to read through issues (open & closed) within the following repos.
 
 - [CRS Sandbox](https://github.com/aixcc-sc/crs-sandbox/issues)
 - [CP Sandbox](https://github.com/aixcc-sc/cp-sandbox/issues)
@@ -73,14 +73,14 @@ During Phase 1, teams must use their own secret keys and tokens to access collab
 
 #### Interpreting Results in GitHub Actions
 
-The job that evaluates the CRS's performance is part of the [CRS Evaluator](https://github.com/aixcc-sc/crs-sandbox/actions/workflows/evaluator.yml) and is called `run-validate-crs-submissions`.
+The job that evaluates the CRS's performance is part of the [CRS Evaluator](https://github.com/aixcc-public/crs-sandbox/actions/workflows/evaluator.yml) and is called `run-validate-crs-submissions`.
 
 It runs the CRS as defined in the [./compose.yaml](./compose.yaml) and evaluates its submitted vulnerability discoveries and generated patches.
 Check the output of the validation steps, CRS submission log step, and CRS logs step for introspection into what happened.
 
 ![GitHub Actions output showing a CRS submitting a working VD and a failing GP](./.static/crs-logs-example.png)
 
-<https://github.com/aixcc-sc/crs-sandbox/assets/165228747/f758d4cf-c597-41f3-b2c8-986250e954e3>
+https://github.com/user-attachments/assets/f3dd9723-29f6-4f0f-9714-3b624cebb2e8
 
 ### Phase 2 - Automated Execution of your CRS
 
@@ -124,8 +124,7 @@ commit, and must use that issued CPV UUID for any generated patches.  Any furthe
 rejected as duplicates.  During phase 2, however, **duplicate submissions will not be rejected** in
 order to facilitate rapid CRS testing.  We may turn rejection back on towards the end of phase 2.
 
-
-<https://github.com/aixcc-sc/crs-sandbox/assets/165228747/771850a7-7019-4199-aa3f-c705bcffe37d>
+https://github.com/user-attachments/assets/20bb23b7-7c7c-4af6-b404-bc028b6e61ef
 
 ### vCluster CRS Guide
 
