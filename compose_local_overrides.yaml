@@ -61,6 +61,9 @@ services:
         target: /cp_root
         bind:
           propagation: rshared
+    depends_on:
+      capi:
+        condition: service_healthy
   capi-background:
     volumes:
       - type: bind
