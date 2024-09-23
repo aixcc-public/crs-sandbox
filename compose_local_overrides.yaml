@@ -55,6 +55,8 @@ services:
         bind:
           propagation: rshared
   capi-worker:
+    environment:
+      - LOCAL_USER=${UID}:${GID}
     volumes:
       - type: bind
         source: ${PWD}/cp_root
